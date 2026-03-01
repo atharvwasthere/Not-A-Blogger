@@ -1,0 +1,72 @@
+# --------------------
+# Python
+# --------------------
+__pycache__/
+*.py[cod]
+*$py.class
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+backend/.venv/
+backend/venv/
+backend/env/
+backend/ENV/
+
+# Env files
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+
+# --------------------
+# Node / Frontend
+# --------------------
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+frontend/build/
+.npm
+.eslintcache
+
+# Bun
+bun.lockb
+frontend/bun.lockb
+bun.lock
+frontend/bun.lock
+
+# Tools
+.tanstack/
+frontend/.tanstack/
+.turbo/
+frontend/.turbo/
+
+# Agents
+.agents/
+frontend/.agents/
+
+# Docs
+.docs/
+frontend/.docs/
+giest.md
+loader.md
+not-a-blogger-seo-SKILL.md
+things to note.md
+PLAN.md
+
+# --------------------
+# IDEs / OS
+# --------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
