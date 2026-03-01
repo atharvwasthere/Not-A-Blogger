@@ -37,9 +37,11 @@ async def upload_file(file: UploadFile) -> str:
         contents = await file.read()
 
         # 3. Upload to Cloudinary
-        # resource_type="auto" automatically determines if it's an image or video
+        # For SVGs and images, we want resource_type="image" to ensure correct delivery headers
+        resource_type = "image" if file.content_type.startswith("image/") else "video"
+
         upload_result = cloudinary.uploader.upload(
-            contents, resource_type="auto", folder="blog_posts"
+            contents, resource_type=resource_type, folder="blog_posts"
         )
 
         # 4. Return Public URL

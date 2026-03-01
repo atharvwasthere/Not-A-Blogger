@@ -102,8 +102,8 @@ async def send_new_post_notification(
             batch = subscribers[i : i + batch_size]
 
             params = {
-                "from": "Atharv <newsletter@notablogger.com>",  # requires a verified domain in Resend
-                "to": ["newsletter@notablogger.com"],  # The sender or a generic inbox
+                "from": "Atharv <newsletter@atharvsingh.me>",  # custom domain
+                "to": ["[EMAIL_ADDRESS]"],  # The sender or a generic inbox
                 "bcc": batch,
                 "subject": f"{post_title} — Not a Blogger",
                 "html": html_content,
@@ -189,7 +189,7 @@ async def send_welcome_email(email: str, subscriber_id: str, name: str = None):
 
     try:
         params = {
-            "from": "Atharv <newsletter@notablogger.com>",  # requires verified domain
+            "from": "Atharv <newsletter@atharvsingh.me>",  # custom domain
             "to": email,
             "subject": "Welcome to Not a Blogger",
             "html": html_content,

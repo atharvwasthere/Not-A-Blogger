@@ -13,6 +13,7 @@ class PostInput(BaseModel):
     content: str = Field(..., min_length=2)
     excerpt: Optional[str] = Field(None, min_length=2)
     cover_image: Optional[str] = Field(None, min_length=2)
+    icon_url: Optional[str] = Field(None, min_length=2)
     is_published: bool = Field(False)
     seo_title: Optional[str] = Field(None, min_length=2, max_length=200)
     seo_description: Optional[str] = Field(None, min_length=2, max_length=300)
@@ -29,6 +30,7 @@ class PostSummary(BaseModel):
     slug: str
     excerpt: Optional[str] = None
     cover_image: Optional[str] = None
+    icon_url: Optional[str] = None
     is_published: bool
     created_at: datetime
     updated_at: datetime
@@ -54,6 +56,7 @@ class PostBase(BaseModel):
     content: str
     excerpt: Optional[str] = None
     cover_image: Optional[str] = None
+    icon_url: Optional[str] = None
     is_published: bool = False
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
