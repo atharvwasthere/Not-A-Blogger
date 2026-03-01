@@ -20,6 +20,7 @@ async def upload_file(file: UploadFile) -> str:
         "image/png",
         "image/webp",
         "image/gif",
+        "image/svg+xml",
         "video/mp4",
         "video/webm",
     ]:

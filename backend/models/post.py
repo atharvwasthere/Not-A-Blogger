@@ -20,3 +20,4 @@ class BlogPost(BaseModel):
     seo_title = Column(String(200))
     seo_description = Column(String(300))
     reading_time = Column(Integer, default=1)
+    icon_url = Column(String(500))
