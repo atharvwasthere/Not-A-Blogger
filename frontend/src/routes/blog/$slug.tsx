@@ -23,7 +23,7 @@ export const Route = createFileRoute('/blog/$slug')({
     },
     head: ({ loaderData: post }) => {
         if (!post) return {}
-        const siteUrl = 'https://atharvsingh.me'
+        const siteUrl = 'https://blogs.atharvsingh.me'
         const postUrl = `${siteUrl}/blog/${post.slug}`
         const metaTitle = post.seo_title || `${post.title} | Atharv Singh — Not a Blogger`
         const metaDesc = post.seo_description || post.excerpt || `${post.title}. By Atharv Singh on Not a Blogger.`

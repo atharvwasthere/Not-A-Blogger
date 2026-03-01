@@ -2,4 +2,4 @@
 User-agent: *
 Disallow: /admin
 
-Sitemap: https://atharvsingh.me/api/sitemap.xml
+Sitemap: https://blogs.atharvsingh.me/api/sitemap.xml
