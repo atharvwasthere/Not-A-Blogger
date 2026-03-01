@@ -28,6 +28,8 @@ export function BlogList({ posts }: BlogListProps) {
                         date={format(new Date(post.created_at || Date.now()), "MMMM d, yyyy")}
                         description={post.excerpt || ""}
                         readingTime={post.reading_time}
+                        coverImage={post.cover_image || undefined}
+                        iconUrl={post.icon_url || undefined}
                     />
                 ))}
             </div>

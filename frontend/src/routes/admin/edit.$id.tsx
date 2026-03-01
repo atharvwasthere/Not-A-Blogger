@@ -23,6 +23,7 @@ function EditPost() {
   const [title, setTitle] = useState(post.title || '')
   const [content, setContent] = useState(post.content || '')
   const [coverImage, setCoverImage] = useState(post.cover_image || '')
+  const [iconUrl, setIconUrl] = useState(post.icon_url || '')
   const [excerpt, setExcerpt] = useState(post.excerpt || '')
   const [seoTitle, setSeoTitle] = useState(post.seo_title || '')
   const [seoDescription, setSeoDescription] = useState(post.seo_description || '')
@@ -43,6 +44,7 @@ function EditPost() {
         title,
         content,
         cover_image: coverImage || undefined,
+        icon_url: iconUrl || undefined,
         is_published: postStatus === 'Published',
         seo_title: seoTitle || undefined,
         seo_description: seoDescription || undefined,
@@ -96,10 +98,22 @@ function EditPost() {
       {/* Right: Sidebar */}
       <aside className="border-l border-zinc-100 bg-zinc-50/30 p-8 flex flex-col gap-10 lg:sticky lg:top-[56px] lg:h-[calc(100vh-56px)] overflow-y-auto">
         <div className="space-y-4">
-          <ImageUpload
-            value={coverImage}
-            onChange={setCoverImage}
-          />
+          <h3 className="font-serif text-lg text-zinc-900 border-b border-zinc-100 pb-2">Post Assets</h3>
+          <div className="space-y-1">
+            <label className="text-[10px] text-zinc-400 uppercase tracking-[0.1em] font-bold">Banner Image</label>
+            <ImageUpload
+              value={coverImage}
+              onChange={setCoverImage}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-zinc-400 uppercase tracking-[0.1em] font-bold">Page Icon (SVG)</label>
+            <ImageUpload
+              value={iconUrl}
+              onChange={setIconUrl}
+              className="aspect-square w-32 mx-auto"
+            />
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -188,7 +202,7 @@ function EditPost() {
               <span className="text-zinc-700 truncate">{post.slug}</span>
             </div>
             <div className="flex gap-4">
-              <span className="w-12 text-zinc-400 shrink-0">Created:</span>
+              <span className="w-12 text-zinc-400 shrink-0 gap-1">Created: </span>
               <span className="text-zinc-300 italic">{format(new Date(post.created_at), 'MMM d, yyyy')}</span>
             </div>
           </div>

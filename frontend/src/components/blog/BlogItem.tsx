@@ -7,9 +7,11 @@ interface BlogItemProps {
     description: string;
     slug: string;
     readingTime: number;
+    coverImage?: string;
+    iconUrl?: string;
 }
 
-export function BlogItem({ title, date, description, slug, readingTime }: BlogItemProps) {
+export function BlogItem({ title, date, description, slug, readingTime, coverImage, iconUrl }: BlogItemProps) {
     return (
         <Link
             to="/blog/$slug"
@@ -20,7 +22,7 @@ export function BlogItem({ title, date, description, slug, readingTime }: BlogIt
                 {/* Icon Column */}
                 <div className="hidden md:block">
                     <img
-                        src="/debugger.3b2d6247.png.svg"
+                        src={iconUrl || coverImage || "/debugger.3b2d6247.png.svg"}
                         alt=""
                         className="w-16 h-16 object-contain opacity-80 group-hover:opacity-100 transition-opacity"
                     />

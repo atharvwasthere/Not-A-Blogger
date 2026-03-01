@@ -3,6 +3,7 @@ export interface PostInput {
     content: string
     excerpt?: string | null
     cover_image?: string | null
+    icon_url?: string | null
     is_published: boolean
     seo_title?: string | null
     seo_description?: string | null
