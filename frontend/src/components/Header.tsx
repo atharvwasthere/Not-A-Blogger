@@ -20,9 +20,10 @@ export default function Header() {
         >
           <Menu size={24} />
         </button>
-        <h1 className="ml-4">
-          <Link to="/" className="text-xl font-bold tracking-tight hover:text-cyan-400 transition-colors">
-            NOT A BLOGGER
+        <h1 className="ml-4 flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight hover:text-cyan-400 transition-colors">
+            <img src="/quotation-marks-svgrepo-com.svg" alt="Logo" className="h-8 w-8 invert" />
+            <span>NOT A BLOGGER</span>
           </Link>
         </h1>
       </header>

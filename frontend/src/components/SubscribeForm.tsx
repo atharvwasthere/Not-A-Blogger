@@ -29,22 +29,13 @@ export function SubscribeForm() {
     };
 
     return (
-        <div className="mt-8 pt-8 border-t border-border">
+        <div className="mt-6 pt-6 border-t border-border">
             <h3 className="font-serif text-lg font-medium text-foreground mb-2">Subscribe to the newsletter</h3>
             <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                Get notified when I publish new essays on backend systems,
-                architecture, and software design. No spam, ever.
+                Get notified when I publish. No spam, ever.
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                <input
-                    type="text"
-                    placeholder="First name (optional)"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={isLoading}
-                    className="w-full px-4 py-2 text-sm bg-transparent border border-border focus:border-foreground focus:outline-none transition-colors"
-                />
                 <input
                     type="email"
                     placeholder="Email address"
