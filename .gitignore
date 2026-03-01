@@ -33,6 +33,8 @@ frontend/node_modules/
 dist/
 frontend/dist/
 frontend/build/
+frontend/.output/
+frontend/.vinxi/
 .npm
 .eslintcache
 
