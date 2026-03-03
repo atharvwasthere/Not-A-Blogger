@@ -57,6 +57,7 @@ export function PostEditor({
     const [postStatus, setPostStatus] = useState<'Draft' | 'Published'>(
         initialValues.isPublished ? 'Published' : 'Draft'
     )
+    const [confirmDelete, setConfirmDelete] = useState(false)
 
     const handleSave = () =>
         onSave({
@@ -204,13 +205,32 @@ export function PostEditor({
                 {/* Delete — Edit mode only */}
                 {onDelete && (
                     <div className="mt-auto pt-8">
-                        <Button
-                            variant="outline"
-                            onClick={onDelete}
-                            className="w-full rounded-none border-zinc-200 text-zinc-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50"
-                        >
-                            Delete Post
-                        </Button>
+                        {confirmDelete ? (
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    onClick={onDelete}
+                                    className="flex-1 rounded-none border-red-200 text-red-500 bg-red-50 hover:bg-red-100"
+                                >
+                                    Yes, delete
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setConfirmDelete(false)}
+                                    className="flex-1 rounded-none border-zinc-200 text-zinc-500 hover:text-zinc-700"
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                onClick={() => setConfirmDelete(true)}
+                                className="w-full rounded-none border-zinc-200 text-zinc-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50"
+                            >
+                                Delete Post
+                            </Button>
+                        )}
                     </div>
                 )}
             </aside>
