@@ -1,4 +1,3 @@
-import os
 import resend
 import logging
 from typing import List
@@ -11,7 +10,7 @@ settings = get_settings()
 logger = logging.getLogger(__name__)
 
 # Try to get API key from environment
-resend.api_key = os.getenv("RESEND_API_KEY", "")
+resend.api_key = settings.RESEND_API_KEY
 
 
 async def send_new_post_notification(
@@ -103,7 +102,7 @@ async def send_new_post_notification(
 
             params = {
                 "from": "Atharv <newsletter@atharvsingh.me>",  # custom domain
-                "to": ["[EMAIL_ADDRESS]"],  # The sender or a generic inbox
+                "to": ["newsletter@atharvsingh.me"],  # Generic inbox or sender
                 "bcc": batch,
                 "subject": f"{post_title} — Not a Blogger",
                 "html": html_content,

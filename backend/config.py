@@ -14,6 +14,7 @@ class AppSettings:
     DATABASE_URL = os.getenv("DATABASE_URL")
     JWT_SECRET = os.getenv("JWT_SECRET")
     JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY")
     JWT_EXPIRES_IN = int(os.getenv("ACCESS_TOKEN_EXPIRE_DAYS", "7"))
     USERNAME = os.getenv("ADMIN_USERNAME")
     PASSWORD = os.getenv("ADMIN_PASSWORD")
