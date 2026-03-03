@@ -3,7 +3,6 @@ from schemas.auth import LoginRequest, LoginResponse
 from services.auth import (
     validate_admin_credentials,
     generate_access_token,
-    verify_token,
 )
 from middleware.auth import require_authentication
 from config import get_settings
@@ -23,7 +22,7 @@ def admin_login(response: Response, credentials: LoginRequest):
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=False,  # Set to True in production (HTTPS)
+        secure=config.ENVIRONMENT == "production",
         samesite="lax",
         max_age=config.JWT_EXPIRES_IN * 24 * 60 * 60,
     )

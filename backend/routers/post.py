@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -47,7 +47,22 @@ def list_posts(
     limit: int = 10,
     include_drafts: bool = False,
     db: Session = Depends(get_db),
+    request: Request = None,
 ):
+    # Drafts are only visible to authenticated admins
+    if include_drafts:
+        token = request.cookies.get("access_token") if request else None
+        if not token:
+            raise HTTPException(
+                status_code=403, detail="Authentication required to view drafts"
+            )
+        from services.auth import verify_token
+
+        if verify_token(token) is None:
+            raise HTTPException(
+                status_code=403, detail="Authentication required to view drafts"
+            )
+
     query = db.query(BlogPost)
 
     if not include_drafts:

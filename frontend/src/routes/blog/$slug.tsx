@@ -38,7 +38,13 @@ export const Route = createFileRoute('/blog/$slug')({
                 { property: 'og:type', content: 'article' },
                 { property: 'og:url', content: postUrl },
                 { property: 'og:site_name', content: 'Not a Blogger' },
-                ...(post.cover_image ? [{ property: 'og:image', content: post.cover_image }] : []),
+                ...(post.cover_image ? [
+                    { property: 'og:image', content: post.cover_image },
+                    { property: 'og:image:alt', content: `Cover image for ${post.title}` }
+                ] : []),
+                { property: 'article:published_time', content: new Date(post.created_at).toISOString() },
+                { property: 'article:modified_time', content: new Date(post.updated_at).toISOString() },
+                { property: 'article:author', content: 'https://blogs.atharvsingh.me' },
                 // Twitter Cards
                 { name: 'twitter:card', content: 'summary_large_image' },
                 { name: 'twitter:title', content: metaTitle },

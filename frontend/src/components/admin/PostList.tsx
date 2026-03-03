@@ -6,11 +6,10 @@ import { Link } from '@tanstack/react-router'
 interface PostListProps {
     posts: Post[]
     isLoading: boolean
-    onSelect: (post: Post) => void
     onDelete: (id: string) => void
 }
 
-export function PostList({ posts, isLoading, onSelect, onDelete }: PostListProps) {
+export function PostList({ posts, isLoading, onDelete }: PostListProps) {
     if (isLoading && posts.length === 0) {
         return (
             <div className="w-full overflow-x-auto">
