@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from sqlalchemy.orm import Session
 from typing import List
+import re
 
 from database import get_db
 from models.post import BlogPost
@@ -100,8 +101,9 @@ def create_post(
 ):
     slug = generate_slug(post_data.title, db)
 
-    # Calculate reading time (approx 200 wpm)
-    word_count = len(post_data.content.split())
+    # Strip HTML tags before calculating reading time (~200 wpm)
+    plain_text = re.sub(r"<[^>]+>", "", post_data.content)
+    word_count = len(plain_text.split())
     reading_time = max(1, round(word_count / 200))
 
     new_post = BlogPost(**post_data.model_dump(), slug=slug, reading_time=reading_time)
@@ -142,9 +144,9 @@ def update_post(
     if post.title != original_title:
         post.slug = generate_slug(post.title, db)
 
-    # Recalculate reading time
-    word_count = len(post.content.split())
-    post.reading_time = max(1, round(word_count / 200))
+    # Recalculate reading time (strip HTML tags first)
+    plain_text = re.sub(r"<[^>]+>", "", post.content)
+    post.reading_time = max(1, round(len(plain_text.split()) / 200))
 
     # Save
     db.commit()

@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Response, Depends
+import html as html_lib
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import get_db
@@ -43,7 +44,8 @@ def get_sitemap(db: Session = Depends(get_db)):
             if post.updated_at
             else post.created_at.strftime("%Y-%m-%d")
         )
-        sitemap_xml += f"  <url>\n    <loc>{base_url}/blog/{post.slug}</loc>\n    <lastmod>{lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n"
+        safe_slug = html_lib.escape(post.slug)
+        sitemap_xml += f"  <url>\n    <loc>{base_url}/blog/{safe_slug}</loc>\n    <lastmod>{lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n"
 
     sitemap_xml += "</urlset>"
 

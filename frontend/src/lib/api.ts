@@ -2,6 +2,20 @@ import { Post, PostInput, AuthResponse } from "./types"
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api"
 
+/** Strip HTML tags and decode common entities — use for generating plaintext excerpts */
+export function stripHtml(html: string): string {
+    return html
+        .replace(/<[^>]*>/g, ' ')          // remove tags
+        .replace(/&nbsp;/g, ' ')            // decode non-breaking space
+        .replace(/&amp;/g, '&')             // decode &
+        .replace(/&lt;/g, '<')              // decode <
+        .replace(/&gt;/g, '>')              // decode >
+        .replace(/&quot;/g, '"')            // decode "
+        .replace(/&#039;/g, "'")            // decode '
+        .replace(/\s+/g, ' ')               // collapse whitespace
+        .trim()
+}
+
 async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const headers = {
         "Content-Type": "application/json",
@@ -49,19 +63,15 @@ export const api = {
     uploadImage: async (file: File) => {
         const formData = new FormData()
         formData.append('file', file)
-        const res = await fetch(`${API_BASE}/upload/`, { // Check backend path. @upload_router.post("/") -> /upload/ (with prefix /api -> /api/upload/)
+        // Use fetch directly here: FormData requires browser to set Content-Type with boundary;
+        // fetcher() always sends Content-Type: application/json which breaks multipart uploads.
+        const res = await fetch(`${API_BASE}/upload/`, {
             method: 'POST',
             body: formData,
-            headers: {
-                // Content-Type is set automatically by browser for FormData
-                // But we need to handle auth. fetcher helper handles simple JSON.
-                // We should probably reuse logic or manual fetch.
-                // Let's implement manual fetch here to handle FormData correctly.
-            },
-            credentials: "include"
+            credentials: 'include',
+            // Do NOT set Content-Type — browser sets it automatically with the correct multipart boundary
         })
-
-        if (!res.ok) throw new Error("Upload failed")
+        if (!res.ok) throw new Error(`Upload failed: ${res.status} ${res.statusText}`)
         const data = await res.json()
         return data.url as string
     },

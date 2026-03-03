@@ -123,8 +123,12 @@ function BlogPost() {
                     )}
                 </div>
 
-                <article className="prose prose-zinc max-w-none font-serif prose-headings:font-serif prose-headings:font-normal prose-p:text-zinc-600 prose-p:leading-loose">
-                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                <article className="prose prose-zinc max-w-none font-serif prose-headings:font-serif prose-headings:font-normal prose-p:text-zinc-600 prose-p:leading-loose
+                                   prose-h1:text-3xl prose-h1:mt-6 prose-h1:mb-3 
+                                   prose-h2:text-2xl prose-h2:mt-5 prose-h2:mb-2 
+                                   prose-h3:text-xl prose-h3:mt-4 prose-h3:mb-1 
+                                   prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5">
+                    <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }} />
                 </article>
             </div>
         </MainLayout>

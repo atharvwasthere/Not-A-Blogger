@@ -22,7 +22,7 @@ export interface User {
     id: string
 }
 
+// The JWT is delivered via httpOnly cookie; access_token is not used client-side
 export interface AuthResponse {
-    access_token: string
     token_type: string
 }

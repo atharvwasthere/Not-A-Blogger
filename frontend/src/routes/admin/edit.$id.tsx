@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { PostEditor } from '@/components/admin/PostEditor'
-import { api } from '@/lib/api'
+import { api, stripHtml } from '@/lib/api'
 import toast from 'react-hot-toast'
 import { EditorSkeleton } from '@/components/admin/EditorSkeleton'
 
@@ -37,7 +37,7 @@ function EditPost() {
         is_published: isPublished,
         seo_title: seoTitle || undefined,
         seo_description: seoDescription || undefined,
-        excerpt: excerpt || content.replace(/<[^>]*>?/gm, '').slice(0, 150),
+        excerpt: excerpt || stripHtml(content).slice(0, 150),
       })
       setLastSaved(new Date())
       toast.success('Post updated successfully!')

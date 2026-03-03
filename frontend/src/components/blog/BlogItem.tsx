@@ -22,7 +22,7 @@ export function BlogItem({ title, date, description, slug, readingTime, coverIma
                 {/* Icon Column */}
                 <div className="hidden md:block">
                     <img
-                        src={iconUrl || coverImage || "/debugger.3b2d6247.png.svg"}
+                        src={iconUrl || coverImage || "/fallback-icon.svg"}
                         alt=""
                         className="w-16 h-16 object-contain opacity-80 group-hover:opacity-100 transition-opacity"
                     />
