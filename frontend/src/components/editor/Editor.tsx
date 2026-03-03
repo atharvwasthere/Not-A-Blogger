@@ -12,6 +12,7 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import TextAlign from '@tiptap/extension-text-align'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Typography from '@tiptap/extension-typography'
 import { common, createLowlight } from 'lowlight'
 import Bold from 'lucide-react/dist/esm/icons/bold'
 import Italic from 'lucide-react/dist/esm/icons/italic'
@@ -21,7 +22,6 @@ import AlignLeft from 'lucide-react/dist/esm/icons/align-left'
 import AlignCenter from 'lucide-react/dist/esm/icons/align-center'
 import AlignRight from 'lucide-react/dist/esm/icons/align-right'
 import UnderlineIcon from 'lucide-react/dist/esm/icons/underline'
-import Highlighter from 'lucide-react/dist/esm/icons/highlighter'
 import YoutubeIcon from 'lucide-react/dist/esm/icons/youtube'
 import Check from 'lucide-react/dist/esm/icons/check'
 import X from 'lucide-react/dist/esm/icons/x'
@@ -121,7 +121,7 @@ export function Editor({ content, onChange, editable = true }: EditorProps) {
                 height: 472.5,
             }),
             Highlight.configure({
-                HTMLAttributes: { class: "bg-yellow-100 px-1 rounded" },
+                multicolor: true,
             }),
             Underline,
             TaskList.configure({
@@ -135,9 +135,10 @@ export function Editor({ content, onChange, editable = true }: EditorProps) {
             }),
             CodeBlockLowlight.configure({
                 lowlight,
-                HTMLAttributes: { class: "bg-zinc-900 text-zinc-100 p-4 rounded-md font-mono text-sm my-4 overflow-x-auto" },
+                HTMLAttributes: { class: "notion-code-block hljs bg-[#191919] text-[#e1e1e1] p-5 rounded-lg font-mono text-sm my-4 overflow-x-auto border border-zinc-800/50" },
             }),
             SlashCommand,
+            Typography,
         ],
         content,
         editable,
@@ -149,6 +150,7 @@ export function Editor({ content, onChange, editable = true }: EditorProps) {
                     'prose-h3:text-xl prose-h3:mt-4 prose-h3:mb-1 prose-h3:font-semibold ' +
                     'prose-p:my-2 prose-p:leading-relaxed ' +
                     'prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5',
+                spellcheck: 'false',
             },
             handleDrop: (view, event, _slice, moved) => {
                 if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
@@ -235,9 +237,35 @@ export function Editor({ content, onChange, editable = true }: EditorProps) {
                             <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={cn("p-1.5 hover:bg-zinc-100 rounded", editor.isActive('underline') && "bg-zinc-100 text-zinc-900")}>
                                 <UnderlineIcon size={14} />
                             </button>
-                            <button onClick={() => editor.chain().focus().toggleHighlight().run()} className={cn("p-1.5 hover:bg-zinc-100 rounded", editor.isActive('highlight') && "bg-zinc-100 text-zinc-900")}>
-                                <Highlighter size={14} />
-                            </button>
+                            <div className="flex items-center gap-0.5 px-1 border-l border-r border-zinc-100 mx-0.5">
+                                <button
+                                    onClick={() => editor.chain().focus().toggleHighlight({ color: '#fef9c3' }).run()}
+                                    className={cn("w-4 h-4 rounded-full bg-[#fef9c3] border border-zinc-200 hover:scale-110 transition-transform", editor.isActive('highlight', { color: '#fef9c3' }) && "ring-1 ring-zinc-400")}
+                                    title="Yellow Highlight"
+                                />
+                                <button
+                                    onClick={() => editor.chain().focus().toggleHighlight({ color: '#bbf7d0' }).run()}
+                                    className={cn("w-4 h-4 rounded-full bg-[#bbf7d0] border border-zinc-200 hover:scale-110 transition-transform", editor.isActive('highlight', { color: '#bbf7d0' }) && "ring-1 ring-zinc-400")}
+                                    title="Green Highlight"
+                                />
+                                <button
+                                    onClick={() => editor.chain().focus().toggleHighlight({ color: '#bfdbfe' }).run()}
+                                    className={cn("w-4 h-4 rounded-full bg-[#bfdbfe] border border-zinc-200 hover:scale-110 transition-transform", editor.isActive('highlight', { color: '#bfdbfe' }) && "ring-1 ring-zinc-400")}
+                                    title="Blue Highlight"
+                                />
+                                <button
+                                    onClick={() => editor.chain().focus().toggleHighlight({ color: '#fbcfe8' }).run()}
+                                    className={cn("w-4 h-4 rounded-full bg-[#fbcfe8] border border-zinc-200 hover:scale-110 transition-transform", editor.isActive('highlight', { color: '#fbcfe8' }) && "ring-1 ring-zinc-400")}
+                                    title="Pink Highlight"
+                                />
+                                <button
+                                    onClick={() => editor.chain().focus().unsetHighlight().run()}
+                                    className="p-1 hover:bg-zinc-100 rounded text-zinc-400"
+                                    title="Remove Highlight"
+                                >
+                                    <X size={10} />
+                                </button>
+                            </div>
                             <button onClick={() => editor.chain().focus().toggleCode().run()} className={cn("p-1.5 hover:bg-zinc-100 rounded", editor.isActive('code') && "bg-zinc-100 text-zinc-900")}>
                                 <Code size={14} />
                             </button>

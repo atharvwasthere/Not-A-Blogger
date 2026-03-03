@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+/* hljs themes are scoped below — no global import */
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @import "tw-animate-css";
@@ -142,6 +143,209 @@ code {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Tiptap mark/highlight styling */
+.prose mark {
+  background-color: transparent;
+  @apply px-1 rounded;
+}
+
+/* Remove default backticks from inline code in Tailwind Typography */
+.prose code::before,
+.prose code::after {
+  content: none !important;
+}
+
+.prose code:not(.hljs) {
+  @apply bg-zinc-100 text-zinc-800 px-1.5 py-0.5 rounded font-medium;
+  font-weight: 500 !important;
+}
+
+/* ===== Notion-style code blocks — always dark ===== */
+/* hljs base display rules (replaced global import) */
+pre code.hljs { display: block; overflow-x: auto; padding: 1em }
+code.hljs { padding: 3px 5px }
+
+.prose .notion-code-block {
+    background-color: #191919 !important;
+    border: 1px solid rgba(63, 63, 70, 0.5) !important;
+    @apply shadow-none rounded-lg p-5 my-4 overflow-x-auto font-mono text-sm;
+}
+
+.prose .notion-code-block code {
+    background-color: transparent !important;
+    color: #c9d1d9;
+    padding: 0;
+    font-weight: 400 !important;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+}
+
+/* ===== GitHub Dark — hljs syntax colors (always active) ===== */
+.hljs { color: #c9d1d9; background: #191919 }
+.hljs-doctag,
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ { color: #ff7b72 }
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ { color: #d2a8ff }
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id { color: #79c0ff }
+.hljs-regexp,
+.hljs-string,
+.hljs-meta .hljs-string { color: #a5d6ff }
+.hljs-built_in,
+.hljs-symbol { color: #ffa657 }
+.hljs-comment,
+.hljs-code,
+.hljs-formula { color: #8b949e }
+.hljs-name,
+.hljs-quote,
+.hljs-selector-tag,
+.hljs-selector-pseudo { color: #7ee787 }
+.hljs-subst { color: #c9d1d9 }
+.hljs-section { color: #1f6feb; font-weight: bold }
+.hljs-bullet { color: #f2cc60 }
+.hljs-emphasis { color: #c9d1d9; font-style: italic }
+.hljs-strong { color: #c9d1d9; font-weight: bold }
+.hljs-addition { color: #aff5b4; background-color: #033a16 }
+.hljs-deletion { color: #ffdcd7; background-color: #67060c }
+
+/* ===== Blockquote — Notion-style (default) ===== */
+.prose blockquote {
+    background-color: #f7f6f3 !important;
+    border-left: 3px solid #e3e2de !important;
+    border-radius: 0 0.375rem 0.375rem 0 !important;
+    padding: 0.75rem 1rem !important;
+    margin: 1rem 0 !important;
+    color: #37352f !important;
+    font-style: italic;
+}
+.prose blockquote p {
+    color: #37352f !important;
+    margin: 0 !important;
+}
+
+/* ===== Reader Light mode (warm paper) ===== */
+/* bg: #f8fbe2, text: #2c2c2b */
+.reader-light {
+    background-color: #f8fbe2 !important;
+    color: #2c2c2b;
+}
+
+.reader-light h1,
+.reader-light .font-serif.text-zinc-900 { color: #2c2c2b !important; }
+
+.reader-light .prose p,
+.reader-light .prose li,
+.reader-light .prose td,
+.reader-light .prose th { color: #2c2c2b !important; }
+
+.reader-light .prose h1,
+.reader-light .prose h2,
+.reader-light .prose h3,
+.reader-light .prose h4 { color: #2c2c2b !important; }
+
+.reader-light .prose a { color: #1a6b4a !important; }
+
+.reader-light .prose strong { color: #1a1a19 !important; }
+
+.reader-light .prose blockquote {
+    background-color: #f0f3d0 !important;
+    border-left-color: #c8cc9a !important;
+    color: #2c2c2b !important;
+}
+.reader-light .prose blockquote p { color: #2c2c2b !important; }
+
+.reader-light .prose hr { border-color: #d4d8a8 !important; }
+
+.reader-light .prose code:not(.notion-code-block code) {
+    background-color: #eef1cc !important;
+    color: #2c2c2b !important;
+}
+
+.reader-light .font-mono.text-xs { color: #6b6b5e !important; }
+.reader-light .text-zinc-500 { color: #6b6b5e !important; }
+.reader-light .bg-zinc-300 { background-color: #c8cc9a !important; }
+
+.reader-light a.text-zinc-400 { color: #6b6b5e !important; }
+.reader-light a.text-zinc-400:hover { color: #2c2c2b !important; }
+.reader-light footer { border-color: #d4d8a8 !important; color: #6b6b5e !important; }
+
+/* ===== Reader Dark mode ===== */
+/* bg: #0D1117, text: #E5E7EB, muted: #9CA3AF */
+.reader-dark {
+    background-color: #0D1117 !important;
+    color: #E5E7EB;
+}
+
+.reader-dark h1,
+.reader-dark .font-serif.text-zinc-900 { color: #E5E7EB !important; }
+
+.reader-dark .prose p,
+.reader-dark .prose li,
+.reader-dark .prose td,
+.reader-dark .prose th { color: #E5E7EB !important; }
+
+.reader-dark .prose h1,
+.reader-dark .prose h2,
+.reader-dark .prose h3,
+.reader-dark .prose h4 { color: #E5E7EB !important; }
+
+.reader-dark .prose a { color: #93c5fd !important; }
+
+.reader-dark .prose strong { color: #E5E7EB !important; }
+
+.reader-dark .prose blockquote {
+    background-color: #161B22 !important;
+    border-left-color: #30363D !important;
+    color: #9CA3AF !important;
+}
+.reader-dark .prose blockquote p { color: #9CA3AF !important; }
+
+.reader-dark .prose hr { border-color: rgba(255, 255, 255, 0.08) !important; }
+
+.reader-dark .prose code:not(.notion-code-block code) {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #E5E7EB !important;
+}
+
+.reader-dark .prose .notion-code-block {
+    border-color: #30363D !important;
+}
+
+.reader-dark .font-mono.text-xs { color: #9CA3AF !important; }
+.reader-dark .text-zinc-500 { color: #9CA3AF !important; }
+.reader-dark .bg-zinc-300 { background-color: #374151 !important; }
+
+.reader-dark a.text-zinc-400 { color: #9CA3AF !important; }
+.reader-dark a.text-zinc-400:hover { color: #E5E7EB !important; }
+.reader-dark footer { border-color: rgba(255, 255, 255, 0.08) !important; color: #9CA3AF !important; }
+
+.reader-dark .prose input[type="checkbox"] {
+    border-color: #9CA3AF !important;
+}
+
+.reader-dark .prose img {
+    opacity: 0.92;
+}
+
+.reader-dark .prose mark {
+    opacity: 0.8;
 }
 
 @keyframes intro-frame {

@@ -1,14 +1,16 @@
 import * as React from "react";
 import { IdentitySidebar } from "./IdentitySidebar";
 import { Link } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 interface MainLayoutProps {
     children: React.ReactNode;
     showSidebar?: boolean;
+    className?: string;
 }
 
-export function MainLayout({ children, showSidebar = false }: MainLayoutProps) {
+export function MainLayout({ children, showSidebar = false, className }: MainLayoutProps) {
     return (
-        <div className="min-h-screen bg-background">
+        <div className={cn("min-h-screen bg-background", className)}>
             {showSidebar && <IdentitySidebar />}
 
             <main className={`min-h-screen w-full transition-all duration-300 ${showSidebar
