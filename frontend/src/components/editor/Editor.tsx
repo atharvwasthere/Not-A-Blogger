@@ -143,7 +143,12 @@ export function Editor({ content, onChange, editable = true }: EditorProps) {
         editable,
         editorProps: {
             attributes: {
-                class: 'prose prose-zinc prose-lg max-w-none focus:outline-none min-h-[50vh] text-zinc-800 break-words',
+                class: 'prose prose-zinc max-w-none focus:outline-none min-h-[50vh] text-zinc-800 break-words ' +
+                    'prose-h1:text-3xl prose-h1:mt-6 prose-h1:mb-3 prose-h1:font-semibold ' +
+                    'prose-h2:text-2xl prose-h2:mt-5 prose-h2:mb-2 prose-h2:font-semibold ' +
+                    'prose-h3:text-xl prose-h3:mt-4 prose-h3:mb-1 prose-h3:font-semibold ' +
+                    'prose-p:my-2 prose-p:leading-relaxed ' +
+                    'prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5',
             },
             handleDrop: (view, event, _slice, moved) => {
                 if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
