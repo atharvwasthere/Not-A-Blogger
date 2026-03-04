@@ -5,7 +5,7 @@ import viteReact from '@vitejs/plugin-react'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
-import path from 'path'
+import { resolve } from 'node:path'
 
 const config = defineConfig({
   resolve: {
@@ -13,7 +13,7 @@ const config = defineConfig({
       // Redirect lowlight to its zero-language core (skips re-exports of `common` and `all`).
       // Without this, the root index re-exports ~37 (common) or ~180 (all) hljs languages
       // into every chunk that imports lowlight, even when only createLowlight() is used.
-      'lowlight': path.resolve('./node_modules/lowlight/lib/index.js'),
+      'lowlight': resolve('./node_modules/lowlight/lib/index.js'),
     },
   },
   plugins: [
