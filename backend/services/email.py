@@ -184,20 +184,6 @@ async def send_welcome_email(email: str, subscriber_id: str, name: str = None):
     <body>
         <div class="container">
 
-            <!-- System header -->
-            <table class="meta-table">
-                <tr>
-                    <td class="meta-key">From</td>
-                    <td>Atharv Singh</td>
-                </tr>
-                <tr>
-                    <td class="meta-key">Subject</td>
-                    <td>Welcome to Not a Blogger</td>
-                </tr>
-            </table>
-
-            <hr class="divider">
-
             <!-- Hero -->
             <div class="hero-wrap">
                 <div class="hero">You are in.</div>
@@ -207,7 +193,6 @@ async def send_welcome_email(email: str, subscriber_id: str, name: str = None):
 
             <!-- Header context -->
             <div class="section">
-                <div class="label">Not a Blogger</div>
                 <p class="author-tagline">I break systems so you don't have to.</p>
                 <p class="author-sub">Notes on backend, systems, and things I build when I'm bored of tutorials.</p>
                 <div class="signature">

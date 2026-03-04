@@ -55,15 +55,8 @@ export const WelcomeEmail = ({
                 <Container style={container}>
 
                     {/* System message header — table layout for alignment */}
-                    <Section style={{ marginBottom: "36px" }}>
-                        <Row>
-                            <Column style={metaKey}>From</Column>
-                            <Column style={metaVal}>{authorName}</Column>
-                        </Row>
-                        <Row>
-                            <Column style={metaKey}>Subject</Column>
-                            <Column style={metaVal}>Welcome to Not a Blogger</Column>
-                        </Row>
+                    <Section style={{ marginBottom: "16px" }}>
+
                     </Section>
 
                     <Hr style={divider} />
@@ -77,7 +70,6 @@ export const WelcomeEmail = ({
 
                     {/* Identity block */}
                     <Section style={section}>
-                        <Text style={label}>Not a Blogger</Text>
                         <Text style={authorTagline}>
                             I break systems so you don't have to.
                         </Text>
