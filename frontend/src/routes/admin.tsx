@@ -25,7 +25,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-export function AdminLayout() {
+function AdminLayout() {
   const router = useRouter();
 
   const handleLogout = async () => {

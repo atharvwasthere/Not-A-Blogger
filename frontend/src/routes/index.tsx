@@ -37,7 +37,7 @@ function Home() {
         if (buffer === "admin") {
           setIsAdminMode(true)
           // Wait for glitch animation before showing login
-          setTimeout(() => setShowLogin(true), 1500)
+          setTimeout(() => setShowLogin(true), 300)
         }
       }
     }
