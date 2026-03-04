@@ -1,4 +1,5 @@
 import { SubscribeForm } from "./SubscribeForm";
+import { CircuitPulse } from "../components/CircuitPulse";
 
 
 export function IdentitySidebar() {
@@ -34,6 +35,7 @@ export function IdentitySidebar() {
                 </div>
 
                 <SubscribeForm />
+                <CircuitPulse />
             </div>
 
             <div className="mt-8 flex flex-col gap-6">
