@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import frame2 from "@/assets/frame-2.webp"
+import newFrame from "@/assets/frame.webp"
 import frame3 from "@/assets/frame-3.webp"
 
 const frames = [
-    { src: frame2, bg: "#AAD2FA" },
+    { src: newFrame, bg: "#AAD2FA" },
     { src: frame3, bg: "#ffffff" },
 ]
 

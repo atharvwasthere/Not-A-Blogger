@@ -1,19 +1,13 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import { BubbleMenu } from '@tiptap/react/menus'
 import StarterKit from '@tiptap/starter-kit'
-
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import { LazyImage } from './extensions/LazyImage'
-import Youtube from '@tiptap/extension-youtube'
 import Highlight from '@tiptap/extension-highlight'
 import Underline from '@tiptap/extension-underline'
-import TaskList from '@tiptap/extension-task-list'
-import TaskItem from '@tiptap/extension-task-item'
 import TextAlign from '@tiptap/extension-text-align'
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import Typography from '@tiptap/extension-typography'
-import { common, createLowlight } from 'lowlight'
 import Bold from 'lucide-react/dist/esm/icons/bold'
 import Italic from 'lucide-react/dist/esm/icons/italic'
 import LinkIcon from 'lucide-react/dist/esm/icons/link'
@@ -29,8 +23,104 @@ import { cn } from '@/lib/utils'
 import { SlashCommand } from './extensions/slash-command'
 import { api } from '@/lib/api'
 import { useCallback, useState, useRef, useEffect } from 'react'
+import type { AnyExtension } from '@tiptap/core'
+import { Loader2 } from 'lucide-react'
 
-const lowlight = createLowlight(common)
+// Base extensions that are lightweight — loaded statically
+const baseExtensions: AnyExtension[] = [
+    StarterKit.configure({
+        heading: { levels: [1, 2, 3] },
+        bulletList: { keepMarks: true },
+        orderedList: { keepMarks: true },
+        codeBlock: false,
+        blockquote: { HTMLAttributes: { class: "border-l-4 border-zinc-200 pl-4 py-1 my-4 italic text-zinc-600 bg-zinc-50 rounded-r" } },
+    }),
+    Placeholder.configure({
+        placeholder: ({ node }) => {
+            if (node.type.name === 'heading') return 'Heading...'
+            return "Type '/' for commands..."
+        },
+    }),
+    Link.configure({
+        openOnClick: false,
+        HTMLAttributes: { class: "active-link text-blue-500 underline cursor-pointer" }
+    }),
+    LazyImage.configure({
+        HTMLAttributes: { class: "rounded-lg border border-zinc-200 shadow-sm max-w-full my-6" },
+    }),
+    Highlight.configure({
+        multicolor: true,
+    }),
+    Underline,
+    TextAlign.configure({
+        types: ['heading', 'paragraph', 'image'],
+    }),
+    SlashCommand,
+    Typography,
+]
+
+// Heavy extensions loaded dynamically: CodeBlockLowlight+lowlight, Youtube, TaskList, TaskItem
+async function loadHeavyExtensions(): Promise<AnyExtension[]> {
+    const [
+        { default: CodeBlockLowlight },
+        { createLowlight },
+        { default: Youtube },
+        { default: TaskList },
+        { default: TaskItem },
+        js, ts, bash, python, json, css, xml, go, rust, sql, java, cpp,
+    ] = await Promise.all([
+        import('@tiptap/extension-code-block-lowlight'),
+        import('lowlight'),
+        import('@tiptap/extension-youtube'),
+        import('@tiptap/extension-task-list'),
+        import('@tiptap/extension-task-item'),
+        import('highlight.js/lib/languages/javascript'),
+        import('highlight.js/lib/languages/typescript'),
+        import('highlight.js/lib/languages/bash'),
+        import('highlight.js/lib/languages/python'),
+        import('highlight.js/lib/languages/json'),
+        import('highlight.js/lib/languages/css'),
+        import('highlight.js/lib/languages/xml'),
+        import('highlight.js/lib/languages/go'),
+        import('highlight.js/lib/languages/rust'),
+        import('highlight.js/lib/languages/sql'),
+        import('highlight.js/lib/languages/java'),
+        import('highlight.js/lib/languages/cpp'),
+    ])
+
+    // Create lowlight with only the languages we need instead of `common` (~350KB savings)
+    const lowlight = createLowlight()
+    lowlight.register('javascript', js.default)
+    lowlight.register('typescript', ts.default)
+    lowlight.register('bash', bash.default)
+    lowlight.register('python', python.default)
+    lowlight.register('json', json.default)
+    lowlight.register('css', css.default)
+    lowlight.register('xml', xml.default)
+    lowlight.register('go', go.default)
+    lowlight.register('rust', rust.default)
+    lowlight.register('sql', sql.default)
+    lowlight.register('java', java.default)
+    lowlight.register('cpp', cpp.default)
+
+    return [
+        CodeBlockLowlight.configure({
+            lowlight,
+            HTMLAttributes: { class: "notion-code-block hljs bg-[#191919] text-[#e1e1e1] p-5 rounded-lg font-mono text-sm my-4 overflow-x-auto border border-zinc-800/50" },
+        }),
+        Youtube.configure({
+            HTMLAttributes: { class: "w-full max-w-full aspect-video rounded-lg shadow-sm my-6 overflow-hidden border border-zinc-200" },
+            width: 840,
+            height: 472.5,
+        }),
+        TaskList.configure({
+            HTMLAttributes: { class: "not-prose pl-2" },
+        }),
+        TaskItem.configure({
+            nested: true,
+        }),
+    ]
+}
 
 interface EditorProps {
     content: string
@@ -90,56 +180,19 @@ function UrlInput({
 }
 
 export function Editor({ content, onChange, editable = true }: EditorProps) {
+    const [allExtensions, setAllExtensions] = useState<AnyExtension[] | null>(null)
     const [linkInputOpen, setLinkInputOpen] = useState(false)
     const [youtubeInputOpen, setYoutubeInputOpen] = useState(false)
 
+    // Load heavy extensions before creating the editor
+    useEffect(() => {
+        loadHeavyExtensions().then(heavy => {
+            setAllExtensions([...baseExtensions, ...heavy])
+        })
+    }, [])
+
     const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                heading: { levels: [1, 2, 3] },
-                bulletList: { keepMarks: true },
-                orderedList: { keepMarks: true },
-                codeBlock: false,
-                blockquote: { HTMLAttributes: { class: "border-l-4 border-zinc-200 pl-4 py-1 my-4 italic text-zinc-600 bg-zinc-50 rounded-r" } },
-            }),
-            Placeholder.configure({
-                placeholder: ({ node }) => {
-                    if (node.type.name === 'heading') return 'Heading...'
-                    return "Type '/' for commands..."
-                },
-            }),
-            Link.configure({
-                openOnClick: false,
-                HTMLAttributes: { class: "active-link text-blue-500 underline cursor-pointer" }
-            }),
-            LazyImage.configure({
-                HTMLAttributes: { class: "rounded-lg border border-zinc-200 shadow-sm max-w-full my-6" },
-            }),
-            Youtube.configure({
-                HTMLAttributes: { class: "w-full max-w-full aspect-video rounded-lg shadow-sm my-6 overflow-hidden border border-zinc-200" },
-                width: 840,
-                height: 472.5,
-            }),
-            Highlight.configure({
-                multicolor: true,
-            }),
-            Underline,
-            TaskList.configure({
-                HTMLAttributes: { class: "not-prose pl-2" },
-            }),
-            TaskItem.configure({
-                nested: true,
-            }),
-            TextAlign.configure({
-                types: ['heading', 'paragraph', 'image'],
-            }),
-            CodeBlockLowlight.configure({
-                lowlight,
-                HTMLAttributes: { class: "notion-code-block hljs bg-[#191919] text-[#e1e1e1] p-5 rounded-lg font-mono text-sm my-4 overflow-x-auto border border-zinc-800/50" },
-            }),
-            SlashCommand,
-            Typography,
-        ],
+        extensions: allExtensions || baseExtensions,
         content,
         editable,
         editorProps: {
@@ -173,7 +226,7 @@ export function Editor({ content, onChange, editable = true }: EditorProps) {
             onChange(editor.getHTML())
         },
         immediatelyRender: false,
-    })
+    }, [allExtensions])
 
     const handleLinkConfirm = useCallback((url: string) => {
         setLinkInputOpen(false)
@@ -190,6 +243,14 @@ export function Editor({ content, onChange, editable = true }: EditorProps) {
         if (!editor || !url) return
         editor.chain().focus().setYoutubeVideo({ src: url }).run()
     }, [editor])
+
+    if (!allExtensions) {
+        return (
+            <div className="min-h-[500px] flex items-center justify-center">
+                <Loader2 className="animate-spin text-zinc-300" size={24} />
+            </div>
+        )
+    }
 
     if (!editor) return null
 

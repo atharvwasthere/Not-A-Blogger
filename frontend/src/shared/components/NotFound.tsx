@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { MainLayout } from './layout/MainLayout'
+import { MainLayout } from '@/shared/layout/MainLayout'
 
 export function NotFound() {
     return (
