@@ -60,10 +60,11 @@ export const WelcomeEmail = ({
                     </Section>
 
                     <Hr style={divider} />
+                    <br></br>
 
                     {/* Hero */}
                     <Section style={heroWrap}>
-                        <Heading style={hero}>You are in.</Heading>
+                        <img src="https://images.atharvsingh.me/cta/Intro.svg" alt="You are in." className="hero"></img>
                     </Section>
 
                     <Hr style={divider} />
@@ -108,9 +109,9 @@ export const WelcomeEmail = ({
 
                     {/* Footer */}
                     <Section style={footer}>
-                        <Text style={footerRule}>&mdash;</Text>
-                        <Text style={footerName}>{authorName}</Text>
-                        <Text style={footerSite}>blogs.atharvsingh.me</Text>
+                        <img src="https://images.atharvsingh.me/cta/Atharv%20Singh.svg" alt="Atharv Singh" className="footer-name"></img>
+                        <br></br>
+                        <img src="https://images.atharvsingh.me/cta/blogs.atharvsingh.me.svg" alt="blogs.atharvsingh.me" className="footer-site"></img>
                         <Text style={footerNote}>
                             You received this because you subscribed to Not a Blogger.
                         </Text>
@@ -247,7 +248,7 @@ const cta = {
 };
 
 const footer = {
-    paddingTop: "36px",
+    paddingTop: "24px",
     borderTop: "1px solid #e8e8e8",
 };
 
