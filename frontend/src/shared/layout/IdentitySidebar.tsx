@@ -3,7 +3,7 @@ import { SubscribeForm } from "./SubscribeForm";
 
 export function IdentitySidebar() {
     return (
-        <aside className="static w-full px-6 py-12 md:fixed md:top-0 md:h-screen md:w-[400px] md:px-12 md:py-10 flex flex-col justify-between border-b md:border-b-0 md:border-r border-border bg-background z-10 transition-colors overflow-y-auto no-scrollbar">
+        <aside className="static w-full min-h-screen px-6 py-12 md:fixed md:top-0 md:h-screen md:w-[400px] md:px-12 md:py-10 flex flex-col justify-between border-b md:border-b-0 md:border-r border-border bg-background z-10 transition-colors overflow-y-auto no-scrollbar">
             <div className="space-y-8">
                 <div className="space-y-4">
                     <h1 className="font-serif text-5xl md:text-6xl text-foreground leading-[0.9] tracking-tight">
