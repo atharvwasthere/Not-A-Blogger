@@ -38,13 +38,13 @@ export function IdentitySidebar() {
 
             <div className="mt-8 flex flex-col gap-6">
                 <div className="flex gap-4 items-center">
-                    <a href="https://github.com/atharvsingh" target="_blank" rel="noopener noreferrer" aria-label="Github" className="opacity-70 hover:opacity-100 transition-opacity">
+                    <a href="https://github.com/atharvwasthere" target="_blank" rel="noopener noreferrer" aria-label="Github" className="opacity-70 hover:opacity-100 transition-opacity">
                         <img src="/github.ico" alt="Github" className="w-5 h-5" />
                     </a>
                     <a href="https://twitter.com/atharvwasthere" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="opacity-70 hover:opacity-100 transition-opacity">
                         <img src="/twitter.ico" alt="Twitter" className="w-5 h-5" />
                     </a>
-                    <a href="https://linkedin.com/in/atharvsingh" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="opacity-70 hover:opacity-100 transition-opacity">
+                    <a href="https://linkedin.com/in/atharvwasthere" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="opacity-70 hover:opacity-100 transition-opacity">
                         <img src="/linkedin.ico" alt="LinkedIn" className="w-5 h-5" />
                     </a>
                 </div>
