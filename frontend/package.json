@@ -6,7 +6,8 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "email": "email dev -d src/emails"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

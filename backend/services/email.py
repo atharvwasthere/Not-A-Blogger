@@ -63,11 +63,9 @@ async def send_new_post_notification(
     <body>
         <div class="container">
             <div>
-                <h1 class="site-title">Not a Blogger</h1>
+                <img src="https://images.atharvsingh.me/cta/New%20Post%20header.png" alt="Not a Blogger" class="header-logo"></img>
                 <p class="author-title">I break systems so you don't have to.</p>
                 <p class="author-subtitle">Notes on backend, systems, and things I build when I'm bored of tutorials.</p>
-                <br>
-                <p class="author-writtenby"><span style="color: #777777;">Written by</span><br><strong>Atharv Singh (not a blogger).</strong></p>
             </div>
             
             <hr class="divider">
@@ -84,10 +82,12 @@ async def send_new_post_notification(
             
             <hr class="divider">
             
-            <div>
-                <p class="footer-text">Written by Atharv Singh.</p>
-                <p class="footer-text">You're receiving this because you subscribed to Not a Blogger.</p>
-                <a href="{settings.SITE_URL}/unsubscribe" class="footer-link">Unsubscribe</a>
+            <div style="padding-top: 36px;">
+                <img src="https://images.atharvsingh.me/cta/Atharv%20Singh.png" alt="Atharv Singh" style="height: 24px; width: auto; display: block; margin-bottom: 4px;">
+                <br>
+                <img src="https://images.atharvsingh.me/cta/blogs.atharvsingh.me.png" alt="blogs.atharvsingh.me" style="height: 14px; width: auto; display: block; margin-bottom: 20px;">
+                <p style="font-size: 13px; color: #777777; margin: 0 0 8px 0; line-height: 1.6;">You're receiving this because you subscribed to Not a Blogger.</p>
+                <a href="{settings.SITE_URL}/unsubscribe" style="font-family: monospace; font-size: 13px; color: #111111; text-decoration: underline;">Unsubscribe</a>
             </div>
         </div>
     </body>
@@ -101,8 +101,8 @@ async def send_new_post_notification(
             batch = subscribers[i : i + batch_size]
 
             params = {
-                "from": "Atharv <newsletter@atharvsingh.me>",  # custom domain
-                "to": ["newsletter@atharvsingh.me"],  # Generic inbox or sender
+                "from": "Atharv <blogs@atharvsingh.me>",  # custom domain
+                "to": ["blogs@atharvsingh.me"],  # Generic inbox or sender
                 "bcc": batch,
                 "subject": f"{post_title} — Not a Blogger",
                 "html": html_content,
@@ -136,8 +136,10 @@ async def send_welcome_email(email: str, subscriber_id: str, name: str = None):
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+            
             * {{ box-sizing: border-box; margin: 0; padding: 0; }}
             body {{ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #fafafa; padding: 48px 0; margin: 0; color: #111111; }}
             .container {{ background-color: #ffffff; margin: 0 auto; max-width: 600px; padding: 52px 48px; }}
@@ -185,8 +187,8 @@ async def send_welcome_email(email: str, subscriber_id: str, name: str = None):
         <div class="container">
 
             <!-- Hero -->
-            <div class="hero-wrap">
-                <div class="hero">You are in.</div>
+            <div style="padding: 40px 0 40px 0;">
+                <img src="https://images.atharvsingh.me/cta/Intro.png" alt="You are in." style="height: 64px; width: auto; display: block;">
             </div>
 
             <hr class="divider">
@@ -212,13 +214,12 @@ async def send_welcome_email(email: str, subscriber_id: str, name: str = None):
                 <a href="https://blogs.atharvsingh.me" class="cta">Explore the archive &rarr;</a>
             </div>
 
-            <!-- Footer -->
-            <div class="footer">
-                <div class="footer-rule">&mdash;</div>
-                <p class="footer-name">Atharv Singh</p>
-                <p class="footer-site">blogs.atharvsingh.me</p>
-                <p class="footer-note">You received this because you subscribed to Not a Blogger.</p>
-                <a href="{unsubscribe_url}" class="footer-link">Unsubscribe</a>
+            <div style="padding-top: 36px; border-top: 1px solid #e8e8e8;">
+                <img src="https://images.atharvsingh.me/cta/Atharv%20Singh.png" alt="Atharv Singh" style="height: 24px; width: auto; display: block; margin-bottom: 4px;">
+                <br> 
+                <img src="https://images.atharvsingh.me/cta/blogs.atharvsingh.me.png" alt="blogs.atharvsingh.me" style="height: 14px; width: auto; display: block; margin-bottom: 20px;">
+                <p style="font-size: 12px; color: #aaaaaa; line-height: 1.6; margin-bottom: 8px;">You received this because you subscribed to Not a Blogger.</p>
+                <a href="{unsubscribe_url}" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: #888888; text-decoration: underline;">Unsubscribe</a>
             </div>
 
         </div>
@@ -228,7 +229,7 @@ async def send_welcome_email(email: str, subscriber_id: str, name: str = None):
 
     try:
         params = {
-            "from": "Atharv <newsletter@atharvsingh.me>",  # custom domain
+            "from": "Atharv <blogs@atharvsingh.me>",  # custom domain
             "to": email,
             "subject": "Welcome to Not a Blogger",
             "html": html_content,

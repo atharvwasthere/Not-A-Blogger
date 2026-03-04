@@ -71,17 +71,12 @@ export const NewPostEmail = ({
                 <Container style={container}>
                     {/* Header */}
                     <Section style={headerSection}>
-                        <Heading style={siteTitle}>Not a Blogger</Heading>
+                        <img src="https://images.atharvsingh.me/cta/New%20Post%20header.svg" alt="Not a Blogger" className="header-logo"></img>
                         <Text style={authorLineTitle}>
                             I break systems so you don't have to.
                         </Text>
                         <Text style={authorLineSubtitle}>
                             Notes on backend, systems, and things I build when I'm bored of tutorials.
-                        </Text>
-                        <br />
-                        <Text style={authorLineWrittenBy}>
-                            <span style={{ color: "#777777" }}>Written by</span><br />
-                            <strong>{authorName} (not a blogger).</strong>
                         </Text>
                     </Section>
 
@@ -117,14 +112,12 @@ export const NewPostEmail = ({
 
                     {/* Footer */}
                     <Section style={footerSection}>
-                        <Text style={footerText}>
-                            Written by {authorName}.
-                        </Text>
-
+                        <img src="https://images.atharvsingh.me/cta/Atharv%20Singh.svg" alt="Atharv Singh" className="footer-name"></img>
+                        <br></br>
+                        <img src="https://images.atharvsingh.me/cta/blogs.atharvsingh.me.svg" alt="blogs.atharvsingh.me" className="footer-site"></img>
                         <Text style={footerText}>
                             You’re receiving this because you subscribed to Not a Blogger.
                         </Text>
-
                         <Link href="{{unsubscribe_url}}" style={footerLink}>
                             Unsubscribe
                         </Link>
