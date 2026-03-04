@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { ExternalLink, LogOut } from "lucide-react";
 import { api } from "@/lib/api";
-import { Unauthorized } from "@/components/Unauthorized";
+import { Unauthorized } from "@/shared/components/Unauthorized";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {

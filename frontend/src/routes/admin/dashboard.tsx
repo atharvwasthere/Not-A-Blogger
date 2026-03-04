@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { api } from "@/lib/api";
 import { Post } from "@/lib/types";
-import { PostList } from "@/components/admin/PostList";
-import { Button } from "@/components/ui/button";
+import { PostList } from "@/features/admin/components/PostList";
+import { Button } from "@/shared/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/admin/dashboard")({

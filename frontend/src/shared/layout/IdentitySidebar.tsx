@@ -1,4 +1,4 @@
-import { SubscribeForm } from "../SubscribeForm";
+import { SubscribeForm } from "./SubscribeForm";
 
 
 export function IdentitySidebar() {

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { MainLayout } from '@/components/layout/MainLayout'
+import { MainLayout } from '@/shared/layout/MainLayout'
 import { api } from '@/lib/api'
 
 export const Route = createFileRoute('/unsubscribe/$id')({

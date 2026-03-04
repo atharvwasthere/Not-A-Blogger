@@ -13,14 +13,12 @@ import {
     Text,
     Font,
 } from "@react-email/components";
-import * as React from "react";
 
 interface NewPostEmailProps {
     postTitle: string;
     postExcerpt: string;
     postUrl: string;
     coverImage?: string;
-    authorName: string;
 }
 
 export const NewPostEmail = ({
@@ -28,7 +26,6 @@ export const NewPostEmail = ({
     postExcerpt = "A breakdown of the architectural decisions, trade-offs, and debugging lessons behind building a reliable backend system.",
     postUrl = "https://yourblog.com/blog/designing-modern-blog",
     coverImage,
-    authorName = "Atharv Singh",
 }: NewPostEmailProps) => {
     const previewText = `${postTitle} — Not a Blogger`;
 
@@ -71,7 +68,7 @@ export const NewPostEmail = ({
                 <Container style={container}>
                     {/* Header */}
                     <Section style={headerSection}>
-                        <img src="https://images.atharvsingh.me/cta/New%20Post%20header.svg" alt="Not a Blogger" className="header-logo"></img>
+                        <img src="https://images.atharvsingh.me/cta/New%20Post%20header.svg" alt="Not a Blogger" className="header-logo" />
                         <Text style={authorLineTitle}>
                             I break systems so you don't have to.
                         </Text>
@@ -112,9 +109,9 @@ export const NewPostEmail = ({
 
                     {/* Footer */}
                     <Section style={footerSection}>
-                        <img src="https://images.atharvsingh.me/cta/Atharv%20Singh.svg" alt="Atharv Singh" className="footer-name"></img>
+                        <img src="https://images.atharvsingh.me/cta/Atharv%20Singh.svg" alt="Atharv Singh" className="footer-name" />
                         <br></br>
-                        <img src="https://images.atharvsingh.me/cta/blogs.atharvsingh.me.svg" alt="blogs.atharvsingh.me" className="footer-site"></img>
+                        <img src="https://images.atharvsingh.me/cta/blogs.atharvsingh.me.svg" alt="blogs.atharvsingh.me" className="footer-site" />
                         <Text style={footerText}>
                             You’re receiving this because you subscribed to Not a Blogger.
                         </Text>
@@ -150,15 +147,7 @@ const headerSection = {
     textAlign: "left" as const,
 };
 
-const siteTitle = {
-    fontFamily: '"Playfair Display", Georgia, serif',
-    fontSize: "48px",
-    fontWeight: "400",
-    letterSpacing: "-0.5px",
-    color: "#111111",
-    margin: "0 0 24px 0",
-    lineHeight: "1.1",
-};
+
 
 const authorLineTitle = {
     fontFamily: '"Inter", sans-serif',
@@ -179,14 +168,7 @@ const authorLineSubtitle = {
     maxWidth: "80%",
 };
 
-const authorLineWrittenBy = {
-    fontFamily: '"Inter", sans-serif',
-    fontSize: "14px",
-    fontWeight: "400",
-    color: "#111111",
-    margin: "0",
-    lineHeight: "1.6",
-};
+
 
 const divider = {
     borderColor: "#e5e5e5",

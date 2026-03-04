@@ -1,14 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { BlogList } from '@/components/blog/BlogList'
+import { BlogList } from '@/features/blog/components/BlogList'
 import { useEffect, useState, lazy, Suspense } from 'react'
 import { AnimatePresence } from 'motion/react'
-import { MainLayout } from '@/components/layout/MainLayout'
+import { MainLayout } from '@/shared/layout/MainLayout'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 
 // Lazy load heavy admin components
-const GlitchOverlay = lazy(() => import('@/components/admin/GlitchOverlay').then(module => ({ default: module.GlitchOverlay })))
-const AdminLogin = lazy(() => import('@/components/admin/AdminLogin').then(module => ({ default: module.AdminLogin })))
+const GlitchOverlay = lazy(() => import('@/features/admin/components/GlitchOverlay').then(module => ({ default: module.GlitchOverlay })))
+const AdminLogin = lazy(() => import('@/features/admin/components/AdminLogin').then(module => ({ default: module.AdminLogin })))
 
 const postsQueryOptions = queryOptions({
   queryKey: ['posts'],

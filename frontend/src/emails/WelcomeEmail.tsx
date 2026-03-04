@@ -7,13 +7,10 @@ import {
     Html,
     Link,
     Preview,
-    Row,
-    Column,
     Section,
     Text,
     Font,
 } from "@react-email/components";
-import * as React from "react";
 
 interface WelcomeEmailProps {
     subscriberName?: string;
@@ -64,7 +61,7 @@ export const WelcomeEmail = ({
 
                     {/* Hero */}
                     <Section style={heroWrap}>
-                        <img src="https://images.atharvsingh.me/cta/Intro.svg" alt="You are in." className="hero"></img>
+                        <img src="https://images.atharvsingh.me/cta/Intro.svg" alt="You are in." className="hero" />
                     </Section>
 
                     <Hr style={divider} />
@@ -109,9 +106,9 @@ export const WelcomeEmail = ({
 
                     {/* Footer */}
                     <Section style={footer}>
-                        <img src="https://images.atharvsingh.me/cta/Atharv%20Singh.svg" alt="Atharv Singh" className="footer-name"></img>
+                        <img src="https://images.atharvsingh.me/cta/Atharv%20Singh.svg" alt="Atharv Singh" className="footer-name" />
                         <br></br>
-                        <img src="https://images.atharvsingh.me/cta/blogs.atharvsingh.me.svg" alt="blogs.atharvsingh.me" className="footer-site"></img>
+                        <img src="https://images.atharvsingh.me/cta/blogs.atharvsingh.me.svg" alt="blogs.atharvsingh.me" className="footer-site" />
                         <Text style={footerNote}>
                             You received this because you subscribed to Not a Blogger.
                         </Text>
@@ -143,22 +140,7 @@ const container = {
     padding: "52px 48px",
 };
 
-const metaKey = {
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-    fontSize: "13px",
-    color: "#b0b0b0",
-    paddingRight: "20px",
-    lineHeight: "1.8",
-    whiteSpace: "nowrap" as const,
-    verticalAlign: "top" as const,
-};
 
-const metaVal = {
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-    fontSize: "13px",
-    color: "#6b6b6b",
-    lineHeight: "1.8",
-};
 
 const divider = {
     borderTop: "1px solid #e8e8e8",
@@ -170,28 +152,13 @@ const heroWrap = {
     padding: "44px 0 44px 24px",
 };
 
-const hero = {
-    fontFamily: '"Playfair Display", Georgia, serif',
-    fontSize: "64px",
-    fontWeight: "600",
-    color: "#111111",
-    margin: "0",
-    lineHeight: "1.0",
-    letterSpacing: "-0.02em",
-};
+
 
 const section = {
     padding: "36px 0",
 };
 
-const label = {
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-    fontSize: "11px",
-    letterSpacing: "0.15em",
-    textTransform: "uppercase" as const,
-    color: "#888888",
-    margin: "0 0 20px 0",
-};
+
 
 const authorTagline = {
     fontSize: "16px",
@@ -252,25 +219,7 @@ const footer = {
     borderTop: "1px solid #e8e8e8",
 };
 
-const footerRule = {
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-    fontSize: "13px",
-    color: "#bbbbbb",
-    margin: "0 0 16px 0",
-};
 
-const footerName = {
-    fontSize: "14px",
-    color: "#555555",
-    margin: "0 0 4px 0",
-};
-
-const footerSite = {
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-    fontSize: "12px",
-    color: "#999999",
-    margin: "0 0 20px 0",
-};
 
 const footerNote = {
     fontSize: "12px",

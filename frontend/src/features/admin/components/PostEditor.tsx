@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Editor } from '@/components/editor/Editor'
-import { ImageUpload } from '@/components/editor/ImageUpload'
-import { Button } from '@/components/ui/button'
+import { Editor } from '@/features/editor/Editor'
+import { ImageUpload } from '@/features/editor/ImageUpload'
+import { Button } from '@/shared/ui/button'
 import { format } from 'date-fns'
 
 export interface PostEditorInitialValues {

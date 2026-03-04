@@ -1,9 +1,9 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
-import { PostEditor } from '@/components/admin/PostEditor'
+import { PostEditor } from '@/features/admin/components/PostEditor'
 import { api, stripHtml } from '@/lib/api'
 import toast from 'react-hot-toast'
-import { EditorSkeleton } from '@/components/admin/EditorSkeleton'
+import { EditorSkeleton } from '@/features/admin/components/EditorSkeleton'
 
 export const Route = createFileRoute('/admin/edit/$id')({
   loader: async ({ params }) => api.getPostById(params.id),

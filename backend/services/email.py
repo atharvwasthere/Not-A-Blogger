@@ -63,7 +63,7 @@ async def send_new_post_notification(
     <body>
         <div class="container">
             <div>
-                <img src="https://images.atharvsingh.me/cta/New%20Post%20header.png" alt="Not a Blogger" class="header-logo"></img>
+                <img src="https://images.atharvsingh.me/cta/New%20Post%20header.png" alt="Not a Blogger" class="header-logo" />
                 <p class="author-title">I break systems so you don't have to.</p>
                 <p class="author-subtitle">Notes on backend, systems, and things I build when I'm bored of tutorials.</p>
             </div>

@@ -3,12 +3,12 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { BookOpen, Glasses, Eye } from 'lucide-react'
-import hljs from 'highlight.js/lib/common'
+// highlight.js loaded dynamically in useEffect — core + individual languages (~50KB vs ~200KB common)
 import { api } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import { MainLayout } from '@/components/layout/MainLayout'
-import { NotFound } from '@/components/NotFound'
+import { MainLayout } from '@/shared/layout/MainLayout'
+import { NotFound } from '@/shared/components/NotFound'
 
 export const Route = createFileRoute('/blog/$slug')({
     loader: async ({ context: { queryClient }, params: { slug } }) => {
@@ -183,14 +183,39 @@ function BlogPost() {
 
     const articleRef = useRef<HTMLDivElement>(null)
 
-    // Run highlight.js on code blocks after content renders
+    // Dynamically load highlight.js core + only needed languages
     useEffect(() => {
         if (!articleRef.current) return
-        articleRef.current.querySelectorAll('pre code').forEach((block) => {
-            // Remove previous highlighting if any
-            block.removeAttribute('data-highlighted')
-            hljs.highlightElement(block as HTMLElement)
-        })
+        let isActive = true
+        import('highlight.js/lib/core').then(async ({ default: hljs }) => {
+            if (!isActive) return
+            const [js, ts, bash, python, json, css, xml] = await Promise.all([
+                import('highlight.js/lib/languages/javascript'),
+                import('highlight.js/lib/languages/typescript'),
+                import('highlight.js/lib/languages/bash'),
+                import('highlight.js/lib/languages/python'),
+                import('highlight.js/lib/languages/json'),
+                import('highlight.js/lib/languages/css'),
+                import('highlight.js/lib/languages/xml'),
+            ])
+            if (!isActive) return
+            hljs.registerLanguage('javascript', js.default)
+            hljs.registerLanguage('typescript', ts.default)
+            hljs.registerLanguage('bash', bash.default)
+            hljs.registerLanguage('python', python.default)
+            hljs.registerLanguage('json', json.default)
+            hljs.registerLanguage('css', css.default)
+            hljs.registerLanguage('xml', xml.default)
+
+            if (articleRef.current) {
+                articleRef.current.querySelectorAll('pre code').forEach((block) => {
+                    block.removeAttribute('data-highlighted')
+                    hljs.highlightElement(block as HTMLElement)
+                })
+            }
+        }).catch(err => console.error("Failed to load syntax highlighter:", err))
+
+        return () => { isActive = false }
     }, [post.content])
 
     const [viewMode, setViewMode] = useState<ViewMode>('default')
