@@ -128,7 +128,7 @@ async def send_welcome_email(email: str, subscriber_id: str, name: str = None):
         return
 
     greeting = f"Welcome, {name}." if name else "Welcome."
-    unsubscribe_url = f"{settings.SITE_URL}/api/subscribers/unsubscribe/{subscriber_id}"
+    unsubscribe_url = f"{settings.SITE_URL}/unsubscribe/{subscriber_id}"
 
     html_content = f"""
     <!DOCTYPE html>
