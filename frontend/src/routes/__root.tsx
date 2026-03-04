@@ -1,5 +1,6 @@
 import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AnimatePresence } from 'motion/react'
 
 
 import { getSessionIntroState } from '../lib/server-intro'
@@ -86,7 +87,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {showIntro && <NotABloggerIntro />}
+        <AnimatePresence>
+          {showIntro && <NotABloggerIntro />}
+        </AnimatePresence>
         <div style={{ visibility: showIntro ? 'hidden' : 'visible' }}>
           <QueryClientProvider client={queryClient}>
             {children}

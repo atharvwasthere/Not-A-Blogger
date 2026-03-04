@@ -1,22 +1,14 @@
-import { useEffect, useState } from "react"
+import { motion } from "motion/react"
 import newFrame from "@/assets/frame.webp"
-import frame3 from "@/assets/frame-3.webp"
-
-const frames = [
-    { src: newFrame, bg: "#AAD2FA" },
-    { src: frame3, bg: "#ffffff" },
-]
 
 export function NotABloggerIntro() {
-    const [index, setIndex] = useState(0)
-    useEffect(() => {
-        const timer = setTimeout(() => setIndex(1), 600)
-        return () => clearTimeout(timer)
-    }, [])
-
     return (
-        <div
+        <motion.div
             aria-hidden
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
             style={{
                 position: "fixed",
                 inset: 0,
@@ -24,20 +16,27 @@ export function NotABloggerIntro() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: frames[index].bg,
+                backgroundColor: "#AAD2FA",
             }}
         >
-            <img
-                key={index}
-                src={frames[index].src}
+            <motion.img
+                src={newFrame}
                 alt=""
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                    duration: 1.2,
+                    ease: [0.16, 1, 0.3, 1], // Custom bounce/out
+                    delay: 0.1
+                }}
                 style={{
                     width: "100%",
                     height: "100%",
-                    objectFit: index === 1 ? "cover" : "contain",
-                    animation: "intro-frame 0.25s ease-out",
+                    objectFit: "contain",
                 }}
             />
-        </div>
+        </motion.div>
     )
 }
+
+
