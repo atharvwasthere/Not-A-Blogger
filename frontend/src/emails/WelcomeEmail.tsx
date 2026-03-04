@@ -1,6 +1,5 @@
 import {
     Body,
-    Button,
     Container,
     Head,
     Heading,
@@ -8,6 +7,8 @@ import {
     Html,
     Link,
     Preview,
+    Row,
+    Column,
     Section,
     Text,
     Font,
@@ -23,7 +24,7 @@ export const WelcomeEmail = ({
     subscriberName,
     authorName = "Atharv Singh",
 }: WelcomeEmailProps) => {
-    const previewText = `Welcome to Not a Blogger`;
+    const greeting = subscriberName ? `Welcome, ${subscriberName}.` : "Welcome.";
 
     return (
         <Html>
@@ -48,79 +49,84 @@ export const WelcomeEmail = ({
                     fontWeight={400}
                     fontStyle="normal"
                 />
-                <Font
-                    fontFamily="JetBrains Mono"
-                    fallbackFontFamily="monospace"
-                    webFont={{
-                        url: "https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxTOlOVQw.woff2",
-                        format: "woff2",
-                    }}
-                    fontWeight={400}
-                    fontStyle="normal"
-                />
             </Head>
-            <Preview>{previewText}</Preview>
+            <Preview>Welcome to Not a Blogger</Preview>
             <Body style={main}>
                 <Container style={container}>
-                    {/* Header */}
-                    <Section style={headerSection}>
-                        <Heading style={siteTitle}>Not a Blogger</Heading>
-                        <Text style={authorLineTitle}>
+
+                    {/* System message header — table layout for alignment */}
+                    <Section style={{ marginBottom: "36px" }}>
+                        <Row>
+                            <Column style={metaKey}>From</Column>
+                            <Column style={metaVal}>{authorName}</Column>
+                        </Row>
+                        <Row>
+                            <Column style={metaKey}>Subject</Column>
+                            <Column style={metaVal}>Welcome to Not a Blogger</Column>
+                        </Row>
+                    </Section>
+
+                    <Hr style={divider} />
+
+                    {/* Hero */}
+                    <Section style={heroWrap}>
+                        <Heading style={hero}>You are in.</Heading>
+                    </Section>
+
+                    <Hr style={divider} />
+
+                    {/* Identity block */}
+                    <Section style={section}>
+                        <Text style={label}>Not a Blogger</Text>
+                        <Text style={authorTagline}>
                             I break systems so you don't have to.
                         </Text>
-                        <Text style={authorLineSubtitle}>
+                        <Text style={authorSub}>
                             Notes on backend, systems, and things I build when I'm bored of tutorials.
                         </Text>
-                        <br />
-                        <Text style={authorLineWrittenBy}>
-                            <span style={{ color: "#777777" }}>Written by</span><br />
-                            <strong>{authorName} (not a blogger).</strong>
+                        <Text style={signature}>
+                            <strong style={{ color: "#111111", fontWeight: 500 }}>{authorName}</strong>
+                            {"\n"}
+                            <span style={signatureAside}>(not a blogger)</span>
                         </Text>
                     </Section>
 
                     <Hr style={divider} />
 
-                    {/* Content */}
-                    <Section style={contentSection}>
-                        <Heading as="h2" style={welcomeTitleStyle}>
-                            {subscriberName ? `Welcome, ${subscriberName}.` : "Welcome."}
-                        </Heading>
+                    {/* Body */}
+                    <Section style={section}>
+                        <Heading as="h2" style={welcomeHeading}>{greeting}</Heading>
 
-                        <Text style={paragraphStyle}>
+                        <Text style={paragraph}>
                             Thanks for subscribing to <strong>Not a Blogger</strong>. You are now on the list to receive my latest writings on backend systems, architectural trade-offs, and deliberate engineering.
                         </Text>
 
-                        <Text style={paragraphStyle}>
-                            I don't publish on a strict schedule. I only hit send when I have something meaningful to say—usually deep dives into technical choices, hard-learned lessons from production, or essays on software design.
+                        <Text style={paragraph}>
+                            I don't publish on a strict schedule. I only hit send when I have something meaningful to say. Usually deep dives into technical choices, hard-learned lessons from production, or essays on software design.
                         </Text>
 
-                        <Text style={paragraphStyle}>
-                            You will receive the next essay as soon as it's published. Until then, you can explore the archive on the site.
+                        <Text style={paragraph}>
+                            You will receive the next essay as soon as it's published. Until then, the archive is open.
                         </Text>
 
-                        <Section style={buttonContainer}>
-                            <Button style={button} href="https://yourblog.com">
-                                Visit the Archive →
-                            </Button>
-                        </Section>
+                        <Link href="https://blogs.atharvsingh.me" style={cta}>
+                            Explore the archive &rarr;
+                        </Link>
                     </Section>
 
-                    <Hr style={divider} />
-
                     {/* Footer */}
-                    <Section style={footerSection}>
-                        <Text style={footerText}>
-                            Written by {authorName}.
+                    <Section style={footer}>
+                        <Text style={footerRule}>&mdash;</Text>
+                        <Text style={footerName}>{authorName}</Text>
+                        <Text style={footerSite}>blogs.atharvsingh.me</Text>
+                        <Text style={footerNote}>
+                            You received this because you subscribed to Not a Blogger.
                         </Text>
-
-                        <Text style={footerText}>
-                            You’re receiving this because you subscribed to Not a Blogger.
-                        </Text>
-
                         <Link href="{{unsubscribe_url}}" style={footerLink}>
                             Unsubscribe
                         </Link>
                     </Section>
+
                 </Container>
             </Body>
         </Html>
@@ -132,119 +138,157 @@ export default WelcomeEmail;
 /* ---------------- STYLES ---------------- */
 
 const main = {
-    backgroundColor: "#f7f7f7",
-    fontFamily:
-        '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
-    padding: "40px 0",
+    backgroundColor: "#fafafa",
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    padding: "48px 0",
 };
 
 const container = {
     backgroundColor: "#ffffff",
     margin: "0 auto",
-    maxWidth: "640px",
-    padding: "40px 32px",
+    maxWidth: "600px",
+    padding: "52px 48px",
 };
 
-const headerSection = {
-    textAlign: "left" as const,
+const metaKey = {
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+    fontSize: "13px",
+    color: "#b0b0b0",
+    paddingRight: "20px",
+    lineHeight: "1.8",
+    whiteSpace: "nowrap" as const,
+    verticalAlign: "top" as const,
 };
 
-const siteTitle = {
-    fontFamily: '"Playfair Display", Georgia, serif',
-    fontSize: "48px",
-    fontWeight: "400",
-    letterSpacing: "-0.5px",
-    color: "#111111",
-    margin: "0 0 24px 0",
-    lineHeight: "1.1",
-};
-
-const authorLineTitle = {
-    fontFamily: '"Inter", sans-serif',
-    fontSize: "18px",
-    fontWeight: "400",
-    color: "#555555",
-    margin: "0 0 12px 0",
-    lineHeight: "1.5",
-};
-
-const authorLineSubtitle = {
-    fontFamily: '"Inter", sans-serif',
-    fontSize: "14px",
-    fontWeight: "400",
-    color: "#888888",
-    margin: "0 0 24px 0",
-    lineHeight: "1.6",
-    maxWidth: "80%",
-};
-
-const authorLineWrittenBy = {
-    fontFamily: '"Inter", sans-serif',
-    fontSize: "14px",
-    fontWeight: "400",
-    color: "#111111",
-    margin: "0",
-    lineHeight: "1.6",
+const metaVal = {
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+    fontSize: "13px",
+    color: "#6b6b6b",
+    lineHeight: "1.8",
 };
 
 const divider = {
-    borderColor: "#e5e5e5",
-    margin: "32px 0",
+    borderTop: "1px solid #e8e8e8",
+    borderBottom: "none",
+    margin: "0",
 };
 
-const contentSection = {};
+const heroWrap = {
+    padding: "44px 0 44px 24px",
+};
 
-const welcomeTitleStyle = {
+const hero = {
     fontFamily: '"Playfair Display", Georgia, serif',
-    fontSize: "26px",
+    fontSize: "64px",
     fontWeight: "600",
     color: "#111111",
-    margin: "0 0 16px 0",
-    lineHeight: "1.3",
+    margin: "0",
+    lineHeight: "1.0",
+    letterSpacing: "-0.02em",
 };
 
-const paragraphStyle = {
-    fontFamily: '"Inter", sans-serif',
-    fontSize: "16px",
-    color: "#444444",
-    lineHeight: "1.7",
+const section = {
+    padding: "36px 0",
+};
+
+const label = {
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+    fontSize: "11px",
+    letterSpacing: "0.15em",
+    textTransform: "uppercase" as const,
+    color: "#888888",
     margin: "0 0 20px 0",
 };
 
-const buttonContainer = {
-    margin: "24px 0",
-};
-
-const button = {
-    fontFamily: '"Inter", sans-serif',
-    backgroundColor: "#0a0a0a",
-    color: "#ffffff",
-    padding: "16px 24px",
-    fontSize: "15px",
-    textDecoration: "none",
-    borderRadius: "0px",
-    display: "block",
-    textAlign: "center" as const,
-    fontWeight: "500",
-    width: "100%",
-    boxSizing: "border-box" as const,
-};
-
-const footerSection = {
-    textAlign: "left" as const,
-};
-
-const footerText = {
-    fontFamily: '"Inter", sans-serif',
-    fontSize: "13px",
-    color: "#777777",
+const authorTagline = {
+    fontSize: "16px",
+    color: "#333333",
     margin: "0 0 8px 0",
+    lineHeight: "1.5",
+};
+
+const authorSub = {
+    fontSize: "13px",
+    color: "#999999",
+    margin: "0 0 24px 0",
     lineHeight: "1.6",
 };
 
-const footerLink = {
-    fontFamily: '"JetBrains Mono", Courier, monospace',
+const signature = {
+    fontSize: "14px",
+    color: "#555555",
+    margin: "0",
+    lineHeight: "1.8",
+};
+
+const signatureAside = {
+    fontSize: "13px",
+    color: "#999999",
+};
+
+const welcomeHeading = {
+    fontFamily: '"Playfair Display", Georgia, serif',
+    fontSize: "22px",
+    fontWeight: "400",
+    color: "#111111",
+    margin: "0 0 24px 0",
+    lineHeight: "1.3",
+};
+
+const paragraph = {
+    fontSize: "16px",
+    color: "#444444",
+    lineHeight: "1.75",
+    margin: "0 0 18px 0",
+    maxWidth: "540px",
+};
+
+const cta = {
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
     fontSize: "13px",
     color: "#111111",
+    textDecoration: "none",
+    display: "inline-block",
+    marginTop: "16px",
+    borderBottom: "1px solid #111111",
+    paddingBottom: "2px",
+};
+
+const footer = {
+    paddingTop: "36px",
+    borderTop: "1px solid #e8e8e8",
+};
+
+const footerRule = {
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+    fontSize: "13px",
+    color: "#bbbbbb",
+    margin: "0 0 16px 0",
+};
+
+const footerName = {
+    fontSize: "14px",
+    color: "#555555",
+    margin: "0 0 4px 0",
+};
+
+const footerSite = {
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+    fontSize: "12px",
+    color: "#999999",
+    margin: "0 0 20px 0",
+};
+
+const footerNote = {
+    fontSize: "12px",
+    color: "#aaaaaa",
+    lineHeight: "1.6",
+    margin: "0 0 8px 0",
+};
+
+const footerLink = {
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+    fontSize: "12px",
+    color: "#888888",
     textDecoration: "underline",
 };
