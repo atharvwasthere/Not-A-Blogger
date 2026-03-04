@@ -145,10 +145,10 @@ function ReaderModeToggle({
             onClick={onToggle}
             disabled={disabled}
             className={cn(
-                "fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full px-4 py-2.5",
+                "fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[100] flex items-center gap-2 rounded-full px-4 py-2.5",
                 "font-mono text-xs tracking-wide cursor-pointer",
-                "shadow-lg border backdrop-blur-sm",
-                "print:hidden disabled:opacity-50",
+                "shadow-[0_4px_12px_rgba(0,0,0,0.1)] border backdrop-blur-md",
+                "disabled:opacity-50",
                 config.btnClass,
             )}
             aria-label={`Switch to ${config.label}`}
@@ -269,56 +269,57 @@ function BlogPost() {
     }
 
     return (
-        <MainLayout className={MODE_CONFIG[viewMode].className}>
-            {/* Wipe transition overlay */}
-            <AnimatePresence>
-                {wipePhase !== 'idle' && (
-                    <motion.div
-                        key={`wipe-${wipeDirection}-${wipePhase}`}
-                        className="fixed inset-0 z-[100] pointer-events-none"
-                        style={{ backgroundColor: overlayColor }}
-                        initial={{ clipPath: getInitialClipPath() }}
-                        animate={{ clipPath: getClipPath() }}
-                        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-                        onAnimationComplete={handleWipeComplete}
-                    />
-                )}
-            </AnimatePresence>
+        <>
+            <MainLayout className={MODE_CONFIG[viewMode].className}>
+                {/* Wipe transition overlay */}
+                <AnimatePresence>
+                    {wipePhase !== 'idle' && (
+                        <motion.div
+                            key={`wipe-${wipeDirection}-${wipePhase}`}
+                            className="fixed inset-0 z-[100] pointer-events-none"
+                            style={{ backgroundColor: overlayColor }}
+                            initial={{ clipPath: getInitialClipPath() }}
+                            animate={{ clipPath: getClipPath() }}
+                            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                            onAnimationComplete={handleWipeComplete}
+                        />
+                    )}
+                </AnimatePresence>
 
-            <div className="max-w-3xl mx-auto px-6 py-12 md:py-24 animate-in fade-in duration-500">
-                <div className="mb-12">
-                    <div className="font-mono text-xs text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span>{format(new Date(post.created_at), "MMMM d, yyyy")}</span>
-                        <span className="w-1 h-1 rounded-full bg-zinc-300" />
-                        <span>{post.reading_time || 1} min read</span>
-                        {post.updated_at !== post.created_at && (
-                            <>
-                                <span className="w-1 h-1 rounded-full bg-zinc-300" />
-                                <span className="text-zinc-500 italic">
-                                    Updated {format(new Date(post.updated_at), "MMM d")}
-                                </span>
-                            </>
-                        )}
+                <div className="max-w-3xl mx-auto px-6 py-12 md:py-24 animate-in fade-in duration-500">
+                    <div className="mb-12">
+                        <div className="font-mono text-xs text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <span>{format(new Date(post.created_at), "MMMM d, yyyy")}</span>
+                            <span className="w-1 h-1 rounded-full bg-zinc-300" />
+                            <span>{post.reading_time || 1} min read</span>
+                            {post.updated_at !== post.created_at && (
+                                <>
+                                    <span className="w-1 h-1 rounded-full bg-zinc-300 hidden md:block" />
+                                    <span className="text-zinc-500 italic hidden md:block">
+                                        Updated {format(new Date(post.updated_at), "MMM d")}
+                                    </span>
+                                </>
+                            )}
+                        </div>
+                        <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-zinc-900 leading-[1.1] mb-8">
+                            {post.title}
+                        </h1>
                     </div>
-                    <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-zinc-900 leading-[1.1] mb-8">
-                        {post.title}
-                    </h1>
-                </div>
 
-                <article ref={articleRef} className="prose prose-zinc max-w-none font-serif prose-headings:font-serif prose-headings:font-normal prose-p:text-zinc-600 prose-p:leading-loose
+                    <article ref={articleRef} className="prose prose-zinc max-w-none font-serif prose-headings:font-serif prose-headings:font-normal prose-p:text-zinc-600 prose-p:leading-loose
                                    prose-h1:text-3xl prose-h1:mt-6 prose-h1:mb-3
                                    prose-h2:text-2xl prose-h2:mt-5 prose-h2:mb-2
                                    prose-h3:text-xl prose-h3:mt-4 prose-h3:mb-1
                                    prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5">
-                    <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }} />
-                </article>
-            </div>
-
+                        <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }} />
+                    </article>
+                </div>
+            </MainLayout>
             <ReaderModeToggle
                 mode={viewMode}
                 onToggle={handleToggle}
                 disabled={isTransitioning}
             />
-        </MainLayout>
+        </>
     )
 }
