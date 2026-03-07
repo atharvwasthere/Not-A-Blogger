@@ -28,14 +28,19 @@ export function IdentitySidebar() {
                                 aria-label="Portfolio"
                                 className="font-medium text-foreground hover:pointer"
                             >
-                                <span className="font-medium text-foreground">Atharv Singh</span> (not a blogger).
+                                <span className="font-medium text-foreground inline-flex items-center gap-1.5 whitespace-nowrap">
+                                    <img src="https://images.atharvsingh.me/cta/Atharv_logo.svg" alt="Atharv Singh" className="h-4 w-auto" />
+                                    Atharv Singh
+                                </span> (not a blogger).
                             </a>
                         </p>
                     </div>
                 </div>
 
                 <SubscribeForm />
-                <CircuitPulse />
+                <div className="md:hidden">
+                    <CircuitPulse />
+                </div>
             </div>
 
             <div className="mt-8 flex flex-col gap-6">
@@ -52,7 +57,11 @@ export function IdentitySidebar() {
                 </div>
                 <footer className="text-[10px] md:text-xs text-muted-foreground font-mono leading-tight">
                     © {new Date().getFullYear()} Not a Blogger.<br />
-                    Written by <span itemProp="author">Atharv Singh</span>.
+                    Written by{' '}
+                    <span itemProp="author" className="inline-flex items-center gap-1 whitespace-nowrap">
+                        <img src="https://images.atharvsingh.me/cta/Atharv_logo.svg" alt="Atharv Singh" className="h-3 w-auto opacity-80 inline-block align-text-bottom" />
+                        Atharv Singh
+                    </span>.
                 </footer>
             </div>
         </aside>

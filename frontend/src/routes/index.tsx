@@ -5,6 +5,7 @@ import { AnimatePresence } from 'motion/react'
 import { MainLayout } from '@/shared/layout/MainLayout'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
+import { CtaBanner } from '@/shared/components/ui/CtaBanner'
 
 // Lazy load heavy admin components
 const GlitchOverlay = lazy(() => import('@/features/admin/components/GlitchOverlay').then(module => ({ default: module.GlitchOverlay })))
@@ -48,6 +49,7 @@ function Home() {
 
   return (
     <MainLayout showSidebar={true}>
+      <CtaBanner />
       <BlogList posts={posts} />
 
       <AnimatePresence>

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as UnsubscribeIdRouteImport } from './routes/unsubscribe.$id'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminNewRouteImport } from './routes/admin/new'
@@ -32,6 +33,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutIndexRoute = AboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UnsubscribeIdRoute = UnsubscribeIdRouteImport.update({
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/admin/new': typeof AdminNewRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/unsubscribe/$id': typeof UnsubscribeIdRoute
+  '/about': typeof AboutIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/admin/new': typeof AdminNewRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/unsubscribe/$id': typeof UnsubscribeIdRoute
+  '/about': typeof AboutIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/admin/new': typeof AdminNewRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/unsubscribe/$id': typeof UnsubscribeIdRoute
+  '/about/': typeof AboutIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/admin/new'
     | '/blog/$slug'
     | '/unsubscribe/$id'
+    | '/about'
     | '/admin/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/admin/new'
     | '/blog/$slug'
     | '/unsubscribe/$id'
+    | '/about'
     | '/admin/edit/$id'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/admin/new'
     | '/blog/$slug'
     | '/unsubscribe/$id'
+    | '/about/'
     | '/admin/edit/$id'
   fileRoutesById: FileRoutesById
 }
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   UnsubscribeRoute: typeof UnsubscribeRouteWithChildren
   BlogSlugRoute: typeof BlogSlugRoute
+  AboutIndexRoute: typeof AboutIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -163,6 +176,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/': {
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/unsubscribe/$id': {
@@ -243,6 +263,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   UnsubscribeRoute: UnsubscribeRouteWithChildren,
   BlogSlugRoute: BlogSlugRoute,
+  AboutIndexRoute: AboutIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

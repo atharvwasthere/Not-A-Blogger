@@ -28,7 +28,11 @@ export function MainLayout({ children, showSidebar = false, className }: MainLay
                 {!showSidebar && (
                     <footer className="max-w-3xl mx-auto px-6 py-12 text-center text-sm text-zinc-400 font-mono border-t border-zinc-100 mt-24">
                         © {new Date().getFullYear()} Not a Blogger.<br />
-                        Written by <span itemProp="author">Atharv Singh</span>.
+                        Written by{' '}
+                        <span itemProp="author" className="inline-flex items-center gap-1 whitespace-nowrap">
+                            <img src="https://images.atharvsingh.me/cta/Atharv_logo.svg" alt="Atharv Singh" className="h-3 w-auto opacity-80 inline-block align-text-bottom" />
+                            Atharv Singh
+                        </span>.
                     </footer>
                 )}
             </main>

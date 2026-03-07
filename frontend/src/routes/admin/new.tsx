@@ -1,8 +1,12 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
-import { PostEditor } from '@/features/admin/components/PostEditor'
+import { useState, lazy, Suspense } from 'react'
 import { api, stripHtml } from '@/lib/api'
 import toast from 'react-hot-toast'
+
+// Lazy load — keeps Tiptap editor out of the main bundle
+const PostEditor = lazy(() =>
+  import('@/features/admin/components/PostEditor').then(m => ({ default: m.PostEditor }))
+)
 
 export const Route = createFileRoute('/admin/new')({
   component: NewPost
@@ -44,5 +48,9 @@ function NewPost() {
     }
   }
 
-  return <PostEditor mode="new" isSaving={isSaving} onSave={handleSave} />
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-zinc-400 font-mono text-sm">Loading editor...</div>}>
+      <PostEditor mode="new" isSaving={isSaving} onSave={handleSave} />
+    </Suspense>
+  )
 }

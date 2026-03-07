@@ -1,5 +1,4 @@
 import { motion } from "motion/react"
-import newFrame from "@/assets/frame.webp"
 
 export function NotABloggerIntro() {
     return (
@@ -20,8 +19,9 @@ export function NotABloggerIntro() {
             }}
         >
             <motion.img
-                src={newFrame}
+                src={"https://images.atharvsingh.me/cta/frame.webp"}
                 alt=""
+                fetchPriority="high"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{

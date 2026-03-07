@@ -42,6 +42,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { name: 'twitter:url', content: 'https://blogs.atharvsingh.me' },
     ],
     links: [
+      { rel: 'preload', href: 'https://images.atharvsingh.me/cta/frame.webp', as: 'image' },
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap' },
       { rel: 'stylesheet', href: appCss },
       { rel: 'canonical', href: 'https://blogs.atharvsingh.me' },
       { rel: 'icon', type: 'image/svg+xml', href: '/quotation-marks-svgrepo-com.svg' },

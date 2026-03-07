@@ -1,9 +1,13 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
-import { PostEditor } from '@/features/admin/components/PostEditor'
+import { useState, lazy, Suspense } from 'react'
 import { api, stripHtml } from '@/lib/api'
 import toast from 'react-hot-toast'
 import { EditorSkeleton } from '@/features/admin/components/EditorSkeleton'
+
+// Lazy load — keeps Tiptap editor out of the main bundle
+const PostEditor = lazy(() =>
+  import('@/features/admin/components/PostEditor').then(m => ({ default: m.PostEditor }))
+)
 
 export const Route = createFileRoute('/admin/edit/$id')({
   loader: async ({ params }) => api.getPostById(params.id),
@@ -62,25 +66,27 @@ function EditPost() {
   }
 
   return (
-    <PostEditor
-      mode="edit"
-      isSaving={isSaving}
-      lastSaved={lastSaved}
-      onSave={handleSave}
-      onDelete={handleDelete}
-      initialValues={{
-        title: post.title,
-        content: post.content,
-        coverImage: post.cover_image || '',
-        iconUrl: post.icon_url || '',
-        excerpt: post.excerpt || '',
-        seoTitle: post.seo_title || '',
-        seoDescription: post.seo_description || '',
-        isPublished: post.is_published,
-        slug: post.slug,
-        createdAt: post.created_at,
-        updatedAt: post.updated_at,
-      }}
-    />
+    <Suspense fallback={<EditorSkeleton />}>
+      <PostEditor
+        mode="edit"
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        onSave={handleSave}
+        onDelete={handleDelete}
+        initialValues={{
+          title: post.title,
+          content: post.content,
+          coverImage: post.cover_image || '',
+          iconUrl: post.icon_url || '',
+          excerpt: post.excerpt || '',
+          seoTitle: post.seo_title || '',
+          seoDescription: post.seo_description || '',
+          isPublished: post.is_published,
+          slug: post.slug,
+          createdAt: post.created_at,
+          updatedAt: post.updated_at,
+        }}
+      />
+    </Suspense>
   )
 }
