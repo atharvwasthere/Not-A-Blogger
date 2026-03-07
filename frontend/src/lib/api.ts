@@ -49,9 +49,9 @@ export const api = {
         fetcher<Post>("/posts/", { method: "POST", body: JSON.stringify(data) }),
     getPostById: (id: string) => fetcher<Post>(`/posts/id/${id}`),
     updatePost: (id: string, data: PostInput) =>
-        fetcher<Post>(`/posts/${id}/`, { method: "PUT", body: JSON.stringify(data) }),
+        fetcher<Post>(`/posts/${id}`, { method: "PUT", body: JSON.stringify(data) }),
     deletePost: (id: string) =>
-        fetcher<void>(`/posts/${id}/`, { method: "DELETE" }),
+        fetcher<void>(`/posts/${id}`, { method: "DELETE" }),
 
     // Auth
     login: (credentials: { username: string; password: string }) =>

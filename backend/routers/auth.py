@@ -18,12 +18,13 @@ def admin_login(response: Response, credentials: LoginRequest):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token = generate_access_token(credentials.username)
 
+    is_production = config.ENVIRONMENT == "production"
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=config.ENVIRONMENT == "production",
-        samesite="lax",
+        secure=is_production,
+        samesite="none" if is_production else "lax",
         max_age=config.JWT_EXPIRES_IN * 24 * 60 * 60,
     )
 
@@ -32,7 +33,13 @@ def admin_login(response: Response, credentials: LoginRequest):
 
 @auth_router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie(key="access_token")
+    is_production = config.ENVIRONMENT == "production"
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=is_production,
+        samesite="none" if is_production else "lax",
+    )
     return {"message": "Logged out successfully"}
 
 
