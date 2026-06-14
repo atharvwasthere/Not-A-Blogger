@@ -69,6 +69,9 @@ def list_posts(
     if not include_drafts:
         query = query.filter(BlogPost.is_published)
 
+    # Sort by creation date descending (latest first)
+    query = query.order_by(BlogPost.created_at.desc())
+
     posts = query.offset(offset).limit(limit).all()
     return posts
 
