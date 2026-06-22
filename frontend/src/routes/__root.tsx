@@ -1,6 +1,7 @@
 import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AnimatePresence } from 'motion/react'
+import { lazy, Suspense } from 'react'
 
 
 import { getSessionIntroState } from '../lib/server-intro'
@@ -11,6 +12,11 @@ import { useSessionIntro } from '../shared/hooks/useSessionIntro'
 import { Toaster } from 'react-hot-toast'
 
 import appCss from '../styles.css?url'
+
+// Lazy-load — keeps cmdk out of the initial bundle (consistent with PostEditor/GlitchOverlay).
+const CommandPalette = lazy(() =>
+  import('../shared/components/CommandPalette').then(m => ({ default: m.CommandPalette }))
+)
 
 interface RouterContext {
   queryClient: QueryClient
@@ -98,6 +104,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <QueryClientProvider client={queryClient}>
             {children}
             <Toaster position="top-center" />
+            <Suspense fallback={null}>
+              <CommandPalette />
+            </Suspense>
           </QueryClientProvider>
         </div>
         <Scripts />

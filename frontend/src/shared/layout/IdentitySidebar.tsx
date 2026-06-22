@@ -1,6 +1,62 @@
 import { SubscribeForm } from "./SubscribeForm";
 import { CircuitPulse } from "../components/CircuitPulse";
+import { useQuery } from "@tanstack/react-query";
+import { Link, useSearch } from "@tanstack/react-router";
+import { api } from "@/lib/api";
 
+function TopicsBlock() {
+    // Reads the shared ['posts'] cache the homepage already populated — no extra fetch.
+    const { data: posts } = useQuery({ queryKey: ['posts'], queryFn: () => api.getPosts() });
+    const activeTag = useSearch({ strict: false, select: (s: { tag?: string }) => s.tag });
+
+    if (!posts?.length) return null;
+
+    // Aggregate unique tags with counts, sorted by frequency then alphabetically.
+    const counts = new Map<string, number>();
+    for (const post of posts) {
+        for (const tag of post.tags ?? []) {
+            counts.set(tag, (counts.get(tag) ?? 0) + 1);
+        }
+    }
+    const topics = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    const seriesSlugs = [...new Set(posts.map(p => p.series).filter(Boolean) as string[])];
+
+    if (topics.length === 0 && seriesSlugs.length === 0) return null;
+
+    return (
+        <div className="space-y-3">
+            <h3 className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70">Topics</h3>
+            <div className="flex flex-wrap gap-2">
+                {topics.map(([tag, count]) => {
+                    const isActive = activeTag === tag;
+                    return (
+                        <Link
+                            key={tag}
+                            to="/"
+                            search={isActive ? {} : { tag }}
+                            className={`font-mono text-xs px-2 py-1 rounded-full border transition-colors ${isActive
+                                ? "border-foreground bg-foreground text-background"
+                                : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/40"
+                                }`}
+                        >
+                            {tag} <span className="opacity-50">{count}</span>
+                        </Link>
+                    );
+                })}
+            </div>
+            {seriesSlugs.map(slug => (
+                <Link
+                    key={slug}
+                    to="/series/$slug"
+                    params={{ slug }}
+                    className="block font-mono text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    Read the {slug} series →
+                </Link>
+            ))}
+        </div>
+    );
+}
 
 export function IdentitySidebar() {
     return (
@@ -37,6 +93,7 @@ export function IdentitySidebar() {
                 </div>
 
                 <SubscribeForm />
+                <TopicsBlock />
                 <div className="md:hidden">
                     <CircuitPulse />
                 </div>

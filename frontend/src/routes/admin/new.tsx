@@ -17,10 +17,12 @@ function NewPost() {
   const [isSaving, setIsSaving] = useState(false)
 
   const handleSave = async ({
-    title, content, coverImage, iconUrl, excerpt, seoTitle, seoDescription, isPublished
+    title, content, coverImage, iconUrl, excerpt, seoTitle, seoDescription, isPublished,
+    tags, series, seriesOrder
   }: {
     title: string; content: string; coverImage: string; iconUrl: string
     excerpt: string; seoTitle: string; seoDescription: string; isPublished: boolean
+    tags: string; series: string; seriesOrder: number | null
   }) => {
     if (!title) {
       toast.error('Title is required')
@@ -37,6 +39,9 @@ function NewPost() {
         seo_title: seoTitle || undefined,
         seo_description: seoDescription || undefined,
         excerpt: excerpt || stripHtml(content).slice(0, 150),
+        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+        series: series.trim() || null,
+        series_order: seriesOrder,
       })
       toast.success('Post saved successfully!')
       router.navigate({ to: '/admin/dashboard' })

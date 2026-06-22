@@ -7,6 +7,9 @@ export interface PostInput {
     is_published: boolean
     seo_title?: string | null
     seo_description?: string | null
+    tags?: string[]
+    series?: string | null
+    series_order?: number | null
 }
 
 export interface Post extends PostInput {
@@ -15,6 +18,14 @@ export interface Post extends PostInput {
     created_at: string
     updated_at: string
     reading_time: number
+    tags: string[]
+}
+
+/** Lightweight post shape for the ⌘K command palette (GET /posts/index). */
+export interface PostIndexItem {
+    slug: string
+    title: string
+    tags: string[]
 }
 
 export interface User {

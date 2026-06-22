@@ -22,10 +22,12 @@ function EditPost() {
   const [lastSaved, setLastSaved] = useState<Date>(new Date(post.updated_at))
 
   const handleSave = async ({
-    title, content, coverImage, iconUrl, excerpt, seoTitle, seoDescription, isPublished
+    title, content, coverImage, iconUrl, excerpt, seoTitle, seoDescription, isPublished,
+    tags, series, seriesOrder
   }: {
     title: string; content: string; coverImage: string; iconUrl: string
     excerpt: string; seoTitle: string; seoDescription: string; isPublished: boolean
+    tags: string; series: string; seriesOrder: number | null
   }) => {
     if (!title) {
       toast.error('Title is required')
@@ -42,6 +44,9 @@ function EditPost() {
         seo_title: seoTitle || undefined,
         seo_description: seoDescription || undefined,
         excerpt: excerpt || stripHtml(content).slice(0, 150),
+        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+        series: series.trim() || null,
+        series_order: seriesOrder,
       })
       setLastSaved(new Date())
       toast.success('Post updated successfully!')
@@ -82,6 +87,9 @@ function EditPost() {
           seoTitle: post.seo_title || '',
           seoDescription: post.seo_description || '',
           isPublished: post.is_published,
+          tags: (post.tags || []).join(', '),
+          series: post.series || '',
+          seriesOrder: post.series_order ?? null,
           slug: post.slug,
           createdAt: post.created_at,
           updatedAt: post.updated_at,

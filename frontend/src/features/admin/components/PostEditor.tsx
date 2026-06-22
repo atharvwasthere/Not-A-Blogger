@@ -13,6 +13,9 @@ export interface PostEditorInitialValues {
     seoTitle?: string
     seoDescription?: string
     isPublished?: boolean
+    tags?: string // comma-separated for the form input
+    series?: string
+    seriesOrder?: number | null
     // Edit-only meta
     slug?: string
     createdAt?: string
@@ -30,6 +33,9 @@ interface PostEditorProps {
         seoTitle: string
         seoDescription: string
         isPublished: boolean
+        tags: string // comma-separated; split by the route handler
+        series: string
+        seriesOrder: number | null
     }) => Promise<void>
     onDelete?: () => Promise<void>
     isSaving: boolean
@@ -54,6 +60,11 @@ export function PostEditor({
     const [excerpt, setExcerpt] = useState(initialValues.excerpt || '')
     const [seoTitle, setSeoTitle] = useState(initialValues.seoTitle || '')
     const [seoDescription, setSeoDescription] = useState(initialValues.seoDescription || '')
+    const [tags, setTags] = useState(initialValues.tags || '')
+    const [series, setSeries] = useState(initialValues.series || '')
+    const [seriesOrder, setSeriesOrder] = useState(
+        initialValues.seriesOrder != null ? String(initialValues.seriesOrder) : ''
+    )
     const [postStatus, setPostStatus] = useState<'Draft' | 'Published'>(
         initialValues.isPublished ? 'Published' : 'Draft'
     )
@@ -69,6 +80,9 @@ export function PostEditor({
             seoTitle,
             seoDescription,
             isPublished: postStatus === 'Published',
+            tags,
+            series,
+            seriesOrder: seriesOrder.trim() === '' ? null : Number(seriesOrder),
         })
 
     return (
@@ -152,6 +166,47 @@ export function PostEditor({
                             onChange={e => setExcerpt(e.target.value)}
                             className="w-full text-sm bg-white border border-zinc-200 rounded-md p-2 h-24 resize-none outline-none focus:border-zinc-300"
                         />
+                    </div>
+                </div>
+
+                <div className="h-px bg-zinc-100 w-full" />
+
+                {/* Topics & Series */}
+                <div className="space-y-4">
+                    <h3 className="font-serif text-lg text-zinc-900">Topics & Series</h3>
+                    <div className="space-y-1">
+                        <label className="text-xs text-zinc-400 font-medium">Tags (comma-separated)</label>
+                        <input
+                            type="text"
+                            placeholder="caching, debugging, go"
+                            value={tags}
+                            onChange={e => setTags(e.target.value)}
+                            className="w-full text-sm bg-white border border-zinc-200 rounded-md p-2 outline-none focus:border-zinc-300"
+                        />
+                        <p className="text-[10px] text-zinc-400">Lowercased & de-duplicated on save.</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <div className="flex-1 space-y-1">
+                            <label className="text-xs text-zinc-400 font-medium">Series slug</label>
+                            <input
+                                type="text"
+                                placeholder="papers"
+                                value={series}
+                                onChange={e => setSeries(e.target.value)}
+                                className="w-full text-sm bg-white border border-zinc-200 rounded-md p-2 outline-none focus:border-zinc-300"
+                            />
+                        </div>
+                        <div className="w-24 space-y-1">
+                            <label className="text-xs text-zinc-400 font-medium">Order</label>
+                            <input
+                                type="number"
+                                min={0}
+                                placeholder="1"
+                                value={seriesOrder}
+                                onChange={e => setSeriesOrder(e.target.value)}
+                                className="w-full text-sm bg-white border border-zinc-200 rounded-md p-2 outline-none focus:border-zinc-300"
+                            />
+                        </div>
                     </div>
                 </div>
 

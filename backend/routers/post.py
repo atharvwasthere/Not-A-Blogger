@@ -6,7 +6,7 @@ import re
 from database import get_db
 from models.post import BlogPost
 from models.subscriber import Subscriber
-from schemas.post import PostInput, PostOutput, PostSummary
+from schemas.post import PostInput, PostOutput, PostSummary, PostIndexItem
 from middleware.auth import require_authentication
 from services.slug import generate_slug
 from services.email import send_new_post_notification
@@ -45,7 +45,7 @@ posts_router = APIRouter(prefix="/posts", tags=["Posts"])
 @posts_router.get("/", response_model=List[PostSummary])
 def list_posts(
     offset: int = 0,
-    limit: int = 10,
+    limit: int | None = None,
     include_drafts: bool = False,
     db: Session = Depends(get_db),
     request: Request = None,
@@ -74,6 +74,28 @@ def list_posts(
 
     posts = query.offset(offset).limit(limit).all()
     return posts
+
+
+@posts_router.get("/index", response_model=List[PostIndexItem])
+def list_post_index(db: Session = Depends(get_db)):
+    """Lightweight index (slug, title, tags) of published posts for the ⌘K palette."""
+    return (
+        db.query(BlogPost)
+        .filter(BlogPost.is_published)
+        .order_by(BlogPost.created_at.desc())
+        .all()
+    )
+
+
+@posts_router.get("/series/{series_slug}", response_model=List[PostSummary])
+def list_series_posts(series_slug: str, db: Session = Depends(get_db)):
+    """Published posts in a series, ordered by their explicit reading order."""
+    return (
+        db.query(BlogPost)
+        .filter(BlogPost.is_published, BlogPost.series == series_slug)
+        .order_by(BlogPost.series_order.asc())
+        .all()
+    )
 
 
 @posts_router.get("/id/{post_id}", response_model=PostOutput)

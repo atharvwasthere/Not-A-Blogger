@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { BlogList } from '@/features/blog/components/BlogList'
 import { useEffect, useState, lazy, Suspense } from 'react'
 import { AnimatePresence } from 'motion/react'
@@ -17,6 +17,10 @@ const postsQueryOptions = queryOptions({
 })
 
 export const Route = createFileRoute('/')({
+  validateSearch: (search: Record<string, unknown>): { tag?: string } => {
+    const tag = typeof search.tag === 'string' && search.tag.trim() ? search.tag : undefined
+    return tag ? { tag } : {}
+  },
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(postsQueryOptions),
   component: Home,
@@ -24,7 +28,10 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   const postsQuery = useSuspenseQuery(postsQueryOptions)
-  const posts = postsQuery.data
+  const { tag } = Route.useSearch()
+  const posts = tag
+    ? postsQuery.data.filter((p) => p.tags?.includes(tag))
+    : postsQuery.data
 
   const [isAdminMode, setIsAdminMode] = useState(false)
   const [showLogin, setShowLogin] = useState(false)
@@ -50,6 +57,18 @@ function Home() {
   return (
     <MainLayout showSidebar={true}>
       <CtaBanner />
+      {tag && (
+        <div className="max-w-5xl mx-auto px-6 pt-6">
+          <Link
+            to="/"
+            search={{}}
+            className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-foreground border border-border rounded-full px-3 py-1.5 transition-colors"
+          >
+            Filtered by <span className="text-foreground">#{tag}</span>
+            <span aria-hidden>✕</span>
+          </Link>
+        </div>
+      )}
       <BlogList posts={posts} />
 
       <AnimatePresence>

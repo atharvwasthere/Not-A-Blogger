@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Text, Boolean, DateTime, Integer
+from sqlalchemy.dialects.postgresql import ARRAY
 from datetime import datetime
 from database import BaseModel
 from uuid import uuid4
@@ -21,3 +22,7 @@ class BlogPost(BaseModel):
     seo_description = Column(String(300))
     reading_time = Column(Integer, default=1)
     icon_url = Column(String(500))
+    # Discovery / curation
+    tags = Column(ARRAY(String), nullable=False, server_default="{}")
+    series = Column(String(100), nullable=True, index=True)
+    series_order = Column(Integer, nullable=True)

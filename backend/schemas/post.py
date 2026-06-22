@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
 from typing import Optional, List
 
@@ -17,6 +17,23 @@ class PostInput(BaseModel):
     is_published: bool = Field(False)
     seo_title: Optional[str] = Field(None, min_length=2, max_length=200)
     seo_description: Optional[str] = Field(None, min_length=2, max_length=300)
+    tags: List[str] = Field(default_factory=list)
+    series: Optional[str] = Field(None, max_length=100)
+    series_order: Optional[int] = Field(None, ge=0)
+
+    @field_validator("tags")
+    @classmethod
+    def normalize_tags(cls, value: List[str]) -> List[str]:
+        # Lowercase, trim, drop empties, dedupe (preserve first-seen order)
+        # so "Go", " go " and "go" collapse to a single sidebar topic.
+        seen: set[str] = set()
+        cleaned: List[str] = []
+        for raw in value or []:
+            tag = raw.strip().lower()
+            if tag and tag not in seen:
+                seen.add(tag)
+                cleaned.append(tag)
+        return cleaned
 
 
 ########################
@@ -35,6 +52,20 @@ class PostSummary(BaseModel):
     created_at: datetime
     updated_at: datetime
     reading_time: Optional[int] = 1
+    tags: List[str] = []
+    series: Optional[str] = None
+    series_order: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+
+class PostIndexItem(BaseModel):
+    """Lightweight payload for the ⌘K command palette — title + tags only."""
+
+    slug: str
+    title: str
+    tags: List[str] = []
 
     class Config:
         from_attributes = True

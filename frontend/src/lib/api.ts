@@ -1,4 +1,4 @@
-import { Post, PostInput, AuthResponse } from "./types"
+import { Post, PostInput, PostIndexItem, AuthResponse } from "./types"
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api"
 
@@ -44,6 +44,8 @@ async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
 export const api = {
     // Posts
     getPosts: (includeDrafts = false) => fetcher<Post[]>(`/posts/?include_drafts=${includeDrafts}`),
+    getPostIndex: () => fetcher<PostIndexItem[]>(`/posts/index`),
+    getSeries: (seriesSlug: string) => fetcher<Post[]>(`/posts/series/${seriesSlug}`),
     getPostBySlug: (slug: string) => fetcher<Post>(`/posts/${slug}`), // GET /posts/{slug} usually doesn't need trailing slash if slug is the end, but check backend. Backend: @posts_router.get("/{slug}") -> /posts/{slug}. No trailing slash needed here assuming standard path param behavior.
     createPost: (data: PostInput) =>
         fetcher<Post>("/posts/", { method: "POST", body: JSON.stringify(data) }),
