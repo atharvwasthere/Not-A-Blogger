@@ -1,14 +1,8 @@
 import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { AnimatePresence } from 'motion/react'
 import { lazy, Suspense } from 'react'
 
-
-import { getSessionIntroState } from '../lib/server-intro'
-
 import { NotFound } from '../shared/components/NotFound'
-import { NotABloggerIntro } from '../shared/components/NotABloggerIntro'
-import { useSessionIntro } from '../shared/hooks/useSessionIntro'
 import { Toaster } from 'react-hot-toast'
 
 import appCss from '../styles.css?url'
@@ -48,7 +42,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { name: 'twitter:url', content: 'https://blogs.atharvsingh.me' },
     ],
     links: [
-      { rel: 'preload', href: 'https://images.atharvsingh.me/cta/frame.webp', as: 'image' },
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap' },
@@ -76,20 +69,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     ],
   }),
 
-  loader: async () => {
-    const { hasSeenIntro } = await getSessionIntroState()
-    return { hasSeenIntro }
-  },
-
   notFoundComponent: NotFound,
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { queryClient } = Route.useRouteContext()
-  const loaderData = Route.useLoaderData()
-  // Use the server-provided initial state to prevent flash
-  const showIntro = useSessionIntro(loaderData?.hasSeenIntro)
 
   return (
     <html lang="en">
@@ -97,18 +82,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <AnimatePresence>
-          {showIntro && <NotABloggerIntro />}
-        </AnimatePresence>
-        <div style={{ visibility: showIntro ? 'hidden' : 'visible' }}>
-          <QueryClientProvider client={queryClient}>
-            {children}
-            <Toaster position="top-center" />
-            <Suspense fallback={null}>
-              <CommandPalette />
-            </Suspense>
-          </QueryClientProvider>
-        </div>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <Toaster position="top-center" />
+          <Suspense fallback={null}>
+            <CommandPalette />
+          </Suspense>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

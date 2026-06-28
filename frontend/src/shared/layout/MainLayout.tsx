@@ -2,7 +2,6 @@ import * as React from "react";
 import { IdentitySidebar } from "./IdentitySidebar";
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import { AnnouncementBanner } from "../components/AnnouncementBanner";
 
 interface MainLayoutProps {
     children: React.ReactNode;
@@ -13,7 +12,6 @@ interface MainLayoutProps {
 export function MainLayout({ children, showSidebar = false, className }: MainLayoutProps) {
     return (
         <div className={cn("min-h-screen bg-background", className)}>
-            <AnnouncementBanner />
             {showSidebar && <IdentitySidebar />}
 
             <main className={`min-h-screen w-full transition-all duration-300 ${showSidebar
