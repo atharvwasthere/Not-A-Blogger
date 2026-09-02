@@ -74,6 +74,7 @@ function EditPost() {
     <Suspense fallback={<EditorSkeleton />}>
       <PostEditor
         mode="edit"
+        postId={post.id}
         isSaving={isSaving}
         lastSaved={lastSaved}
         onSave={handleSave}

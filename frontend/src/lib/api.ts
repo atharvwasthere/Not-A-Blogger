@@ -1,4 +1,4 @@
-import { Post, PostInput, PostIndexItem, AuthResponse } from "./types"
+import { Post, PostInput, PostIndexItem, AuthResponse, EmbedSummary } from "./types"
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api"
 
@@ -14,6 +14,15 @@ export function stripHtml(html: string): string {
         .replace(/&#039;/g, "'")            // decode '
         .replace(/\s+/g, ' ')               // collapse whitespace
         .trim()
+}
+
+async function readError(res: Response): Promise<string> {
+    const text = await res.text()
+    try {
+        return JSON.parse(text).detail ?? text
+    } catch {
+        return text || res.statusText
+    }
 }
 
 async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -77,6 +86,28 @@ export const api = {
         const data = await res.json()
         return data.url as string
     },
+
+    // Embeds — multipart, so these bypass fetcher() for the same reason uploadImage does
+    uploadEmbed: async (postId: string, title: string, file: File) => {
+        const body = new FormData()
+        body.append('post_id', postId)
+        body.append('title', title)
+        body.append('file', file)
+        const res = await fetch(`${API_BASE}/embeds/`, { method: 'POST', body, credentials: 'include' })
+        if (!res.ok) throw new Error(await readError(res))
+        return res.json() as Promise<EmbedSummary>
+    },
+
+    replaceEmbed: async (id: string, file: File) => {
+        const body = new FormData()
+        body.append('file', file)
+        const res = await fetch(`${API_BASE}/embeds/${id}`, { method: 'PUT', body, credentials: 'include' })
+        if (!res.ok) throw new Error(await readError(res))
+        return res.json() as Promise<EmbedSummary>
+    },
+
+    // Built here, never stored in post HTML, so moving the API domain needs no content migration
+    embedSrc: (id: string) => `${API_BASE}/embeds/${id}`,
 
     // Subscribers
     subscribe: (data: { email: string, name?: string }) =>
