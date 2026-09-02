@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ShieldAlert, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 export function Unauthorized() {
     return (

@@ -2,7 +2,7 @@ import {
     Link,
     useRouter,
 } from '@tanstack/react-router'
-import { MainLayout } from './layout/MainLayout'
+import { MainLayout } from '../layout/MainLayout'
 import { RotateCcw } from 'lucide-react'
 
 export function DefaultCatchBoundary({ error }: { error: Error }) {
