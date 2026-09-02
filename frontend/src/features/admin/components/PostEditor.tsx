@@ -41,6 +41,8 @@ interface PostEditorProps {
     isSaving: boolean
     lastSaved?: Date
     mode: 'new' | 'edit'
+    /** Owning post id. Absent while a draft is unsaved, which hides the /embed command. */
+    postId?: string
 }
 
 export function PostEditor({
@@ -50,6 +52,7 @@ export function PostEditor({
     isSaving,
     lastSaved,
     mode,
+    postId,
 }: PostEditorProps) {
     const [title, setTitle] = useState(initialValues.title || '')
     const [content, setContent] = useState(
@@ -98,7 +101,7 @@ export function PostEditor({
                     autoFocus
                 />
 
-                <Editor content={content} onChange={setContent} />
+                <Editor content={content} onChange={setContent} postId={postId} />
 
                 {lastSaved && (
                     <div className="fixed bottom-6 left-6 text-xs text-zinc-300 bg-black font-mono transition-opacity duration-500">

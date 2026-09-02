@@ -37,3 +37,13 @@ export interface User {
 export interface AuthResponse {
     token_type: string
 }
+
+/** Metadata for an uploaded visualiser. The html body is never sent here — it is served as a document. */
+export interface EmbedSummary {
+    id: string
+    post_id: string
+    title: string
+    byte_size: number
+    created_at: string
+    updated_at: string
+}

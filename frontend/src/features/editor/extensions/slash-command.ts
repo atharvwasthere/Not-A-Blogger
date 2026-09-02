@@ -1,4 +1,5 @@
 import { Extension } from '@tiptap/core'
+import type { Editor, Range } from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
@@ -13,11 +14,19 @@ import {
     Quote,
     Code,
     Minus,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Boxes
 } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { pickHtmlFile } from './Embed'
 
 // Define the menu items
-const getSuggestionItems = ({ query }) => {
+const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }) => {
+    // Only offered once the post exists — an upload needs a post_id to belong to.
+    const postId: string | undefined = editor.extensionManager.extensions.find(
+        (ext) => ext.name === 'embed'
+    )?.options.postId
+
     return [
         {
             title: 'Heading 1',
@@ -122,7 +131,32 @@ const getSuggestionItems = ({ query }) => {
                 }
                 input.click()
             }
-        }
+        },
+        ...(postId ? [{
+            title: 'Embed',
+            description: 'Upload an interactive HTML visualiser.',
+            icon: Boxes,
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
+                editor.chain().focus().deleteRange(range).run()
+
+                pickHtmlFile(async (file) => {
+                    const suggested = file.name.replace(/\.html$/i, '')
+                    const title = window.prompt('Caption for this visualiser', suggested)
+                    if (title === null) return
+
+                    try {
+                        const { api } = await import('@/lib/api')
+                        const embed = await api.uploadEmbed(postId, title || suggested, file)
+                        editor.chain().focus().setEmbed({
+                            embedId: embed.id,
+                            title: title || suggested,
+                        }).run()
+                    } catch (error) {
+                        toast.error((error as Error).message || 'Embed upload failed')
+                    }
+                })
+            }
+        }] : [])
     ].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase()))
 }
 

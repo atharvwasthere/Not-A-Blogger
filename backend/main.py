@@ -9,6 +9,7 @@ from routers.auth import auth_router
 from routers.post import posts_router
 from routers.upload import upload_router
 from routers.subscribers import router as sub_router
+from routers.embed import embeds_router
 
 # Create app
 app = FastAPI()
@@ -57,6 +58,7 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
 app.include_router(upload_router, prefix="/api")
 app.include_router(sub_router, prefix="/api")
+app.include_router(embeds_router, prefix="/api")
 
 
 # Root endpoint

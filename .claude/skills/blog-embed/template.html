@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en" data-mode="default">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embed template</title>
+
+<style>
+/* ─────────────────────────────────────────────────────────────
+   1. RESET — body margin skews every height measurement.
+   NEVER set height:100vh or height:100% on html/body. The parent
+   sizes this frame FROM your reported height, so viewport units
+   are circular: the frame locks at its initial height forever.
+   ───────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  /* Parent runs a 0.4s clip-path wipe on toggle — match it or the swap pops. */
+  transition: background-color .3s ease, color .3s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2. THEME — driven by [data-mode], set from the embed:theme
+   message. Do NOT use @media (prefers-color-scheme): that follows
+   the reader's OS, not the blog's reader-mode toggle, so a reader
+   in reader-light on a dark OS gets a dark widget on cream paper.
+   Values below are lifted from frontend/src/styles.css:248,294.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* default — white page */
+  --ground:  #ffffff;
+  --surface: #fafafa;
+  --ink:     #18181b;
+  --muted:   #71717a;
+  --rule:    #e4e4e7;
+  --accent:  #1a6b4a;
+  color-scheme: light;
+}
+
+html[data-mode="reader-light"] {
+  --ground:  #f8fbe2;
+  --surface: #eef1cc;
+  --ink:     #2c2c2b;
+  --muted:   #6b6b5e;
+  --rule:    #d4d8a8;
+  --accent:  #1a6b4a;
+  color-scheme: light;
+}
+
+html[data-mode="reader-dark"] {
+  --ground:  #0D1117;
+  --surface: #161B22;
+  --ink:     #E5E7EB;
+  --muted:   #9CA3AF;
+  --rule:    #30363D;
+  --accent:  #93c5fd;
+  color-scheme: dark;   /* makes native controls + scrollbars match */
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3. LAYOUT — the article column is max-w-3xl minus px-6 padding
+   (blog/$slug.tsx:289), so you get ~720px desktop, ~320px mobile.
+   Design to 720 and stay fluid. Never a fixed pixel canvas.
+   ───────────────────────────────────────────────────────────── */
+#root { padding: 20px; }          /* padding lives INSIDE the measured node */
+
+.stage {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 24px;
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  overflow-x: auto;               /* wide diagrams scroll, page never does */
+}
+
+.chunks { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+
+.chunk {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  background: var(--ground);
+  color: var(--muted);
+  transition: border-color .25s ease, color .25s ease, transform .25s ease;
+}
+.chunk[data-on="1"] {
+  border-color: var(--accent);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+button {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--ground);
+  border: 1px solid var(--rule);
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: border-color .2s ease;
+}
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .4; cursor: default; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.step {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.caption {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 12px;
+  line-height: 1.7;
+}
+
+/* This one DOES work in the frame — it's a user-agent query, unaffected
+   by the opaque origin. Respect it. */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+
+<body>
+<!-- Everything measurable lives inside #root. The observer watches THIS,
+     not document.documentElement — see note in the script. -->
+<div id="root">
+
+  <div class="stage">
+    <div class="chunks" id="chunks"></div>
+  </div>
+
+  <div class="controls">
+    <button id="prev">&larr; prev</button>
+    <button id="play">play</button>
+    <button id="next">next &rarr;</button>
+    <span class="step" id="step">01 / 04</span>
+  </div>
+
+  <p class="caption" id="caption">Fixed-size window, no overlap.</p>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   EMBED PROTOCOL v1 — copy this block verbatim into every embed.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  var root = document.getElementById('root');
+  var MODES = ['default', 'reader-light', 'reader-dark'];
+
+  function send(msg) {
+    msg.v = 1;
+    // targetOrigin must be '*' — this frame has an opaque origin and
+    // cannot be addressed any other way. Safe: no secrets in the payload.
+    parent.postMessage(msg, '*');
+  }
+
+  // Theme down. Validate the enum; never act on message content beyond this.
+  addEventListener('message', function (e) {
+    var d = e.data;
+    if (!d || d.v !== 1 || d.type !== 'embed:theme') return;
+    if (MODES.indexOf(d.mode) !== -1) document.documentElement.dataset.mode = d.mode;
+  });
+
+  // Height up. Measure #root, NOT documentElement.scrollHeight — that value
+  // is floored at the viewport height, so once the parent grows the frame it
+  // can never report a smaller height again and the frame ratchets open.
+  var last = 0;
+  function report() {
+    var h = Math.ceil(root.getBoundingClientRect().height);
+    if (h && h !== last) { last = h; send({ type: 'embed:size', height: h }); }
+  }
+  new ResizeObserver(report).observe(root);
+
+  send({ type: 'embed:ready' });
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   YOUR VISUALISER — replace everything below.
+   No localStorage / sessionStorage / cookies: in an opaque origin
+   the accessor THROWS, it does not return null. Keep state in memory.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  var STEPS = [
+    { on: [0],       text: 'Fixed-size window, no overlap.' },
+    { on: [0, 1],    text: 'Advance by window size — boundary splits a sentence.' },
+    { on: [1, 2],    text: 'Add overlap so context survives the boundary.' },
+    { on: [2, 3],    text: 'Overlap costs tokens. This is the tradeoff.' }
+  ];
+  var LABELS = ['tok 0-127', 'tok 96-223', 'tok 192-319', 'tok 288-415'];
+
+  var chunks  = document.getElementById('chunks');
+  var caption = document.getElementById('caption');
+  var stepEl  = document.getElementById('step');
+  var i = 0, timer = null;
+
+  LABELS.forEach(function (label) {
+    var el = document.createElement('div');
+    el.className = 'chunk';
+    el.textContent = label;
+    chunks.appendChild(el);
+  });
+
+  function render() {
+    var s = STEPS[i];
+    [].forEach.call(chunks.children, function (el, n) {
+      el.dataset.on = s.on.indexOf(n) !== -1 ? '1' : '0';
+    });
+    caption.textContent = s.text;
+    stepEl.textContent = String(i + 1).padStart(2, '0') + ' / ' +
+                         String(STEPS.length).padStart(2, '0');
+    document.getElementById('prev').disabled = i === 0;
+    document.getElementById('next').disabled = i === STEPS.length - 1;
+  }
+
+  function stop() {
+    clearInterval(timer);
+    timer = null;
+    document.getElementById('play').textContent = 'play';
+  }
+
+  // Clamp here, not just via the disabled attribute — a keyboard shortcut or a
+  // programmatic call would otherwise walk the index off the end of STEPS.
+  document.getElementById('prev').onclick = function () { stop(); if (i > 0) { i--; render(); } };
+  document.getElementById('next').onclick = function () { stop(); if (i < STEPS.length - 1) { i++; render(); } };
+  document.getElementById('play').onclick = function () {
+    if (timer) return stop();
+    document.getElementById('play').textContent = 'pause';
+    i = 0; render();
+    timer = setInterval(function () {
+      if (i >= STEPS.length - 1) return stop();
+      i++; render();
+    }, 1400);
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>

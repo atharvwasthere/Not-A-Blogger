@@ -21,6 +21,7 @@ import Check from 'lucide-react/dist/esm/icons/check'
 import X from 'lucide-react/dist/esm/icons/x'
 import { cn } from '@/lib/utils'
 import { SlashCommand } from './extensions/slash-command'
+import { Embed } from './extensions/Embed'
 import { api } from '@/lib/api'
 import { useCallback, useState, useRef, useEffect } from 'react'
 import type { AnyExtension } from '@tiptap/core'
@@ -60,7 +61,7 @@ const baseExtensions: AnyExtension[] = [
 ]
 
 // Heavy extensions loaded dynamically: CodeBlockLowlight+lowlight, Youtube, TaskList, TaskItem
-async function loadHeavyExtensions(): Promise<AnyExtension[]> {
+async function loadHeavyExtensions(postId?: string): Promise<AnyExtension[]> {
     const [
         { default: CodeBlockLowlight },
         { createLowlight },
@@ -119,6 +120,7 @@ async function loadHeavyExtensions(): Promise<AnyExtension[]> {
         TaskItem.configure({
             nested: true,
         }),
+        Embed.configure({ postId: postId ?? null }),
     ]
 }
 
@@ -126,6 +128,8 @@ interface EditorProps {
     content: string
     onChange: (html: string) => void
     editable?: boolean
+    /** Owning post. Absent on an unsaved draft, which hides the /embed command. */
+    postId?: string
 }
 
 // Small inline URL input popover used for link + youtube
@@ -179,17 +183,17 @@ function UrlInput({
     )
 }
 
-export function Editor({ content, onChange, editable = true }: EditorProps) {
+export function Editor({ content, onChange, editable = true, postId }: EditorProps) {
     const [allExtensions, setAllExtensions] = useState<AnyExtension[] | null>(null)
     const [linkInputOpen, setLinkInputOpen] = useState(false)
     const [youtubeInputOpen, setYoutubeInputOpen] = useState(false)
 
     // Load heavy extensions before creating the editor
     useEffect(() => {
-        loadHeavyExtensions().then(heavy => {
+        loadHeavyExtensions(postId).then(heavy => {
             setAllExtensions([...baseExtensions, ...heavy])
         })
-    }, [])
+    }, [postId])
 
     const editor = useEditor({
         extensions: allExtensions || baseExtensions,
