@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { BookOpen, Glasses, Eye } from 'lucide-react'
 // highlight.js loaded dynamically in useEffect — core + individual languages (~50KB vs ~200KB common)
@@ -192,6 +192,11 @@ function BlogPost() {
 
     const articleRef = useRef<HTMLDivElement>(null)
 
+    // Stable identity. A new object literal each render makes React reapply
+    // dangerouslySetInnerHTML, which reparses the body and destroys the embed
+    // frames along with their src, measured height and internal state.
+    const contentHtml = useMemo(() => ({ __html: post.content ?? '' }), [post.content])
+
     // Dynamically load highlight.js core + only needed languages
     useEffect(() => {
         if (!articleRef.current) return
@@ -368,7 +373,7 @@ function BlogPost() {
                                    prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5
                                    break-words overflow-x-hidden"
                     >
-                        <div dangerouslySetInnerHTML={{ __html: post.content ?? '' }} />
+                        <div dangerouslySetInnerHTML={contentHtml} />
                     </article>
                 </div>
             </MainLayout>
