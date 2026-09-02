@@ -1,16 +1,16 @@
-name: Deploy Backend to Azure App Service
+name: Deploy Backend to Cloudflare Containers
 
 on:
   push:
     branches:
-      - main
+      - master
     paths:
-      - 'backend/**'     # Only trigger when backend code changes
+      - 'backend/**'
+      - 'cloudflare/**'
       - '.github/workflows/deploy-backend.yml'
 
 env:
-  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}     # e.g. yourregistry.azurecr.io
-  IMAGE_NAME: blog-backend
+  IMAGE_NAME: atharv19/not-a-blogger-api
 
 jobs:
   build-and-deploy:
@@ -22,29 +22,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Login to Azure Container Registry ────────────────────────────
-      - name: Login to ACR
+      - name: Set short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      # ── 2. Login to Docker Hub ───────────────────────────────────────────
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # ── 3. Build & Push Docker image ────────────────────────────────────
-      # Tags with both 'latest' and the Git SHA for rollback capability
+      # ── 3. Build & push Docker image (linux/amd64, required by Cloudflare
+      #      Containers) — tagged with both the Git short SHA and 'latest'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
           context: ./backend
+          platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.sha_short }}
+            ${{ env.IMAGE_NAME }}:latest
 
-      # ── 4. Deploy to Azure App Service ──────────────────────────────────
-      - name: Deploy to Azure App Service
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ secrets.AZURE_APP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      # ── 4. Point wrangler.jsonc at the new image tag ─────────────────────
+      - name: Update container image tag
+        run: |
+          sed -i -E "s#(\"image\": \"docker\.io/${IMAGE_NAME//\//\\/}):[^\"]+\"#\1:${{ steps.vars.outputs.sha_short }}\"#" cloudflare/wrangler.jsonc
+
+      # ── 5. Deploy to Cloudflare ───────────────────────────────────────────
+      - name: Install wrangler deps
+        working-directory: cloudflare
+        run: npm ci
+
+      - name: Deploy with wrangler
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
