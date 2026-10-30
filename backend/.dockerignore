@@ -8,5 +8,4 @@ env
 .env
 .git
 .gitignore
-alembic.ini
 *.db
