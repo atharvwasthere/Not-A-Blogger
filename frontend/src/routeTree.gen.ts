@@ -9,21 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as UnsubscribeIdRouteImport } from './routes/unsubscribe.$id'
-import { Route as SeriesSlugRouteImport } from './routes/series/$slug'
-import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
-import { Route as AdminNewRouteImport } from './routes/admin/new'
-import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminNewRouteImport } from './routes/admin/new'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
+import { Route as SeriesSlugRouteImport } from './routes/series/$slug'
+import { Route as UnsubscribeIdRouteImport } from './routes/unsubscribe.$id'
 import { Route as AdminEditIdRouteImport } from './routes/admin/edit.$id'
 
-const UnsubscribeRoute = UnsubscribeRouteImport.update({
-  id: '/unsubscribe',
-  path: '/unsubscribe',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -31,9 +31,9 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
@@ -41,24 +41,9 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
   path: '/about/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UnsubscribeIdRoute = UnsubscribeIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => UnsubscribeRoute,
-} as any)
-const SeriesSlugRoute = SeriesSlugRouteImport.update({
-  id: '/series/$slug',
-  path: '/series/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/blog/$slug',
-  path: '/blog/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminNewRoute = AdminNewRouteImport.update({
-  id: '/new',
-  path: '/new',
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -66,10 +51,25 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AdminNewRoute = AdminNewRouteImport.update({
+  id: '/new',
+  path: '/new',
   getParentRoute: () => AdminRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeriesSlugRoute = SeriesSlugRouteImport.update({
+  id: '/series/$slug',
+  path: '/series/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeIdRoute = UnsubscribeIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => UnsubscribeRoute,
 } as any)
 const AdminEditIdRoute = AdminEditIdRouteImport.update({
   id: '/edit/$id',
@@ -87,7 +87,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
   '/unsubscribe/$id': typeof UnsubscribeIdRoute
-  '/about': typeof AboutIndexRoute
+  '/about/': typeof AboutIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
 }
 export interface FileRoutesByTo {
@@ -129,7 +129,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/series/$slug'
     | '/unsubscribe/$id'
-    | '/about'
+    | '/about/'
     | '/admin/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -170,11 +170,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unsubscribe': {
-      id: '/unsubscribe'
-      path: '/unsubscribe'
-      fullPath: '/unsubscribe'
-      preLoaderRoute: typeof UnsubscribeRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -184,46 +184,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/': {
       id: '/about/'
       path: '/about'
-      fullPath: '/about'
+      fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/unsubscribe/$id': {
-      id: '/unsubscribe/$id'
-      path: '/$id'
-      fullPath: '/unsubscribe/$id'
-      preLoaderRoute: typeof UnsubscribeIdRouteImport
-      parentRoute: typeof UnsubscribeRoute
-    }
-    '/series/$slug': {
-      id: '/series/$slug'
-      path: '/series/$slug'
-      fullPath: '/series/$slug'
-      preLoaderRoute: typeof SeriesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/blog/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/new': {
-      id: '/admin/new'
-      path: '/new'
-      fullPath: '/admin/new'
-      preLoaderRoute: typeof AdminNewRouteImport
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/login': {
@@ -233,12 +212,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardRouteImport
+    '/admin/new': {
+      id: '/admin/new'
+      path: '/new'
+      fullPath: '/admin/new'
+      preLoaderRoute: typeof AdminNewRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/series/$slug': {
+      id: '/series/$slug'
+      path: '/series/$slug'
+      fullPath: '/series/$slug'
+      preLoaderRoute: typeof SeriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe/$id': {
+      id: '/unsubscribe/$id'
+      path: '/$id'
+      fullPath: '/unsubscribe/$id'
+      preLoaderRoute: typeof UnsubscribeIdRouteImport
+      parentRoute: typeof UnsubscribeRoute
     }
     '/admin/edit/$id': {
       id: '/admin/edit/$id'
