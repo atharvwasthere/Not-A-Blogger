@@ -28,21 +28,15 @@ const config = defineConfig({
     viteReact(),
   ],
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/@tiptap/') || id.includes('node_modules/prosemirror')) {
-            return 'editor'
-          }
-          if (id.includes('node_modules/@tanstack/react-query')) {
-            return 'query'
-          }
-          if (id.includes('node_modules/motion') || id.includes('node_modules/framer-motion')) {
-            return 'motion'
-          }
-          if (id.includes('node_modules/@tanstack/react-router')) {
-            return 'router'
-          }
+        codeSplitting: {
+          groups: [
+            { name: 'editor', test: /node_modules[\\/](@tiptap[\\/]|prosemirror)/ },
+            { name: 'query', test: /node_modules[\\/]@tanstack[\\/]react-query/ },
+            { name: 'motion', test: /node_modules[\\/](motion|framer-motion)/ },
+            { name: 'router', test: /node_modules[\\/]@tanstack[\\/]react-router/ },
+          ],
         },
       },
     },
