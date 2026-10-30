@@ -73,7 +73,7 @@ jobs:
           compose() { sudo docker compose --env-file tag.env "$@"; }
 
           compose pull -q api
-          compose run --rm api alembic upgrade head
+          compose run --rm -T api alembic upgrade head </dev/null  # without this, run swallows the rest of this script from stdin
           compose up -d api
 
           for i in $(seq 1 30); do
