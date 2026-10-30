@@ -1,5 +1,7 @@
 import { Extension } from '@tiptap/core'
 import type { Editor, Range } from '@tiptap/core'
+import type { SuggestionProps, SuggestionKeyDownProps } from '@tiptap/suggestion'
+import type { Instance } from 'tippy.js'
 import Suggestion from '@tiptap/suggestion'
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
@@ -32,7 +34,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Heading 1',
             description: 'Big section heading.',
             icon: Heading1,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run()
             },
         },
@@ -40,7 +42,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Heading 2',
             description: 'Medium section heading.',
             icon: Heading2,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run()
             },
         },
@@ -48,7 +50,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Heading 3',
             description: 'Small section heading.',
             icon: Heading3,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run()
             },
         },
@@ -56,7 +58,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Bullet List',
             description: 'Create a simple bulleted list.',
             icon: List,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).toggleBulletList().run()
             },
         },
@@ -64,7 +66,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Numbered List',
             description: 'Create a list with numbering.',
             icon: ListOrdered,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).toggleOrderedList().run()
             },
         },
@@ -72,7 +74,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Task List',
             description: 'Track tasks with a todo list.',
             icon: CheckSquare,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).toggleTaskList().run()
             },
         },
@@ -80,7 +82,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Quote',
             description: 'Capture a quote.',
             icon: Quote,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).setBlockquote().run()
             },
         },
@@ -88,7 +90,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Code Block',
             description: 'Capture a code snippet.',
             icon: Code,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).setCodeBlock().run()
             },
         },
@@ -96,7 +98,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Divider',
             description: 'Visually separate content.',
             icon: Minus,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).setHorizontalRule().run()
             },
         },
@@ -104,7 +106,7 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
             title: 'Image',
             description: 'Upload an image from your computer.',
             icon: ImageIcon,
-            command: ({ editor, range }) => {
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
                 editor.chain().focus().deleteRange(range).run()
 
                 // Create hidden file input
@@ -167,7 +169,7 @@ export const SlashCommand = Extension.create({
         return {
             suggestion: {
                 char: '/',
-                command: ({ editor, range, props }) => {
+                command: ({ editor, range, props }: { editor: Editor; range: Range; props: { command: (args: { editor: Editor; range: Range }) => void } }) => {
                     props.command({ editor, range })
                 },
             },
@@ -186,11 +188,11 @@ export const SlashCommand = Extension.create({
     suggestion: {
         items: getSuggestionItems,
         render: () => {
-            let component
-            let popup
+            let component: ReactRenderer
+            let popup: Instance[]
 
             return {
-                onStart: (props) => {
+                onStart: (props: SuggestionProps) => {
                     component = new ReactRenderer(CommandList, {
                         props,
                         editor: props.editor,
@@ -201,7 +203,7 @@ export const SlashCommand = Extension.create({
                     }
 
                     popup = tippy('body', {
-                        getReferenceClientRect: props.clientRect,
+                        getReferenceClientRect: () => props.clientRect?.() ?? new DOMRect(),
                         appendTo: () => document.body,
                         content: component.element,
                         showOnCreate: true,
@@ -211,7 +213,7 @@ export const SlashCommand = Extension.create({
                     })
                 },
 
-                onUpdate(props) {
+                onUpdate(props: SuggestionProps) {
                     component.updateProps(props)
 
                     if (!props.clientRect) {
@@ -219,18 +221,18 @@ export const SlashCommand = Extension.create({
                     }
 
                     popup[0].setProps({
-                        getReferenceClientRect: props.clientRect,
+                        getReferenceClientRect: () => props.clientRect?.() ?? new DOMRect(),
                     })
                 },
 
-                onKeyDown(props) {
+                onKeyDown(props: SuggestionKeyDownProps) {
                     if (props.event.key === 'Escape') {
                         popup[0].hide()
 
                         return true
                     }
 
-                    return component.ref?.onKeyDown(props)
+                    return (component.ref as { onKeyDown?: (p: SuggestionKeyDownProps) => boolean })?.onKeyDown?.(props)
                 },
 
                 onExit() {
