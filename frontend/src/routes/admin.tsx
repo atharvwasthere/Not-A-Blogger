@@ -17,10 +17,11 @@ export const Route = createFileRoute("/admin")({
     }
   },
   errorComponent: ({ error }) => {
-    if (error.message === "401") {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message === "401") {
       return <Unauthorized />;
     }
-    return <div>Something went wrong: {error.message}</div>;
+    return <div>Something went wrong: {message}</div>;
   },
   component: AdminLayout,
 });
