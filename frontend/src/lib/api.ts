@@ -1,4 +1,4 @@
-import { Post, PostInput, PostIndexItem, AuthResponse, EmbedSummary } from "./types"
+import { Post, PostInput, PostIndexItem, EmbedSummary } from "./types"
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api"
 
@@ -65,8 +65,8 @@ export const api = {
         fetcher<void>(`/posts/${id}`, { method: "DELETE" }),
 
     // Auth
-    login: (credentials: { username: string; password: string }) =>
-        fetcher<AuthResponse>("/auth/login", { method: "POST", body: JSON.stringify(credentials) }), // Auth router usually simpler, check auth.py. @auth_router.post("/login") -> /auth/login.
+    // A full-page navigation: GitHub sends the browser back to the API, which sets the session cookie.
+    githubLoginUrl: () => `${API_BASE}/auth/github/login`,
     logout: () => fetcher<void>("/auth/logout", { method: "POST" }),
     getMe: () => fetcher<{ username: string }>("/auth/me"),
 
