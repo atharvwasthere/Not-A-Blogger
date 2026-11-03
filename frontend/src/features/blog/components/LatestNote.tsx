@@ -6,7 +6,7 @@ import { PostMeta } from './PostMeta'
 
 export function LatestNote({ post }: { post: Post }) {
     return (
-        <section aria-labelledby="latest-note" className="@container">
+        <section aria-labelledby="latest-note">
             <p id="latest-note" className="section-label mb-[18px]">Latest note</p>
             <Link
                 to="/blog/$slug"
