@@ -18,6 +18,8 @@ export interface PostInput {
     series?: string | null
     series_order?: number | null
     based_on?: BasedOn | null
+    /** Whether this post shows its newspaper cover (when one exists and covers are on site-wide). */
+    show_print?: boolean
 }
 
 export interface Post extends PostInput {
@@ -29,7 +31,16 @@ export interface Post extends PostInput {
     published_at?: string | null
     reading_time: number
     tags: string[]
+    /** The halftone cover, written only by the generate endpoint. */
+    print_url?: string | null
 }
+
+/** Site-wide switches (GET/PUT /settings). */
+export interface SiteSettings {
+    covers_enabled: boolean
+}
+
+export type PrintInvert = 'auto' | 'always' | 'never'
 
 export interface User {
     username: string

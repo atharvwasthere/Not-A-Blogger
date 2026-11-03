@@ -7,6 +7,8 @@ import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { themeBootScript } from '../theme/themeStore'
 import { CommandPaletteProvider } from '../shared/search/CommandPaletteProvider'
+import { siteSettingsQueryOptions } from '../features/settings/useSiteSettings'
+import type { SiteSettings } from '../lib/types'
 
 import appCss from '../styles.css?url'
 import { SITE_URL } from '@/lib/site'
@@ -74,6 +76,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       },
     ],
   }),
+
+  // Site settings (covers on/off) before the first render, so covers never pop in.
+  // A failed fetch must not take the site down: it only means no covers.
+  loader: async ({ context: { queryClient } }): Promise<SiteSettings | null> => {
+    try {
+      return await queryClient.ensureQueryData(siteSettingsQueryOptions)
+    } catch {
+      return null
+    }
+  },
 
   notFoundComponent: NotFound,
   shellComponent: RootDocument,

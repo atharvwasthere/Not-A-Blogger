@@ -11,6 +11,7 @@ from routers.post import posts_router
 from routers.upload import upload_router
 from routers.subscribers import router as sub_router
 from routers.embed import embeds_router
+from routers.settings import settings_router
 from mcp_server.oauth import oauth_router
 from mcp_server.server import mcp, MCPRoutes
 
@@ -69,6 +70,7 @@ app.include_router(posts_router, prefix="/api")
 app.include_router(upload_router, prefix="/api")
 app.include_router(sub_router, prefix="/api")
 app.include_router(embeds_router, prefix="/api")
+app.include_router(settings_router, prefix="/api")
 app.include_router(oauth_router, prefix="/api")
 
 # Added last so it runs first: MCP paths skip the site CORS policy (the SDK sets its own).

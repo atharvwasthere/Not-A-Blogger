@@ -7,8 +7,10 @@ from database import get_db
 from models.post import BlogPost
 from models.subscriber import Subscriber
 from schemas.post import PostInput, PostOutput, PostSummary
+from schemas.settings import PrintOutput, PrintRequest
 from middleware.auth import require_authentication
 from services import post as post_service
+from services import prints as print_service
 from services.email import send_new_post_notification
 from config import get_settings
 
@@ -157,3 +159,21 @@ def delete_post(
     # Delete it
     db.delete(post)
     db.commit()
+
+
+@posts_router.post("/{post_id}/print", response_model=PrintOutput)
+def generate_post_print(
+    post_id: str,
+    body: PrintRequest,
+    db: Session = Depends(get_db),
+    auth=Depends(require_authentication),
+):
+    """Renders the post's newspaper cover from one of its images. Does not switch the cover on."""
+    # A plain def: FastAPI runs the download and the CPU-bound render in its threadpool.
+    post = db.query(BlogPost).filter(BlogPost.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    post.print_url = print_service.generate_print(body.source_url, body.invert)
+    db.commit()
+    return PrintOutput(print_url=post.print_url)

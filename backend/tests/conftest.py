@@ -37,7 +37,7 @@ def schema():
 def clean_tables():
     yield
     with engine.begin() as conn:
-        conn.execute(text("TRUNCATE oauth_clients, oauth_codes, oauth_tokens, embeds, blogs CASCADE"))
+        conn.execute(text("TRUNCATE oauth_clients, oauth_codes, oauth_tokens, embeds, blogs, site_settings CASCADE"))
 
 
 @pytest.fixture(scope="session")

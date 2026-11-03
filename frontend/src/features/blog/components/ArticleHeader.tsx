@@ -1,12 +1,17 @@
 import type { Post } from '@/lib/types'
 import { postUrl } from '@/lib/site'
+import { topicTint } from '@/theme/topics'
 import { formatPostDate, postDate } from '../formatDate'
+import { usePrint } from '../hooks/usePrint'
+import { Print } from './Print'
 import { BasedOn } from './BasedOn'
 import { CopyLinkButton } from './CopyLinkButton'
 
 const Dot = () => <span aria-hidden className="inline-block h-[3px] w-[3px] rounded-full bg-faint" />
 
 export function ArticleHeader({ post }: { post: Post }) {
+    const print = usePrint(post)
+
     return (
         <header>
             <div className="mb-[18px] flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
@@ -21,6 +26,7 @@ export function ArticleHeader({ post }: { post: Post }) {
                 {post.title}
             </h1>
             {post.based_on && <BasedOn source={post.based_on} />}
+            {print && <Print src={print} tint={topicTint(post.tags[0])} ratio="16/9" className="mb-[30px] mt-1.5 rounded-[4px]" />}
         </header>
     )
 }
