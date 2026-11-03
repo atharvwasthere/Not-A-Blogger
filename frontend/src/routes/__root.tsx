@@ -44,7 +44,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     links: [
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
-      { rel: 'preload', href: '/fonts/GeistSerif.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+      { rel: 'preconnect', href: 'https://cdn.jsdelivr.net', crossOrigin: 'anonymous' },
+      { rel: 'preload', href: 'https://cdn.jsdelivr.net/gh/atharvwasthere/fonts-cdn@v1.1.0/fonts/GeistSerif/GeistSerif-Variable.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+      { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/gh/atharvwasthere/fonts-cdn@v1.1.0/fonts.css' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=JetBrains+Mono:wght@400;500&display=swap' },
       { rel: 'stylesheet', href: appCss },
       { rel: 'canonical', href: 'https://blogs.atharvsingh.me' },
