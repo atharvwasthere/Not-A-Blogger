@@ -5,6 +5,8 @@ import toast from 'react-hot-toast'
 import { useQueryClient } from '@tanstack/react-query'
 import { EditorSkeleton } from '@/features/admin/components/EditorSkeleton'
 
+import type { PostEditorValues } from '@/features/admin/components/PostEditor'
+
 // Lazy load — keeps Tiptap editor out of the main bundle
 const PostEditor = lazy(() =>
   import('@/features/admin/components/PostEditor').then(m => ({ default: m.PostEditor }))
@@ -25,12 +27,8 @@ function EditPost() {
 
   const handleSave = async ({
     title, content, coverImage, iconUrl, excerpt, seoTitle, seoDescription, isPublished,
-    tags, series, seriesOrder
-  }: {
-    title: string; content: string; coverImage: string; iconUrl: string
-    excerpt: string; seoTitle: string; seoDescription: string; isPublished: boolean
-    tags: string; series: string; seriesOrder: number | null
-  }) => {
+    tags, series, seriesOrder, basedOn
+  }: PostEditorValues) => {
     if (!title) {
       toast.error('Title is required')
       return
@@ -49,6 +47,7 @@ function EditPost() {
         tags: tags.split(',').map(t => t.trim()).filter(Boolean),
         series: series.trim() || null,
         series_order: seriesOrder,
+        based_on: basedOn,
       })
       queryClient.invalidateQueries({ queryKey: ['posts'] })
       setLastSaved(new Date())
@@ -95,6 +94,7 @@ function EditPost() {
           tags: (post.tags || []).join(', '),
           series: post.series || '',
           seriesOrder: post.series_order ?? null,
+          basedOn: post.based_on ?? null,
           slug: post.slug,
           createdAt: post.created_at,
           updatedAt: post.updated_at,

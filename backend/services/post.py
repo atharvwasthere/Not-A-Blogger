@@ -14,7 +14,7 @@ def _reading_time(content: str) -> int:
 
 def create_post(db: Session, post_data: PostInput) -> BlogPost:
     post = BlogPost(
-        **post_data.model_dump(),
+        **post_data.model_dump(mode="json"),
         slug=generate_slug(post_data.title, db),
         reading_time=_reading_time(post_data.content),
     )
@@ -27,7 +27,7 @@ def create_post(db: Session, post_data: PostInput) -> BlogPost:
 def update_post(db: Session, post: BlogPost, post_data: PostInput) -> BlogPost:
     original_title = post.title
 
-    for field, value in post_data.model_dump().items():
+    for field, value in post_data.model_dump(mode="json").items():
         setattr(post, field, value)
 
     if post.title != original_title:

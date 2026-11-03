@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 from datetime import datetime
 from typing import Optional, List
 
@@ -6,6 +6,14 @@ from typing import Optional, List
 ########################
 #   Creating a post    #
 # ######################
+
+
+class BasedOn(BaseModel):
+    """The source a post is built around, shown above the article ("Based on")."""
+
+    title: str = Field(..., min_length=2, max_length=300)
+    by: Optional[str] = Field(None, max_length=200)  # "Nishtala et al. · NSDI ’13"
+    url: HttpUrl
 
 
 class PostInput(BaseModel):
@@ -20,6 +28,7 @@ class PostInput(BaseModel):
     tags: List[str] = Field(default_factory=list)
     series: Optional[str] = Field(None, max_length=100)
     series_order: Optional[int] = Field(None, ge=0)
+    based_on: Optional[BasedOn] = None
 
     @field_validator("tags")
     @classmethod
@@ -55,6 +64,7 @@ class PostSummary(BaseModel):
     tags: List[str] = []
     series: Optional[str] = None
     series_order: Optional[int] = None
+    based_on: Optional[BasedOn] = None
 
     class Config:
         from_attributes = True

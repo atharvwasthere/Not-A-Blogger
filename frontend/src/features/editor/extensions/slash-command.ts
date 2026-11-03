@@ -17,7 +17,8 @@ import {
     Code,
     Minus,
     Image as ImageIcon,
-    Boxes
+    Boxes,
+    BookMarked
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { pickHtmlFile } from './Embed'
@@ -133,6 +134,14 @@ const getSuggestionItems = ({ query, editor }: { query: string; editor: Editor }
                 }
                 input.click()
             }
+        },
+        {
+            title: 'References',
+            description: 'Links worth the reader\'s time, each with a note. One per post, at the end.',
+            icon: BookMarked,
+            command: ({ editor, range }: { editor: Editor; range: Range }) => {
+                editor.chain().focus().deleteRange(range).openReferences().run()
+            },
         },
         ...(postId ? [{
             title: 'Embed',

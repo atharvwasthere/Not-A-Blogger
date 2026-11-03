@@ -22,6 +22,7 @@ import X from 'lucide-react/dist/esm/icons/x'
 import { cn } from '@/lib/utils'
 import { SlashCommand } from './extensions/slash-command'
 import { Embed } from './extensions/Embed'
+import { References } from './extensions/References'
 import { api } from '@/lib/api'
 import { useCallback, useState, useRef, useEffect } from 'react'
 import type { AnyExtension } from '@tiptap/core'
@@ -121,6 +122,7 @@ async function loadHeavyExtensions(postId?: string): Promise<AnyExtension[]> {
             nested: true,
         }),
         Embed.configure({ postId: postId ?? null }),
+        References,
     ]
 }
 

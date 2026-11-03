@@ -1,3 +1,10 @@
+/** The source a post is built around ("Based on"). */
+export interface BasedOn {
+    title: string
+    by?: string | null
+    url: string
+}
+
 export interface PostInput {
     title: string
     content: string
@@ -10,6 +17,7 @@ export interface PostInput {
     tags?: string[]
     series?: string | null
     series_order?: number | null
+    based_on?: BasedOn | null
 }
 
 export interface Post extends PostInput {
