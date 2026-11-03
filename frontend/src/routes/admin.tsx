@@ -9,6 +9,8 @@ import { api } from "@/lib/api";
 import { Unauthorized } from "@/shared/components/Unauthorized";
 
 export const Route = createFileRoute("/admin")({
+  // The session cookie belongs to the API domain, so only the browser can check it.
+  ssr: false,
   beforeLoad: async () => {
     try {
       await api.getMe();
