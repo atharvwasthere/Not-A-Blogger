@@ -12,8 +12,11 @@ async def read_embed_file(file: UploadFile) -> tuple[str, str, int]:
             status_code=400, detail="An embed must be a single .html file"
         )
 
-    contents = await file.read()
+    return validate_embed_html(await file.read())
 
+
+def validate_embed_html(contents: bytes) -> tuple[str, str, int]:
+    """Check a visualiser's size and encoding, returning (html, sha256, byte_size)."""
     if len(contents) > MAX_EMBED_BYTES:
         raise HTTPException(
             status_code=413,
