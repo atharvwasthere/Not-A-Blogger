@@ -1,41 +1,33 @@
-import * as React from "react";
-import { IdentitySidebar } from "./IdentitySidebar";
-import { Link } from "@tanstack/react-router";
-import { cn } from "@/lib/utils";
+import * as React from 'react'
+import { cn } from '@/lib/utils'
+import { IdentityRail } from './IdentityRail'
+import { PhoneHeader } from './PhoneHeader'
+import { SiteNav } from './SiteNav'
 
 interface MainLayoutProps {
-    children: React.ReactNode;
-    showSidebar?: boolean;
-    className?: string;
+    children: React.ReactNode
+    /** `browse`: identity rail + nav (home, notes, topics). `read`: nav with the wordmark, single column. */
+    variant?: 'browse' | 'read'
+    className?: string
 }
 
-export function MainLayout({ children, showSidebar = false, className }: MainLayoutProps) {
-    return (
-        <div className={cn("min-h-screen bg-background", className)}>
-            {showSidebar && <IdentitySidebar />}
+export function MainLayout({ children, variant = 'read', className }: MainLayoutProps) {
+    const browse = variant === 'browse'
 
-            <main className={`min-h-screen w-full transition-all duration-300 ${showSidebar
-                ? "md:ml-[400px] md:w-[calc(100%-400px)]"
-                : "mx-auto w-full relative"
-                }`}>
-                {!showSidebar && (
-                    <div className="absolute top-6 right-6 z-50 Print:hidden">
-                        <Link to="/" className="text-sm font-mono text-zinc-400 hover:text-zinc-900 transition-colors">
-                            ← Home
-                        </Link>
-                    </div>
-                )}
-                {children}
-                {!showSidebar && (
-                    <footer className="max-w-3xl mx-auto px-6 py-12 text-center text-sm text-zinc-400 font-mono border-t border-zinc-100 mt-24">
-                        © {new Date().getFullYear()} Not a Blogger.<br />
-                        Written by{' '}
-                        <span itemProp="author" className="inline-flex items-center gap-1 whitespace-nowrap">
-                            Atharv Singh
-                        </span>.
-                    </footer>
-                )}
-            </main>
+    return (
+        <div
+            className={cn(
+                'min-h-screen bg-paper text-body',
+                browse && 'md:grid md:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]',
+                className,
+            )}
+        >
+            {browse && <IdentityRail />}
+            <div className="min-w-0">
+                <PhoneHeader />
+                <SiteNav showWordmark={!browse} />
+                <main>{children}</main>
+            </div>
         </div>
-    );
+    )
 }

@@ -54,7 +54,7 @@ function NewPost() {
   }
 
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-zinc-400 font-mono text-sm">Loading editor...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-soft font-mono text-sm">Loading editor...</div>}>
       <PostEditor mode="new" isSaving={isSaving} onSave={handleSave} />
     </Suspense>
   )

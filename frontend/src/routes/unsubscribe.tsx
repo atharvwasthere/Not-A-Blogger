@@ -31,17 +31,17 @@ function UnsubscribeManual() {
 
     if (isDone) {
         return (
-            <MainLayout showSidebar={false}>
+            <MainLayout variant="read">
                 <div className="max-w-xl mx-auto px-6 py-32 flex flex-col items-center text-center space-y-8 animate-intro-frame">
                     <h1 className="font-serif text-6xl text-foreground tracking-tight italic">
                         Farewell.
                     </h1>
                     <div className="space-y-4">
-                        <p className="text-zinc-500 text-lg">
+                        <p className="text-soft text-lg">
                             You won't receive any more notes on systems and backend from me.
                         </p>
-                        <p className="text-zinc-400">
-                            Changed your mind? <Link to="/" className="text-foreground underline underline-offset-4 hover:text-zinc-600 transition-colors">Resubscribe</Link> on the homepage.
+                        <p className="text-soft">
+                            Changed your mind? <Link to="/" className="text-foreground underline underline-offset-4 hover:text-body transition-colors">Resubscribe</Link> on the homepage.
                         </p>
                     </div>
                 </div>
@@ -50,13 +50,13 @@ function UnsubscribeManual() {
     }
 
     return (
-        <MainLayout showSidebar={false}>
+        <MainLayout variant="read">
             <div className="max-w-xl mx-auto px-6 py-32 flex flex-col space-y-12 animate-intro-frame">
                 <div className="space-y-4">
                     <h1 className="font-serif text-5xl text-foreground tracking-tight">
                         Unsubscribe
                     </h1>
-                    <p className="text-zinc-500 text-lg leading-relaxed">
+                    <p className="text-soft text-lg leading-relaxed">
                         Enter your email address below to stop receiving the "Not a Blogger" newsletter.
                     </p>
                 </div>
@@ -69,18 +69,18 @@ function UnsubscribeManual() {
                         onChange={(e) => setEmail(e.target.value)}
                         disabled={isLoading}
                         required
-                        className="w-full px-4 py-3 text-lg bg-transparent border-b border-zinc-200 focus:border-foreground focus:outline-none transition-colors placeholder:text-zinc-300"
+                        className="w-full px-4 py-3 text-lg bg-transparent border-b border-rule focus:border-foreground focus:outline-none transition-colors placeholder:text-faint"
                     />
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full px-6 py-4 bg-foreground text-background font-medium hover:bg-zinc-800 disabled:opacity-50 transition-colors"
+                        className="w-full px-6 py-4 bg-foreground text-background font-medium hover:bg-ink/90 disabled:opacity-50 transition-colors"
                     >
                         {isLoading ? 'Processing...' : 'Unsubscribe'}
                     </button>
                 </form>
 
-                <Link to="/" className="text-sm font-mono text-zinc-400 hover:text-foreground transition-colors">
+                <Link to="/" className="text-sm font-mono text-soft hover:text-foreground transition-colors">
                     ← Back to home
                 </Link>
             </div>

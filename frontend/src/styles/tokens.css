@@ -1,0 +1,80 @@
+/*
+ * Colour tokens. This is the only file in the app that contains colour values.
+ * Components use the Tailwind classes generated from these (bg-paper, text-ink, text-soft,
+ * border-rule, text-label…) or var(--…).
+ *
+ * Paper and ink. Every text colour passes WCAG AA (4.5:1) on every surface it is used on;
+ * see docs/redesign/01-layout-and-theme.md for the contrast table.
+ *
+ * `.theme-light` pins a subtree to the light palette (the admin, which is not themed).
+ */
+:root,
+.theme-light {
+  color-scheme: light;
+  --paper: #fbfaf6;   /* page background */
+  --card: #fffefb;    /* cards, inputs */
+  --wash: #f3eee5;    /* icon tiles, code blocks, quotes */
+  --rule: #e6dfd3;    /* borders, dividers */
+  --ink: #1b1915;     /* titles, buttons, links */
+  --body: #4a453f;    /* article text */
+  --soft: #625b53;    /* dates, meta, captions */
+  --faint: #a39c93;   /* decoration only: dots, placeholder text. Never readable text */
+  --label: #7a5332;   /* section labels, code keywords */
+  --select: #eadfcb;  /* text selection */
+  --danger: #b42318;  /* destructive actions (admin) */
+
+  --tint-debugging: #e6dcbc;
+  --tint-distributed-systems: #e4e1db;
+  --tint-performance: #ede6d4;
+  --tint-under-the-hood: #ded9cc;
+  --tint-tooling: #e9e2d1;
+  --tint-default: #e9e2d1;
+
+  --mark-green: #dceed3;
+  --mark-yellow: #f5ecc4;
+  --mark-blue: #dae6f4;
+
+  --code-keyword: #7a5332;
+  --code-string: #4c662b;
+  --code-number: #9a4226;
+  --code-comment: #625b53;
+
+  /* overlays: the search scrim */
+  --scrim: rgb(20 16 12 / 0.28);
+  /* dark-ink icons are inverted to read on dark paper */
+  --icon-filter: none;
+}
+
+.dark {
+  color-scheme: dark;
+  --paper: #14120f;
+  --card: #1a1714;
+  --wash: #221e1a;
+  --rule: #302a24;
+  --ink: #ede8e0;
+  --body: #bfb7ac;
+  --soft: #9a9186;
+  --faint: #6b635a;
+  --label: #d4a97f;
+  --select: #3a3026;
+  --danger: #f97066;
+
+  --tint-debugging: #2b2619;
+  --tint-distributed-systems: #22201c;
+  --tint-performance: #28231b;
+  --tint-under-the-hood: #24211b;
+  --tint-tooling: #27221a;
+  --tint-default: #27221a;
+
+  --mark-green: #253822;
+  --mark-yellow: #3a3219;
+  --mark-blue: #1e2d3f;
+
+  --code-keyword: #d4a97f;
+  --code-string: #afc38e;
+  --code-number: #e39a7d;
+  --code-comment: #9a9186;
+
+  --scrim: rgb(0 0 0 / 0.5);
+  --icon-filter: invert(0.88);
+}
