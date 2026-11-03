@@ -16,8 +16,11 @@ body {
   overflow-wrap: break-word;
 }
 
+/* Geist Serif comes from fonts-cdn (linked in __root.tsx); it is not on Google Fonts */
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Playfair Display", serif;
+  font-family: "Geist Serif", Georgia, serif;
+  /* Geist Serif has one weight and no italic; render bold/italic headings upright instead of faking them */
+  font-synthesis: none;
 }
 
 code, .font-mono {
@@ -27,6 +30,10 @@ code, .font-mono {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+@theme {
+  --font-serif: "Newsreader", Georgia, serif;
 }
 
 @theme inline {
