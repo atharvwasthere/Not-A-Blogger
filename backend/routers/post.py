@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from sqlalchemy.orm import Session
 from typing import List
-import re
 
 from database import get_db
 from models.post import BlogPost
 from models.subscriber import Subscriber
 from schemas.post import PostInput, PostOutput, PostSummary, PostIndexItem
 from middleware.auth import require_authentication
-from services.slug import generate_slug
+from services import post as post_service
 from services.email import send_new_post_notification
 from config import get_settings
 
@@ -124,18 +123,7 @@ def create_post(
     db: Session = Depends(get_db),
     auth=Depends(require_authentication),
 ):
-    slug = generate_slug(post_data.title, db)
-
-    # Strip HTML tags before calculating reading time (~200 wpm)
-    plain_text = re.sub(r"<[^>]+>", "", post_data.content)
-    word_count = len(plain_text.split())
-    reading_time = max(1, round(word_count / 200))
-
-    new_post = BlogPost(**post_data.model_dump(), slug=slug, reading_time=reading_time)
-
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
+    new_post = post_service.create_post(db, post_data)
 
     # Fire notification if published immediately
     if new_post.is_published:
@@ -157,25 +145,8 @@ def update_post(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    # Capture original state to check for publish transition
-    original_title = post.title
     was_published = post.is_published
-
-    # Update fields
-    for field, value in post_data.model_dump().items():
-        setattr(post, field, value)
-
-    # Regenerate slug if title changed
-    if post.title != original_title:
-        post.slug = generate_slug(post.title, db)
-
-    # Recalculate reading time (strip HTML tags first)
-    plain_text = re.sub(r"<[^>]+>", "", post.content)
-    post.reading_time = max(1, round(len(plain_text.split()) / 200))
-
-    # Save
-    db.commit()
-    db.refresh(post)
+    post = post_service.update_post(db, post, post_data)
 
     # Fire notification if transitioning from Draft -> Published
     if post.is_published and not was_published:
