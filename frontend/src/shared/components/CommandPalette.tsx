@@ -1,36 +1,20 @@
-import { useEffect, useState } from 'react'
 import { Command } from 'cmdk'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { api } from '@/lib/api'
+import { PostIcon } from '@/features/blog/components/PostIcon'
+import { postsQueryOptions } from '@/features/blog/hooks/usePosts'
+import { useCommandPalette } from '@/shared/search/CommandPaletteProvider'
 
-/**
- * Global ⌘K / Ctrl+K command palette.
- * Client-side fuzzy search over post title + tags (cmdk's built-in filter
- * matches against each item's `value`, which we set to "title tags...").
- * Mounted once at the root so it works on every route.
- */
+// Plain substring match: cmdk's default fuzzy scoring matches almost anything against a long excerpt.
+const matches = (value: string, search: string, keywords?: string[]) =>
+    [value, ...(keywords ?? [])].join(' ').toLowerCase().includes(search.trim().toLowerCase()) ? 1 : 0
+
+/** Global search dialog, opened by ⌘K / Ctrl+K or the search button in the nav. */
 export function CommandPalette() {
-    const [open, setOpen] = useState(false)
+    const { open, setOpen } = useCommandPalette()
     const navigate = useNavigate()
 
-    const { data: posts } = useQuery({
-        queryKey: ['posts-index'],
-        queryFn: api.getPostIndex,
-        staleTime: 5 * 60 * 1000,
-    })
-
-    useEffect(() => {
-        const onKeyDown = (e: KeyboardEvent) => {
-            // Modifier check keeps this independent of the homepage 'admin' easter-egg buffer.
-            if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                setOpen(o => !o)
-            }
-        }
-        window.addEventListener('keydown', onKeyDown)
-        return () => window.removeEventListener('keydown', onKeyDown)
-    }, [])
+    const { data: posts } = useQuery({ ...postsQueryOptions, enabled: open })
 
     const go = (slug: string) => {
         setOpen(false)
@@ -41,31 +25,30 @@ export function CommandPalette() {
         <Command.Dialog
             open={open}
             onOpenChange={setOpen}
-            label="Search posts"
-            overlayClassName="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm"
-            contentClassName="fixed left-1/2 top-[20vh] z-[101] w-[90vw] max-w-xl -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-background shadow-2xl"
+            label="Search notes"
+            filter={matches}
+            overlayClassName="fixed inset-0 z-[100] bg-[var(--scrim)]"
+            contentClassName="fixed left-1/2 top-[14vh] z-[101] w-[calc(100vw-32px)] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-[14px] border border-rule bg-card shadow-2xl"
         >
             <Command.Input
-                placeholder="Search posts by title or tag…"
-                className="w-full border-b border-border bg-transparent px-4 py-3.5 font-sans text-sm text-foreground outline-none placeholder:text-muted-foreground/60"
+                placeholder="Search notes…"
+                className="w-full border-b border-rule bg-transparent px-5 py-[18px] font-sans text-base text-ink outline-none placeholder:text-faint"
             />
             <Command.List className="max-h-[50vh] overflow-y-auto p-2 no-scrollbar">
-                <Command.Empty className="px-3 py-6 text-center font-mono text-xs text-muted-foreground">
-                    No posts found.
+                <Command.Empty className="px-3 py-[18px] font-sans text-sm text-soft">
+                    No notes match that.
                 </Command.Empty>
                 {posts?.map(post => (
                     <Command.Item
                         key={post.slug}
-                        value={`${post.title} ${post.tags.join(' ')}`}
+                        value={post.slug}
+                        keywords={[post.title, ...post.tags, post.excerpt ?? '']}
                         onSelect={() => go(post.slug)}
-                        className="flex cursor-pointer flex-col gap-1 rounded-md px-3 py-2.5 text-foreground aria-selected:bg-foreground/5"
+                        className="grid cursor-pointer grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-3 py-2.5 aria-selected:bg-wash"
                     >
-                        <span className="font-serif text-sm">{post.title}</span>
-                        {post.tags.length > 0 && (
-                            <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                                {post.tags.join(' · ')}
-                            </span>
-                        )}
+                        <PostIcon post={post} className="h-[22px] w-[22px]" />
+                        <span className="font-sans text-[14.5px] text-ink">{post.title}</span>
+                        <span className="font-mono text-xs text-soft">{post.reading_time || 1} min</span>
                     </Command.Item>
                 ))}
             </Command.List>

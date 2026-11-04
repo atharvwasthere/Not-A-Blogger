@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState, lazy, Suspense } from 'react'
 import { api, stripHtml } from '@/lib/api'
 import toast from 'react-hot-toast'
+import { useQueryClient } from '@tanstack/react-query'
 import { EditorSkeleton } from '@/features/admin/components/EditorSkeleton'
 
 // Lazy load — keeps Tiptap editor out of the main bundle
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/admin/edit/$id')({
 function EditPost() {
   const post = Route.useLoaderData()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date>(new Date(post.updated_at))
 
@@ -48,6 +50,7 @@ function EditPost() {
         series: series.trim() || null,
         series_order: seriesOrder,
       })
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
       setLastSaved(new Date())
       toast.success('Post updated successfully!')
     } catch (error) {
@@ -62,6 +65,7 @@ function EditPost() {
     if (!confirm('Are you sure?')) return
     try {
       await api.deletePost(post.id)
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
       toast.success('Post deleted')
       router.navigate({ to: '/admin/dashboard' })
     } catch (error) {

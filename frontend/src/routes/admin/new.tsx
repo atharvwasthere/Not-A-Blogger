@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState, lazy, Suspense } from 'react'
 import { api, stripHtml } from '@/lib/api'
 import toast from 'react-hot-toast'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Lazy load — keeps Tiptap editor out of the main bundle
 const PostEditor = lazy(() =>
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/admin/new')({
 
 function NewPost() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [isSaving, setIsSaving] = useState(false)
 
   const handleSave = async ({
@@ -43,6 +45,7 @@ function NewPost() {
         series: series.trim() || null,
         series_order: seriesOrder,
       })
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
       toast.success('Post saved successfully!')
       router.navigate({ to: '/admin/dashboard' })
     } catch (error) {
@@ -54,7 +57,7 @@ function NewPost() {
   }
 
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-zinc-400 font-mono text-sm">Loading editor...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-soft font-mono text-sm">Loading editor...</div>}>
       <PostEditor mode="new" isSaving={isSaving} onSave={handleSave} />
     </Suspense>
   )

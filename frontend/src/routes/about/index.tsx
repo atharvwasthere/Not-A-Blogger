@@ -7,9 +7,9 @@ export const Route = createFileRoute('/about/')({
 
 function AboutPage() {
     return (
-        <MainLayout showSidebar={false}>
+        <MainLayout variant="read">
             <div className="max-w-3xl mx-auto px-6 py-12 md:py-24">
-                <div className="prose prose-zinc dark:prose-invert prose-headings:font-serif prose-h1:text-4xl prose-h1:font-normal prose-h2:text-2xl prose-h2:font-normal prose-h2:mt-12 prose-p:text-zinc-600 dark:prose-p:text-zinc-400 prose-li:text-zinc-600 dark:prose-li:text-zinc-400 max-w-none">
+                <div className="prose prose-headings:font-serif prose-h1:text-4xl prose-h1:font-normal prose-h2:text-2xl prose-h2:font-normal prose-h2:mt-12 max-w-none">
 
                     <h1 className="mb-12">About this site</h1>
 

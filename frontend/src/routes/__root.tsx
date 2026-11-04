@@ -4,6 +4,9 @@ import { lazy, Suspense } from 'react'
 
 import { NotFound } from '../shared/components/NotFound'
 import { Toaster } from 'react-hot-toast'
+import { ThemeProvider } from '../theme/ThemeProvider'
+import { themeBootScript } from '../theme/themeStore'
+import { CommandPaletteProvider } from '../shared/search/CommandPaletteProvider'
 
 import appCss from '../styles.css?url'
 
@@ -80,17 +83,24 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const { queryClient } = Route.useRouteContext()
 
   return (
-    <html lang="en">
+    // The head script sets the theme class before React hydrates, so <html> differs from the server render.
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Runs before any CSS paints: no light flash for a reader in dark. */}
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
         <HeadContent />
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          {children}
-          <Toaster position="top-center" />
-          <Suspense fallback={null}>
-            <CommandPalette />
-          </Suspense>
+          <ThemeProvider>
+            <CommandPaletteProvider>
+              {children}
+              <Toaster position="top-center" />
+              <Suspense fallback={null}>
+                <CommandPalette />
+              </Suspense>
+            </CommandPaletteProvider>
+          </ThemeProvider>
         </QueryClientProvider>
         <Scripts />
       </body>

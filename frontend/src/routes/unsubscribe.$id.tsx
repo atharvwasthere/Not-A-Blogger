@@ -27,7 +27,7 @@ function UnsubscribeById() {
     }
 
     return (
-        <MainLayout showSidebar={false}>
+        <MainLayout variant="read">
             <div className="max-w-xl mx-auto px-6 py-32 flex flex-col items-center text-center space-y-8 animate-intro-frame">
                 {status === 'idle' && (
                     <>
@@ -35,20 +35,20 @@ function UnsubscribeById() {
                             Leaving?
                         </h1>
                         <div className="space-y-6">
-                            <p className="text-zinc-500 text-lg leading-relaxed">
+                            <p className="text-soft text-lg leading-relaxed">
                                 Confirm and you'll stop receiving Not a Blogger.
                             </p>
                             <button
                                 onClick={confirm}
-                                className="font-mono text-sm border border-zinc-300 px-6 py-3 text-foreground hover:border-zinc-900 transition-colors"
+                                className="font-mono text-sm border border-rule px-6 py-3 text-foreground hover:border-ink transition-colors"
                             >
                                 Unsubscribe
                             </button>
-                            <p className="text-zinc-400 text-sm">
+                            <p className="text-soft text-sm">
                                 Changed your mind?{' '}
                                 <Link
                                     to="/"
-                                    className="text-foreground underline underline-offset-4 hover:text-zinc-600 transition-colors"
+                                    className="text-foreground underline underline-offset-4 hover:text-body transition-colors"
                                 >
                                     Keep reading
                                 </Link>
@@ -63,7 +63,7 @@ function UnsubscribeById() {
                         <h1 className="font-serif text-5xl text-foreground tracking-tight animate-pulse underline underline-offset-8">
                             Unsubscribing...
                         </h1>
-                        <p className="text-zinc-500 text-lg">One second.</p>
+                        <p className="text-soft text-lg">One second.</p>
                     </>
                 )}
 
@@ -73,14 +73,14 @@ function UnsubscribeById() {
                             Farewell.
                         </h1>
                         <div className="space-y-4">
-                            <p className="text-zinc-500 text-lg">
+                            <p className="text-soft text-lg">
                                 You have been unsubscribed. No more notes, no more systems.
                             </p>
-                            <p className="text-zinc-400">
+                            <p className="text-soft">
                                 Changed your mind?{' '}
                                 <Link
                                     to="/"
-                                    className="text-foreground underline underline-offset-4 hover:text-zinc-600 transition-colors"
+                                    className="text-foreground underline underline-offset-4 hover:text-body transition-colors"
                                 >
                                     Resubscribe
                                 </Link>{' '}
@@ -96,14 +96,14 @@ function UnsubscribeById() {
                             Something went wrong.
                         </h1>
                         <div className="space-y-4">
-                            <p className="text-zinc-500 text-lg leading-relaxed">
+                            <p className="text-soft text-lg leading-relaxed">
                                 We couldn't find that subscription ID.
                             </p>
-                            <p className="text-zinc-400">
+                            <p className="text-soft">
                                 Try unsubscribing manually{' '}
                                 <Link
                                     to="/unsubscribe"
-                                    className="text-foreground underline underline-offset-4 hover:text-zinc-600 transition-colors"
+                                    className="text-foreground underline underline-offset-4 hover:text-body transition-colors"
                                 >
                                     here
                                 </Link>

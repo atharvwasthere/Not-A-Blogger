@@ -5,7 +5,7 @@ from typing import List
 from database import get_db
 from models.post import BlogPost
 from models.subscriber import Subscriber
-from schemas.post import PostInput, PostOutput, PostSummary, PostIndexItem
+from schemas.post import PostInput, PostOutput, PostSummary
 from middleware.auth import require_authentication
 from services import post as post_service
 from services.email import send_new_post_notification
@@ -73,17 +73,6 @@ def list_posts(
 
     posts = query.offset(offset).limit(limit).all()
     return posts
-
-
-@posts_router.get("/index", response_model=List[PostIndexItem])
-def list_post_index(db: Session = Depends(get_db)):
-    """Lightweight index (slug, title, tags) of published posts for the ⌘K palette."""
-    return (
-        db.query(BlogPost)
-        .filter(BlogPost.is_published)
-        .order_by(BlogPost.created_at.desc())
-        .all()
-    )
 
 
 @posts_router.get("/series/{series_slug}", response_model=List[PostSummary])

@@ -27,7 +27,7 @@ function SeriesPage() {
     const { data: posts } = useSuspenseQuery(seriesQueryOptions(slug))
 
     return (
-        <MainLayout showSidebar={false}>
+        <MainLayout variant="read">
             <div className="max-w-3xl mx-auto px-6 py-16 md:py-24">
                 <header className="mb-12 space-y-3">
                     <p className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">Series</p>
@@ -46,7 +46,7 @@ function SeriesPage() {
                                 <Link
                                     to="/blog/$slug"
                                     params={{ slug: post.slug }}
-                                    className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 border-b border-border py-6 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                                    className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 border-b border-border py-6 transition-colors hover:bg-wash"
                                 >
                                     <span className="font-mono text-sm text-muted-foreground">
                                         {String(i + 1).padStart(2, '0')}

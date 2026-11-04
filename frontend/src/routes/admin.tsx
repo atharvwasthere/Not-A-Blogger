@@ -37,34 +37,34 @@ function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-zinc-100">
+    <div className="theme-light min-h-screen bg-card text-ink font-sans">
       {/* Top Bar - Consistent across all admin pages */}
-      <header className="h-14 border-b border-zinc-100 flex items-center justify-between px-6 sticky top-0 bg-white/80 backdrop-blur-sm z-50">
+      <header className="h-14 border-b border-rule flex items-center justify-between px-6 sticky top-0 bg-card/80 backdrop-blur-sm z-50">
         <div className="flex items-center gap-2">
           <Link
             to="/admin/dashboard"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <span className="font-serif font-medium text-lg">Admin</span>
-            <span className="text-zinc-300">—</span>
-            <span className="text-zinc-400 text-sm font-mono">
+            <span className="text-faint">—</span>
+            <span className="text-soft text-sm font-mono">
               behind the scenes
             </span>
           </Link>
         </div>
 
-        <div className="flex items-center gap-6 text-sm text-zinc-500">
+        <div className="flex items-center gap-6 text-sm text-soft">
           <a
             href="/"
             target="_blank"
-            className="hover:text-zinc-900 transition-colors flex items-center gap-1"
+            className="hover:text-ink transition-colors flex items-center gap-1"
           >
             View site
             <ExternalLink className="w-3 h-3" />
           </a>
           <button
             onClick={handleLogout}
-            className="hover:text-zinc-900 transition-colors flex items-center gap-1"
+            className="hover:text-ink transition-colors flex items-center gap-1"
           >
             Logout
             <LogOut className="w-3 h-3" />

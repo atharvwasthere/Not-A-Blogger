@@ -39,25 +39,24 @@ export function SubscribeForm() {
 
     return (
         <div>
-        <div className="mt-6 pt-6 border-t border-border">
-            <h3 className="font-serif text-lg font-medium text-foreground mb-2">Subscribe to the newsletter</h3>
-            <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                Get notified when I publish. No spam, ever.
-            </p>
-        </div>
-        <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-2">
+        <h3 className="mb-2 text-[21px] font-normal leading-snug text-ink">Subscribe to the newsletter</h3>
+        <p className="mb-[18px] max-w-sm font-sans text-sm leading-relaxed text-soft">
+            Get notified when I publish. No spam, ever.
+        </p>
+        <form onSubmit={handleSubmit} className="grid w-full max-w-sm gap-2.5">
             <input
                 type="email"
                 placeholder="john@doe.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-transparent border border-border text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground transition-colors"
+                aria-label="Email"
+                className="w-full rounded-[4px] border border-rule bg-card px-3.5 py-[13px] font-mono text-[13.5px] text-ink placeholder:text-faint transition-colors focus:border-ink focus:outline-none"
                 disabled={uiStatus !== "idle"}
             />
             <Button
                 type="submit"
-                className="w-full h-12 bg-foreground text-background hover:bg-foreground/90 rounded-none relative overflow-hidden"
+                className="relative h-[46px] w-full overflow-hidden rounded-[4px] bg-ink text-[14.5px] font-medium text-paper hover:bg-ink/90"
                 disabled={uiStatus !== "idle"}
             >
                 <AnimatePresence mode="wait">
@@ -104,7 +103,7 @@ export function SubscribeForm() {
                         animate={{ x: 100, opacity: 0, scale: 0.5 }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        <Send className="w-5 h-5 text-background" />
+                        <Send className="w-5 h-5 text-paper" />
                     </motion.div>
                 )}
             </Button>
