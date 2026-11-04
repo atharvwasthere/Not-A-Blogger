@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import type { Post } from '@/lib/types'
 import { PostIcon } from './PostIcon'
 import { PostMeta } from './PostMeta'
+import { postDate } from '../formatDate'
 
 export function NoteRow({ post }: { post: Post }) {
     return (
@@ -14,7 +15,7 @@ export function NoteRow({ post }: { post: Post }) {
                     <span className="block font-sans text-[15.5px] leading-[1.4] text-ink decoration-faint underline-offset-4 group-hover:underline">
                         {post.title}
                     </span>
-                    <PostMeta date={post.created_at} readingTime={post.reading_time} className="mt-[3px] block font-sans text-[13.5px] text-soft" />
+                    <PostMeta date={postDate(post)} readingTime={post.reading_time} className="mt-[3px] block font-sans text-[13.5px] text-soft" />
                 </span>
             </Link>
         </li>

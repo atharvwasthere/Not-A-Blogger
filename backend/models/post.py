@@ -18,6 +18,7 @@ class BlogPost(BaseModel):
     is_published = Column(Boolean, default=False, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    published_at = Column(DateTime, nullable=True)  # set on first publish, kept if unpublished
     seo_title = Column(String(200))
     seo_description = Column(String(300))
     reading_time = Column(Integer, default=1)

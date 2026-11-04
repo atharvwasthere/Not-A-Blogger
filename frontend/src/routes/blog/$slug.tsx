@@ -8,6 +8,7 @@ import { useEmbedFrames } from '@/features/blog/hooks/useEmbedFrames'
 import { useReferences } from '@/features/blog/hooks/useReferences'
 import { ArticleHeader } from '@/features/blog/components/ArticleHeader'
 import { SITE_URL, postUrl } from '@/lib/site'
+import { postDate } from '@/features/blog/formatDate'
 
 export const Route = createFileRoute('/blog/$slug')({
     loader: async ({ context: { queryClient }, params: { slug } }) => {
@@ -40,7 +41,7 @@ export const Route = createFileRoute('/blog/$slug')({
                     { property: 'og:image', content: post.cover_image },
                     { property: 'og:image:alt', content: `Cover image for ${post.title}` }
                 ] : []),
-                { property: 'article:published_time', content: new Date(post.created_at).toISOString() },
+                { property: 'article:published_time', content: new Date(postDate(post)).toISOString() },
                 { property: 'article:modified_time', content: new Date(post.updated_at).toISOString() },
                 { property: 'article:author', content: SITE_URL },
                 // Twitter Cards
@@ -62,7 +63,7 @@ export const Route = createFileRoute('/blog/$slug')({
                         '@type': 'BlogPosting',
                         headline: post.title,
                         url,
-                        datePublished: new Date(post.created_at).toISOString().split('T')[0],
+                        datePublished: new Date(postDate(post)).toISOString().split('T')[0],
                         dateModified: new Date(post.updated_at).toISOString().split('T')[0],
                         description: metaDesc,
                         ...(post.cover_image ? { image: post.cover_image } : {}),

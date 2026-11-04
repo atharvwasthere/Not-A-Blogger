@@ -25,6 +25,8 @@ export interface Post extends PostInput {
     slug: string
     created_at: string
     updated_at: string
+    /** Set on first publish; null for a draft that was never published. */
+    published_at?: string | null
     reading_time: number
     tags: string[]
 }

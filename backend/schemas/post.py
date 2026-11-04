@@ -60,6 +60,7 @@ class PostSummary(BaseModel):
     is_published: bool
     created_at: datetime
     updated_at: datetime
+    published_at: Optional[datetime] = None
     reading_time: Optional[int] = 1
     tags: List[str] = []
     series: Optional[str] = None
@@ -75,6 +76,7 @@ class PostOutput(PostInput):
     slug: str
     created_at: datetime
     updated_at: datetime
+    published_at: Optional[datetime] = None
     reading_time: Optional[int] = 1
 
     class Config:

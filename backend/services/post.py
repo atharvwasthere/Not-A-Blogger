@@ -1,4 +1,6 @@
 import re
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
 from models.post import BlogPost
@@ -12,12 +14,18 @@ def _reading_time(content: str) -> int:
     return max(1, round(len(plain_text.split()) / 200))
 
 
+def _stamp_first_publish(post: BlogPost) -> None:
+    if post.is_published and post.published_at is None:
+        post.published_at = datetime.utcnow()
+
+
 def create_post(db: Session, post_data: PostInput) -> BlogPost:
     post = BlogPost(
         **post_data.model_dump(mode="json"),
         slug=generate_slug(post_data.title, db),
         reading_time=_reading_time(post_data.content),
     )
+    _stamp_first_publish(post)
     db.add(post)
     db.commit()
     db.refresh(post)
@@ -33,6 +41,7 @@ def update_post(db: Session, post: BlogPost, post_data: PostInput) -> BlogPost:
     if post.title != original_title:
         post.slug = generate_slug(post.title, db)
     post.reading_time = _reading_time(post.content)
+    _stamp_first_publish(post)
 
     db.commit()
     db.refresh(post)
