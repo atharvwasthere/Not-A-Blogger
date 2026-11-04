@@ -60,17 +60,6 @@ class PostSummary(BaseModel):
         from_attributes = True
 
 
-class PostIndexItem(BaseModel):
-    """Lightweight payload for the ⌘K command palette — title + tags only."""
-
-    slug: str
-    title: str
-    tags: List[str] = []
-
-    class Config:
-        from_attributes = True
-
-
 class PostOutput(PostInput):
     id: str
     slug: str
