@@ -27,7 +27,7 @@ function EditPost() {
 
   const handleSave = async ({
     title, content, coverImage, iconUrl, excerpt, seoTitle, seoDescription, isPublished,
-    tags, series, seriesOrder, basedOn
+    tags, series, seriesOrder, basedOn, printUrl, showPrint
   }: PostEditorValues) => {
     if (!title) {
       toast.error('Title is required')
@@ -48,6 +48,8 @@ function EditPost() {
         series: series.trim() || null,
         series_order: seriesOrder,
         based_on: basedOn,
+        print_url: printUrl,
+        show_print: showPrint,
       })
       queryClient.invalidateQueries({ queryKey: ['posts'] })
       setLastSaved(new Date())
@@ -95,6 +97,8 @@ function EditPost() {
           series: post.series || '',
           seriesOrder: post.series_order ?? null,
           basedOn: post.based_on ?? null,
+          showPrint: post.show_print ?? false,
+          printUrl: post.print_url ?? null,
           slug: post.slug,
           createdAt: post.created_at,
           updatedAt: post.updated_at,

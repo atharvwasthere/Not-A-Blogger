@@ -2,9 +2,12 @@ import { Link } from '@tanstack/react-router'
 import type { Post } from '@/lib/types'
 import { topicLabel, topicTint } from '@/theme/topics'
 import { formatPostDate, postDate } from '../formatDate'
+import { usePrint } from '../hooks/usePrint'
+import { Print } from './Print'
 
 /** One post in the newspaper grid, on the page's topic tint, or else its first topic's. */
 export function NoteCard({ post, topic }: { post: Post; topic?: string }) {
+    const print = usePrint(post)
     return (
         <Link
             to="/blog/$slug"
@@ -17,6 +20,8 @@ export function NoteCard({ post, topic }: { post: Post; topic?: string }) {
             {post.tags.length > 0 && (
                 <span className="font-mono text-xs uppercase tracking-[0.1em] text-body">{post.tags.map(topicLabel).join(' · ')}</span>
             )}
+            {/* Transparent paper: the card's own tint shows through the dots. */}
+            {print && <Print src={print} tint="transparent" ratio="16/10" className="mt-[18px]" />}
             {post.excerpt && <p className="mt-[18px] font-serif text-[17px] leading-normal text-ink">{post.excerpt}</p>}
         </Link>
     )

@@ -315,6 +315,15 @@ section[data-open] > .references-body ol { opacity: 1; transform: none; transiti
 }
 .references-install button:hover { color: var(--ink); }
 
+/* Newspaper cover: the dots are a mask, so they take the ink colour of either theme. */
+.print { position: relative; background: var(--print-tint, var(--wash)); }
+.print::before {
+  content: ""; position: absolute; inset: 0;
+  background: var(--ink); opacity: .88;
+  -webkit-mask: var(--print-src) center / cover no-repeat;
+  mask: var(--print-src) center / cover no-repeat;
+}
+
 /* Icons are drawn in dark ink; invert them on dark paper. */
 .post-icon {
   filter: var(--icon-filter);

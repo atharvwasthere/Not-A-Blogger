@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { api } from "@/lib/api";
 import { Post } from "@/lib/types";
 import { PostList } from "@/features/admin/components/PostList";
+import { CoversSwitch } from "@/features/admin/components/CoversSwitch";
 import { Button } from "@/shared/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -51,6 +52,10 @@ function Dashboard() {
             New Post
           </Button>
         </Link>
+      </div>
+
+      <div className="mb-8">
+        <CoversSwitch />
       </div>
 
       <div className="bg-card border border-rule shadow-sm">

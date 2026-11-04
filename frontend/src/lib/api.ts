@@ -1,4 +1,4 @@
-import { Post, PostInput, EmbedSummary } from "./types"
+import { Post, PostInput, EmbedSummary, SiteSettings, PrintInvert } from "./types"
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api"
 
@@ -62,6 +62,18 @@ export const api = {
         fetcher<Post>(`/posts/${id}`, { method: "PUT", body: JSON.stringify(data) }),
     deletePost: (id: string) =>
         fetcher<void>(`/posts/${id}`, { method: "DELETE" }),
+
+    // Newspaper covers
+    generatePrint: (postId: string, sourceUrl: string, invert: PrintInvert) =>
+        fetcher<{ print_url: string }>(`/posts/${postId}/print`, {
+            method: "POST",
+            body: JSON.stringify({ source_url: sourceUrl, invert }),
+        }),
+
+    // Site-wide settings
+    getSettings: () => fetcher<SiteSettings>("/settings"),
+    updateSettings: (body: SiteSettings) =>
+        fetcher<SiteSettings>("/settings", { method: "PUT", body: JSON.stringify(body) }),
 
     // Auth
     // A full-page navigation: GitHub sends the browser back to the API, which sets the session cookie.

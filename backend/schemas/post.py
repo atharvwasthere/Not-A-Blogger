@@ -29,6 +29,8 @@ class PostInput(BaseModel):
     series: Optional[str] = Field(None, max_length=100)
     series_order: Optional[int] = Field(None, ge=0)
     based_on: Optional[BasedOn] = None
+    print_url: Optional[str] = Field(None, max_length=500)
+    show_print: bool = False
 
     @field_validator("tags")
     @classmethod
@@ -66,6 +68,8 @@ class PostSummary(BaseModel):
     series: Optional[str] = None
     series_order: Optional[int] = None
     based_on: Optional[BasedOn] = None
+    print_url: Optional[str] = None
+    show_print: bool = False
 
     class Config:
         from_attributes = True

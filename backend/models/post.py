@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, Boolean, DateTime, Integer
+from sqlalchemy import Column, String, Text, Boolean, DateTime, Integer, false as sql_false
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from datetime import datetime
 from database import BaseModel
@@ -29,3 +29,6 @@ class BlogPost(BaseModel):
     series_order = Column(Integer, nullable=True)
     # The source a paper-series post is built around: {title, by, url}
     based_on = Column(JSONB(none_as_null=True), nullable=True)
+    # Newspaper cover: a halftone print of an image from the post, and whether it shows.
+    print_url = Column(String(500), nullable=True)
+    show_print = Column(Boolean, nullable=False, default=False, server_default=sql_false())

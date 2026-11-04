@@ -4,6 +4,7 @@ import { ImageUpload } from '@/features/editor/ImageUpload'
 import { Button } from '@/shared/ui/button'
 import { format } from 'date-fns'
 import type { BasedOn } from '@/lib/types'
+import { NewspaperCover } from './NewspaperCover'
 
 export interface PostEditorInitialValues {
     title?: string
@@ -18,6 +19,8 @@ export interface PostEditorInitialValues {
     series?: string
     seriesOrder?: number | null
     basedOn?: BasedOn | null
+    showPrint?: boolean
+    printUrl?: string | null
     // Edit-only meta
     slug?: string
     createdAt?: string
@@ -38,6 +41,8 @@ export interface PostEditorValues {
     seriesOrder: number | null
     /** null when the title is empty */
     basedOn: BasedOn | null
+    printUrl: string | null
+    showPrint: boolean
 }
 
 interface PostEditorProps {
@@ -77,6 +82,8 @@ export function PostEditor({
     const [basedOnTitle, setBasedOnTitle] = useState(initialValues.basedOn?.title || '')
     const [basedOnBy, setBasedOnBy] = useState(initialValues.basedOn?.by || '')
     const [basedOnUrl, setBasedOnUrl] = useState(initialValues.basedOn?.url || '')
+    const [printUrl, setPrintUrl] = useState(initialValues.printUrl ?? null)
+    const [showPrint, setShowPrint] = useState(initialValues.showPrint ?? false)
     const [postStatus, setPostStatus] = useState<'Draft' | 'Published'>(
         initialValues.isPublished ? 'Published' : 'Draft'
     )
@@ -111,6 +118,8 @@ export function PostEditor({
             basedOn: basedOnTitle.trim()
                 ? { title: basedOnTitle.trim(), by: basedOnBy.trim() || null, url: basedOnUrl.trim() }
                 : null,
+            printUrl,
+            showPrint,
         })
 
     return (
@@ -149,6 +158,16 @@ export function PostEditor({
                         <ImageUpload value={iconUrl} onChange={setIconUrl} className="aspect-square w-32 mx-auto" />
                     </div>
                 </div>
+
+                <NewspaperCover
+                    postId={postId}
+                    content={content}
+                    coverImage={coverImage}
+                    printUrl={printUrl}
+                    onPrintUrlChange={setPrintUrl}
+                    showPrint={showPrint}
+                    onShowPrintChange={setShowPrint}
+                />
 
                 {/* Publish */}
                 <div className="space-y-4">
