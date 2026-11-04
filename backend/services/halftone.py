@@ -24,9 +24,19 @@ def should_invert(mean_luminance: float, invert: Invert) -> bool:
     return invert == "always" or (invert == "auto" and mean_luminance < INVERT_BELOW)
 
 
+def _flatten(source: Image.Image) -> Image.Image:
+    """Upright (EXIF) and on white paper: transparent pixels hide colour that convert("L") would print."""
+    image = ImageOps.exif_transpose(source)
+    if image.mode in ("RGBA", "LA", "PA") or (image.mode == "P" and "transparency" in image.info):
+        rgba = image.convert("RGBA")
+        paper = Image.new("RGBA", rgba.size, (255, 255, 255, 255))
+        image = Image.alpha_composite(paper, rgba)
+    return image
+
+
 def render_halftone(source: Image.Image, invert: Invert = "auto") -> Image.Image:
     """Return a WIDTH x HEIGHT RGBA image whose alpha channel holds the ink dots."""
-    gray = ImageOps.fit(source.convert("L"), (WIDTH, HEIGHT), Image.LANCZOS)
+    gray = ImageOps.fit(_flatten(source).convert("L"), (WIDTH, HEIGHT), Image.LANCZOS)
 
     mean = ImageStat.Stat(gray).mean[0]
     if should_invert(mean, invert):

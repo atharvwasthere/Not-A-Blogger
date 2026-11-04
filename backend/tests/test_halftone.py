@@ -1,3 +1,5 @@
+import io
+
 from PIL import Image
 
 from services.halftone import HEIGHT, INVERT_BELOW, WIDTH, render_halftone, should_invert
@@ -52,3 +54,35 @@ def test_never_keeps_a_mid_grey_image_un_inverted():
     left = sum(alpha.crop((40, 40, 440, 560)).getdata())
     right = sum(alpha.crop((520, 40, 920, 560)).getdata())
     assert left > right
+
+
+def test_transparent_background_prints_as_paper():
+    # A diagram export: transparent (stored as black) background, one black stroke.
+    diagram = Image.new("RGBA", (800, 500), (0, 0, 0, 0))
+    for x in range(100, 700):
+        diagram.putpixel((x, 250), (0, 0, 0, 255))
+    blank = ink(render_halftone(Image.new("RGB", (800, 500), "white"), "never"))
+    printed = ink(render_halftone(diagram, "never"))
+    solid = ink(render_halftone(Image.new("RGB", (800, 500), "black"), "never"))
+    assert blank < printed < solid / 10
+
+
+def test_exif_rotation_is_applied():
+    photo = Image.new("RGB", (800, 400), "white")
+    for x in range(0, 400):
+        for y in range(0, 400):
+            photo.putpixel((x, y), (0, 0, 0))  # left half dark
+    exif = photo.getexif()
+    exif[0x0112] = 3  # rotated 180 degrees: the dark half belongs on the right
+    rotated = Image.open(_roundtrip(photo, exif))
+    out = render_halftone(rotated, "never").getchannel("A")
+    left = sum(out.crop((0, 0, 480, 600)).getdata())
+    right = sum(out.crop((480, 0, 960, 600)).getdata())
+    assert right > left
+
+
+def _roundtrip(image, exif):
+    buffer = io.BytesIO()
+    image.save(buffer, format="JPEG", exif=exif)
+    buffer.seek(0)
+    return buffer
