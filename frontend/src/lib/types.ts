@@ -18,6 +18,8 @@ export interface PostInput {
     series?: string | null
     series_order?: number | null
     based_on?: BasedOn | null
+    /** The halftone cover, saved with the post after it is generated and previewed. */
+    print_url?: string | null
     /** Whether this post shows its newspaper cover (when one exists and covers are on site-wide). */
     show_print?: boolean
 }
@@ -31,8 +33,6 @@ export interface Post extends PostInput {
     published_at?: string | null
     reading_time: number
     tags: string[]
-    /** The halftone cover, written only by the generate endpoint. */
-    print_url?: string | null
 }
 
 /** Site-wide switches (GET/PUT /settings). */

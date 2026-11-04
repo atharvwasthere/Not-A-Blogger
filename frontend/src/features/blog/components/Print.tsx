@@ -23,7 +23,7 @@ export function Print({
             className={cn('print block', className)}
             style={
                 {
-                    '--print-src': `url("${encodeURI(src)}")`,
+                    '--print-src': `url("${src.replace(/["\\]/g, '\\$&')}")`,
                     ...(tint ? { '--print-tint': tint } : {}),
                     ...(ratio ? { aspectRatio: ratio } : {}),
                 } as React.CSSProperties

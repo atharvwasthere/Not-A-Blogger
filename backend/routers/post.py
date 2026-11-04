@@ -10,6 +10,7 @@ from schemas.post import PostInput, PostOutput, PostSummary
 from schemas.settings import PrintOutput, PrintRequest
 from middleware.auth import require_authentication
 from services import post as post_service
+from services.cloudinary_urls import is_own_cloudinary_url
 from services import prints as print_service
 from services.email import send_new_post_notification
 from config import get_settings
@@ -108,6 +109,12 @@ def get_single_post(slug: str, db: Session = Depends(get_db)):
 # Protected Routes
 
 
+def _check_print_url(print_url: str | None, current: str | None = None) -> None:
+    # Checked on admin writes only: PostOutput inherits PostInput, so a schema validator would also run on reads.
+    if print_url and print_url != current and not is_own_cloudinary_url(print_url):
+        raise HTTPException(status_code=422, detail="print_url must be an image on this blog's Cloudinary")
+
+
 @posts_router.post("/", response_model=PostOutput, status_code=201)
 def create_post(
     post_data: PostInput,
@@ -115,6 +122,7 @@ def create_post(
     db: Session = Depends(get_db),
     auth=Depends(require_authentication),
 ):
+    _check_print_url(post_data.print_url)
     new_post = post_service.create_post(db, post_data)
 
     # Fire notification if published immediately
@@ -137,6 +145,7 @@ def update_post(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
+    _check_print_url(post_data.print_url, post.print_url)
     was_published = post.is_published
     post = post_service.update_post(db, post, post_data)
 
@@ -168,12 +177,9 @@ def generate_post_print(
     db: Session = Depends(get_db),
     auth=Depends(require_authentication),
 ):
-    """Renders the post's newspaper cover from one of its images. Does not switch the cover on."""
+    """Renders a cover from one of the post's images for preview. The post stores it when saved."""
     # A plain def: FastAPI runs the download and the CPU-bound render in its threadpool.
-    post = db.query(BlogPost).filter(BlogPost.id == post_id).first()
-    if not post:
+    if db.get(BlogPost, post_id) is None:
         raise HTTPException(status_code=404, detail="Post not found")
-
-    post.print_url = print_service.generate_print(body.source_url, body.invert)
-    db.commit()
-    return PrintOutput(print_url=post.print_url)
+    db.close()  # don't hold a pooled connection through the download, render and upload
+    return PrintOutput(print_url=print_service.generate_print(post_id, body.source_url, body.invert))

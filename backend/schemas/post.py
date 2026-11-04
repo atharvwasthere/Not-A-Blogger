@@ -29,6 +29,7 @@ class PostInput(BaseModel):
     series: Optional[str] = Field(None, max_length=100)
     series_order: Optional[int] = Field(None, ge=0)
     based_on: Optional[BasedOn] = None
+    print_url: Optional[str] = Field(None, max_length=500)
     show_print: bool = False
 
     @field_validator("tags")
@@ -77,7 +78,6 @@ class PostSummary(BaseModel):
 class PostOutput(PostInput):
     id: str
     slug: str
-    print_url: Optional[str] = None  # only written by POST /posts/{id}/print
     created_at: datetime
     updated_at: datetime
     published_at: Optional[datetime] = None

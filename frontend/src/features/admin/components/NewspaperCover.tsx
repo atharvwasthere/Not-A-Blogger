@@ -19,35 +19,33 @@ const INVERT: Array<{ value: PrintInvert; label: string }> = [
     { value: 'never', label: 'Never' },
 ]
 
-/**
- * Pick an image from the post, print it as a halftone, preview it on both papers, then decide
- * whether this post shows it. Generating never switches the cover on.
- */
+/** Pick a post image, print it, preview it on both papers; it reaches the site only when the post is saved. */
 export function NewspaperCover({
     postId,
     content,
     coverImage,
-    initialPrintUrl,
+    printUrl,
+    onPrintUrlChange,
     showPrint,
     onShowPrintChange,
 }: {
     postId?: string
     content: string
     coverImage: string
-    initialPrintUrl?: string | null
+    printUrl: string | null
+    onPrintUrlChange: (url: string) => void
     showPrint: boolean
     onShowPrintChange: (show: boolean) => void
 }) {
     const sources = useMemo(() => sourceImages(content, coverImage), [content, coverImage])
     const [source, setSource] = useState<string | null>(null)
     const [invert, setInvert] = useState<PrintInvert>('auto')
-    const [printUrl, setPrintUrl] = useState(initialPrintUrl ?? null)
 
     const generate = useMutation({
         mutationFn: () => api.generatePrint(postId!, source!, invert),
         onSuccess: ({ print_url }) => {
-            setPrintUrl(print_url)
-            toast.success('Cover generated. Switch it on to show it.')
+            onPrintUrlChange(print_url)
+            toast.success('Cover ready. Save the post to use it.')
         },
         onError: (error) => toast.error((error as Error).message || 'Could not generate the cover'),
     })

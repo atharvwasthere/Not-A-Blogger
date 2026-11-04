@@ -41,6 +41,7 @@ export interface PostEditorValues {
     seriesOrder: number | null
     /** null when the title is empty */
     basedOn: BasedOn | null
+    printUrl: string | null
     showPrint: boolean
 }
 
@@ -81,6 +82,7 @@ export function PostEditor({
     const [basedOnTitle, setBasedOnTitle] = useState(initialValues.basedOn?.title || '')
     const [basedOnBy, setBasedOnBy] = useState(initialValues.basedOn?.by || '')
     const [basedOnUrl, setBasedOnUrl] = useState(initialValues.basedOn?.url || '')
+    const [printUrl, setPrintUrl] = useState(initialValues.printUrl ?? null)
     const [showPrint, setShowPrint] = useState(initialValues.showPrint ?? false)
     const [postStatus, setPostStatus] = useState<'Draft' | 'Published'>(
         initialValues.isPublished ? 'Published' : 'Draft'
@@ -116,6 +118,7 @@ export function PostEditor({
             basedOn: basedOnTitle.trim()
                 ? { title: basedOnTitle.trim(), by: basedOnBy.trim() || null, url: basedOnUrl.trim() }
                 : null,
+            printUrl,
             showPrint,
         })
 
@@ -160,7 +163,8 @@ export function PostEditor({
                     postId={postId}
                     content={content}
                     coverImage={coverImage}
-                    initialPrintUrl={initialValues.printUrl}
+                    printUrl={printUrl}
+                    onPrintUrlChange={setPrintUrl}
                     showPrint={showPrint}
                     onShowPrintChange={setShowPrint}
                 />

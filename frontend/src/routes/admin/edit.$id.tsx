@@ -27,7 +27,7 @@ function EditPost() {
 
   const handleSave = async ({
     title, content, coverImage, iconUrl, excerpt, seoTitle, seoDescription, isPublished,
-    tags, series, seriesOrder, basedOn, showPrint
+    tags, series, seriesOrder, basedOn, printUrl, showPrint
   }: PostEditorValues) => {
     if (!title) {
       toast.error('Title is required')
@@ -48,6 +48,7 @@ function EditPost() {
         series: series.trim() || null,
         series_order: seriesOrder,
         based_on: basedOn,
+        print_url: printUrl,
         show_print: showPrint,
       })
       queryClient.invalidateQueries({ queryKey: ['posts'] })

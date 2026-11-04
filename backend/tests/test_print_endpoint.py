@@ -28,8 +28,8 @@ def fake_cloudinary(monkeypatch):
         calls["downloaded"].append(url)
         return source.getvalue()
 
-    def upload(image):
-        calls["uploaded"].append(image.size)
+    def upload(image, public_id):
+        calls["uploaded"].append((image.size, public_id))
         return UPLOADED
 
     monkeypatch.setattr(prints, "download_source", download)
@@ -67,36 +67,49 @@ def test_rejects_urls_outside_our_cloud(admin_client, fake_cloudinary, url):
     assert fake_cloudinary["downloaded"] == []
 
 
-def test_stores_print_url_and_leaves_show_print_alone(admin_client, fake_cloudinary):
-    post_id = make_post(show_print=False)
+def test_generating_returns_a_preview_and_changes_nothing_live(admin_client, fake_cloudinary):
+    live = f"https://res.cloudinary.com/{CLOUD}/image/upload/v1/blog_posts/prints/live.png"
+    post_id = make_post(show_print=True, print_url=live)
     res = admin_client.post(f"/api/posts/{post_id}/print", json={"source_url": SOURCE, "invert": "never"})
 
     assert res.status_code == 200, res.text
     assert res.json() == {"print_url": UPLOADED}
-    assert fake_cloudinary["uploaded"] == [(960, 600)]
+    [(size, public_id)] = fake_cloudinary["uploaded"]
+    assert size == (960, 600) and public_id.startswith(f"{post_id}/")
     with SessionLocal() as db:
         post = db.get(BlogPost, post_id)
-        assert post.print_url == UPLOADED
-        assert post.show_print is False
+        assert post.print_url == live
+        assert post.show_print is True
 
 
-def test_regenerating_keeps_a_cover_that_is_on(admin_client):
-    post_id = make_post(show_print=True)
-    admin_client.post(f"/api/posts/{post_id}/print", json={"source_url": SOURCE})
-    with SessionLocal() as db:
-        assert db.get(BlogPost, post_id).show_print is True
+def test_the_same_source_and_invert_reuse_one_asset(admin_client, fake_cloudinary):
+    post_id = make_post()
+    for invert in ("auto", "auto", "never"):
+        admin_client.post(f"/api/posts/{post_id}/print", json={"source_url": SOURCE, "invert": invert})
+    ids = [public_id for _, public_id in fake_cloudinary["uploaded"]]
+    assert ids[0] == ids[1] != ids[2]
+
+
+def test_svg_sources_are_fetched_as_png(admin_client, fake_cloudinary):
+    post_id = make_post()
+    svg = f"https://res.cloudinary.com/{CLOUD}/image/upload/v1/blog_posts/diagram.svg"
+    admin_client.post(f"/api/posts/{post_id}/print", json={"source_url": svg})
+    assert fake_cloudinary["downloaded"] == [svg.replace("/image/upload/", "/image/upload/f_png/")]
 
 
 def test_unknown_post_is_404(admin_client):
     assert admin_client.post("/api/posts/nope/print", json={"source_url": SOURCE}).status_code == 404
 
 
-def test_print_url_cannot_be_written_through_the_post_api(admin_client):
-    res = admin_client.post(
+def test_print_url_is_saved_with_the_post_but_only_from_our_cloud(admin_client):
+    sneaky = admin_client.post(
         "/api/posts/", json={"title": "Sneaky", "content": "<p>x</p>", "print_url": "https://evil.example/x.png"}
     )
-    assert res.status_code == 201
-    assert res.json()["print_url"] is None
+    assert sneaky.status_code == 422
+
+    saved = admin_client.post("/api/posts/", json={"title": "Cover", "content": "<p>x</p>", "print_url": UPLOADED})
+    assert saved.status_code == 201
+    assert saved.json()["print_url"] == UPLOADED
 
 
 def test_show_print_round_trips(admin_client):
@@ -129,3 +142,18 @@ def test_non_image_is_refused():
     with pytest.raises(Exception) as error:
         prints.open_image(b"<html>not an image</html>")
     assert error.value.status_code == 400
+
+
+def test_huge_images_are_refused_before_decoding():
+    buffer = io.BytesIO()
+    Image.new("1", (8000, 6000)).save(buffer, format="PNG")
+    with pytest.raises(Exception) as error:
+        prints.open_image(buffer.getvalue())
+    assert "40 megapixels" in error.value.detail
+
+
+def test_reading_a_post_never_fails_on_its_print_url(client):
+    # The cloud check guards admin writes only; a stored URL from another cloud must still read.
+    make_post(is_published=True, print_url="https://res.cloudinary.com/old-cloud/image/upload/x.png")
+    assert client.get("/api/posts/bundle").status_code == 200
+    assert client.get("/api/posts/").status_code == 200
