@@ -8,6 +8,7 @@ import { NotFound } from '@/shared/components/NotFound'
 import { postQueryOptions, usePost } from '@/features/blog/hooks/usePosts'
 import { useTheme } from '@/theme/useTheme'
 import type { EmbedMode } from '@/theme/themeStore'
+import { SITE_URL } from '@/lib/site'
 
 export const Route = createFileRoute('/blog/$slug')({
     loader: async ({ context: { queryClient }, params: { slug } }) => {
@@ -22,8 +23,7 @@ export const Route = createFileRoute('/blog/$slug')({
     },
     head: ({ loaderData: post }) => {
         if (!post) return {}
-        const siteUrl = 'https://blogs.atharvsingh.me'
-        const postUrl = `${siteUrl}/blog/${post.slug}`
+        const postUrl = `${SITE_URL}/blog/${post.slug}`
         const metaTitle = post.seo_title || `${post.title} | Atharv Singh — Not a Blogger`
         const metaDesc = post.seo_description || post.excerpt || `${post.title}. By Atharv Singh on Not a Blogger.`
         return {
@@ -43,7 +43,7 @@ export const Route = createFileRoute('/blog/$slug')({
                 ] : []),
                 { property: 'article:published_time', content: new Date(post.created_at).toISOString() },
                 { property: 'article:modified_time', content: new Date(post.updated_at).toISOString() },
-                { property: 'article:author', content: 'https://blogs.atharvsingh.me' },
+                { property: 'article:author', content: SITE_URL },
                 // Twitter Cards
                 { name: 'twitter:card', content: 'summary_large_image' },
                 { name: 'twitter:title', content: metaTitle },
@@ -70,12 +70,12 @@ export const Route = createFileRoute('/blog/$slug')({
                         author: {
                             '@type': 'Person',
                             name: 'Atharv Singh',
-                            url: siteUrl,
+                            url: SITE_URL,
                         },
                         publisher: {
                             '@type': 'Blog',
                             name: 'Not a Blogger',
-                            url: siteUrl,
+                            url: SITE_URL,
                         },
                     }),
                 },

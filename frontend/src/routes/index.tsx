@@ -9,6 +9,7 @@ import { topicSlug } from '@/theme/topics'
 import { postsQueryOptions, usePosts } from '@/features/blog/hooks/usePosts'
 import { LatestNote } from '@/features/blog/components/LatestNote'
 import { NoteRow } from '@/features/blog/components/NoteRow'
+import { canonical } from '@/lib/site'
 
 // Lazy load heavy admin components
 const GlitchOverlay = lazy(() => import('@/features/admin/components/GlitchOverlay').then(module => ({ default: module.GlitchOverlay })))
@@ -19,11 +20,12 @@ export const Route = createFileRoute('/')({
   beforeLoad: ({ location }) => {
     const tag = (location.search as { tag?: unknown }).tag
     if (typeof tag === 'string' && topicSlug(tag)) {
-      throw redirect({ to: '/topics/$topic', params: { topic: topicSlug(tag) }, statusCode: 301 })
+      throw redirect({ to: '/topics/$topic', params: { topic: topicSlug(tag) }, statusCode: 302 })
     }
   },
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(postsQueryOptions),
+  head: () => ({ links: [canonical()] }),
   component: Home,
 })
 

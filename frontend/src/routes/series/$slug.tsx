@@ -3,6 +3,7 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { ArrowRight } from 'lucide-react'
 import { api } from '@/lib/api'
 import { MainLayout } from '@/shared/layout/MainLayout'
+import { canonical } from '@/lib/site'
 
 const seriesQueryOptions = (slug: string) =>
     queryOptions({
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/series/$slug')({
             { title: `${slug} — a series | Not a Blogger` },
             { name: 'description', content: `A reading sequence on Not a Blogger: the ${slug} series by Atharv Singh.` },
         ],
+        links: [canonical(`/series/${slug}`)],
     }),
     component: SeriesPage,
 })

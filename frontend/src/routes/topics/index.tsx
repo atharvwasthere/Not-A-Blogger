@@ -5,6 +5,7 @@ import { PageHeading } from '@/shared/layout/PageHeading'
 import { postsQueryOptions, usePosts } from '@/features/blog/hooks/usePosts'
 import { NoteRow } from '@/features/blog/components/NoteRow'
 import { groupByTopic, topicLabel, topicSlug } from '@/theme/topics'
+import { canonical } from '@/lib/site'
 
 export const Route = createFileRoute('/topics/')({
     loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(postsQueryOptions),
@@ -13,6 +14,7 @@ export const Route = createFileRoute('/topics/')({
             { title: 'Topics — Not a Blogger' },
             { name: 'description', content: 'What Atharv Singh writes about on Not a Blogger, grouped by topic.' },
         ],
+        links: [canonical('/topics')],
     }),
     component: TopicsPage,
 })

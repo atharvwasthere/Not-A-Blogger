@@ -4,6 +4,7 @@ import { BrowsePage } from '@/shared/layout/BrowsePage'
 import { PageHeading } from '@/shared/layout/PageHeading'
 import { postsQueryOptions, usePosts } from '@/features/blog/hooks/usePosts'
 import { NoteGrid } from '@/features/blog/components/NoteGrid'
+import { canonical } from '@/lib/site'
 
 export const Route = createFileRoute('/notes/')({
     loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(postsQueryOptions),
@@ -12,6 +13,7 @@ export const Route = createFileRoute('/notes/')({
             { title: 'Notes — Not a Blogger' },
             { name: 'description', content: 'Every note on Not a Blogger by Atharv Singh, newest first.' },
         ],
+        links: [canonical('/notes')],
     }),
     component: NotesPage,
 })
