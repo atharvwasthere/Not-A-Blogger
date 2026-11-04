@@ -15,6 +15,8 @@ export function ReferencesView({ editor, node, updateAttributes, deleteNode, sel
     const items = node.attrs.items as Reference[]
     const [editing, setEditing] = useState<Editing>(items.length === 0 ? 'new' : null)
     const [dragFrom, setDragFrom] = useState<number | null>(null)
+    // Rows are addressed by index, so the list stays still while a form is open.
+    const locked = editing !== null
 
     useEffect(() => {
         const open = (e: Event) => {
@@ -66,7 +68,7 @@ export function ReferencesView({ editor, node, updateAttributes, deleteNode, sel
                         ) : (
                             <li
                                 key={i}
-                                draggable
+                                draggable={!locked}
                                 onDragStart={(e) => {
                                     setDragFrom(i)
                                     e.dataTransfer.effectAllowed = 'move'
@@ -74,13 +76,13 @@ export function ReferencesView({ editor, node, updateAttributes, deleteNode, sel
                                 onDragOver={(e) => e.preventDefault()}
                                 onDrop={(e) => {
                                     e.preventDefault()
-                                    if (dragFrom !== null) move(dragFrom, i)
+                                    if (dragFrom !== null && !locked) move(dragFrom, i)
                                     setDragFrom(null)
                                 }}
                                 onDragEnd={() => setDragFrom(null)}
                                 className={`grid grid-cols-[18px_24px_minmax(0,1fr)_auto] items-start gap-2 rounded-[4px] bg-card px-2 py-2 ${dragFrom === i ? 'opacity-50' : ''}`}
                             >
-                                <GripVertical className="mt-0.5 h-4 w-4 cursor-grab text-faint" aria-label="Drag to reorder" />
+                                <GripVertical className={`mt-0.5 h-4 w-4 text-faint ${locked ? 'opacity-40' : 'cursor-grab'}`} aria-label="Drag to reorder" />
                                 <span className="font-mono text-xs text-soft">[{i + 1}]</span>
                                 <span className="min-w-0">
                                     <span className="block truncate text-sm text-ink">{item.title}</span>
@@ -90,14 +92,15 @@ export function ReferencesView({ editor, node, updateAttributes, deleteNode, sel
                                     <span className="block truncate font-serif text-sm italic text-body">{item.note}</span>
                                 </span>
                                 <span className="flex gap-1">
-                                    <button type="button" aria-label="Edit reference" onClick={() => setEditing(i)} className="p-1 text-soft hover:text-ink">
+                                    <button type="button" aria-label="Edit reference" disabled={locked} onClick={() => setEditing(i)} className="p-1 text-soft hover:text-ink disabled:opacity-40">
                                         <Pencil className="h-3.5 w-3.5" />
                                     </button>
                                     <button
                                         type="button"
                                         aria-label="Remove reference"
+                                        disabled={locked}
                                         onClick={() => setItems(items.filter((_, j) => j !== i))}
-                                        className="p-1 text-soft hover:text-danger"
+                                        className="p-1 text-soft hover:text-danger disabled:opacity-40"
                                     >
                                         <Trash2 className="h-3.5 w-3.5" />
                                     </button>

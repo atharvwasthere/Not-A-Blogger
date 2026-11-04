@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { detectReference, REFERENCE_KINDS, type Reference, type ReferenceKind } from './referenceKind'
+import { detectReference, REFERENCE_KINDS, type DetectedReference, type Reference, type ReferenceKind } from './referenceKind'
 
 const isHttpUrl = (value: string) => {
     try {
@@ -28,10 +28,22 @@ export function ReferenceForm({
     const [draft, setDraft] = useState<Reference>(initial ?? EMPTY)
     const set = (patch: Partial<Reference>) => setDraft((d) => ({ ...d, ...patch }))
 
+    // What detection last filled in; a field the author has changed since is left alone.
+    const [auto, setAuto] = useState<DetectedReference>(() =>
+        initial && isHttpUrl(initial.url) ? detectReference(initial.url) : { kind: EMPTY.kind, source: '' },
+    )
+
     const onUrl = (url: string) => {
         if (!isHttpUrl(url)) return set({ url })
         const detected = detectReference(url)
-        set({ url, kind: detected.kind, source: detected.source, install: detected.install })
+        setDraft((d) => ({
+            ...d,
+            url,
+            kind: d.kind === auto.kind ? detected.kind : d.kind,
+            source: !d.source || d.source === auto.source ? detected.source : d.source,
+            install: !d.install || d.install === auto.install ? detected.install : d.install,
+        }))
+        setAuto(detected)
     }
 
     const canSave = isHttpUrl(draft.url) && draft.title.trim() !== '' && draft.note.trim() !== ''
