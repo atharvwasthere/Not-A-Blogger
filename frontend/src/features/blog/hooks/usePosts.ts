@@ -5,12 +5,14 @@ import { api } from '@/lib/api'
 export const postsQueryOptions = queryOptions({
     queryKey: ['posts'],
     queryFn: () => api.getPosts(),
+    staleTime: 5 * 60 * 1000,
 })
 
 export const postQueryOptions = (slug: string) =>
     queryOptions({
         queryKey: ['posts', slug],
         queryFn: () => api.getPostBySlug(slug),
+        staleTime: 5 * 60 * 1000,
     })
 
 export function usePosts() {

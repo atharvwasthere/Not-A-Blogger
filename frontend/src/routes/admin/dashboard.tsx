@@ -23,7 +23,7 @@ function Dashboard() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deletePost(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts", "admin"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (error) => {
       console.error("Failed to delete", error);
