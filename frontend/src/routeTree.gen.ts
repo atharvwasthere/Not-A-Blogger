@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RssDotxmlRoute = RssDotxmlRouteImport.update({
+  id: '/rss.xml',
+  path: '/rss.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
@@ -98,6 +104,7 @@ const AdminEditIdRoute = AdminEditIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/rss.xml': typeof RssDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/rss.xml': typeof RssDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/rss.xml': typeof RssDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/rss.xml'
     | '/unsubscribe'
     | '/admin/dashboard'
     | '/admin/login'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/rss.xml'
     | '/unsubscribe'
     | '/admin/dashboard'
     | '/admin/login'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/rss.xml'
     | '/unsubscribe'
     | '/admin/dashboard'
     | '/admin/login'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  RssDotxmlRoute: typeof RssDotxmlRoute
   UnsubscribeRoute: typeof UnsubscribeRouteWithChildren
   BlogSlugRoute: typeof BlogSlugRoute
   SeriesSlugRoute: typeof SeriesSlugRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rss.xml': {
+      id: '/rss.xml'
+      path: '/rss.xml'
+      fullPath: '/rss.xml'
+      preLoaderRoute: typeof RssDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/unsubscribe': {
@@ -341,6 +361,7 @@ const UnsubscribeRouteWithChildren = UnsubscribeRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  RssDotxmlRoute: RssDotxmlRoute,
   UnsubscribeRoute: UnsubscribeRouteWithChildren,
   BlogSlugRoute: BlogSlugRoute,
   SeriesSlugRoute: SeriesSlugRoute,
