@@ -18,8 +18,9 @@
   --ink: #1b1915;     /* titles, buttons, links */
   --body: #4a453f;    /* article text */
   --soft: #625b53;    /* dates, meta, captions */
+  --mute: #756d64;    /* quieter text: sub-lines, section labels, meta (4.87:1 on paper) */
   --faint: #a39c93;   /* decoration only: dots, placeholder text. Never readable text */
-  --label: #7a5332;   /* section labels, code keywords */
+  --label: #7a5332;   /* the About link and code keywords */
   --select: #eadfcb;  /* text selection */
   --danger: #b42318;  /* destructive actions (admin) */
 
@@ -55,6 +56,7 @@
   --ink: #ede8e0;
   --body: #bfb7ac;
   --soft: #9a9186;
+  --mute: #857d72;
   --faint: #6b635a;
   --label: #d4a97f;
   --select: #3a3026;

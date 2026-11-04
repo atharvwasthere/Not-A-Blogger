@@ -1,5 +1,5 @@
+import { AboutLink } from './AboutLink'
 import { SubscribeForm } from './SubscribeForm'
-import { WhyThisBlog } from './WhyThisBlog'
 import { SocialLinks } from './SocialLinks'
 import { SiteCredit } from './SiteCredit'
 
@@ -7,7 +7,7 @@ import { SiteCredit } from './SiteCredit'
 export function PhoneTail() {
     return (
         <div className="flex flex-col gap-[26px] border-t border-rule px-5 pb-9 pt-[30px] md:hidden">
-            <WhyThisBlog />
+            <AboutLink />
             <SubscribeForm />
             <SocialLinks />
             <SiteCredit />
