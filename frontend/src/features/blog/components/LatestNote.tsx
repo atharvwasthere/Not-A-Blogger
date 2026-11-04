@@ -30,14 +30,14 @@ export function LatestNote({ post }: { post: Post }) {
                     <PostMeta
                         date={postDate(post)}
                         readingTime={post.reading_time}
-                        className="font-mono text-[13px] uppercase tracking-[0.08em] text-soft"
+                        className="font-mono text-xs uppercase tracking-[0.08em] text-mute"
                     />
                 </span>
                 <span className="flex h-full flex-col justify-between gap-[18px] md:col-span-full md:gap-[26px] xl:col-span-1">
                     {post.excerpt && (
-                        <p className="line-clamp-7 font-mono text-[13px] leading-[1.8] text-ink md:text-sm">{post.excerpt}</p>
+                        <p className="line-clamp-7 font-mono text-[13px] leading-[1.8] text-soft md:text-sm">{post.excerpt}</p>
                     )}
-                    <span className="inline-flex items-center gap-2.5 self-end text-[14.5px] text-ink">
+                    <span className="inline-flex items-center gap-2.5 self-end text-sm font-medium text-ink">
                         Read note
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-[3px]" strokeWidth={1.4} aria-hidden />
                     </span>
@@ -69,14 +69,14 @@ function LatestNoteWithCover({ post, print }: { post: Post; print: string }) {
                     <PostMeta
                         date={postDate(post)}
                         readingTime={post.reading_time}
-                        className="font-mono text-[13px] uppercase tracking-[0.08em] text-soft"
+                        className="font-mono text-xs uppercase tracking-[0.08em] text-mute"
                     />
                 </span>
                 <span className="flex flex-col justify-between gap-[18px] px-[22px] pb-6 pt-3.5 md:gap-[26px] md:px-9 md:pb-[30px] md:pt-5">
                     {post.excerpt && (
-                        <p className="line-clamp-7 font-mono text-[13px] leading-[1.8] text-ink md:text-sm">{post.excerpt}</p>
+                        <p className="line-clamp-7 font-mono text-[13px] leading-[1.8] text-soft md:text-sm">{post.excerpt}</p>
                     )}
-                    <span className="inline-flex items-center gap-2.5 self-end text-[14.5px] text-ink">
+                    <span className="inline-flex items-center gap-2.5 self-end text-sm font-medium text-ink">
                         Read note
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-[3px]" strokeWidth={1.4} aria-hidden />
                     </span>

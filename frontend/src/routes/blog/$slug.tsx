@@ -9,6 +9,7 @@ import { useReferences } from '@/features/blog/hooks/useReferences'
 import { ArticleHeader } from '@/features/blog/components/ArticleHeader'
 import { SITE_URL, postUrl } from '@/lib/site'
 import { postDate } from '@/features/blog/formatDate'
+import { SubscribeForm } from '@/shared/layout/SubscribeForm'
 
 export const Route = createFileRoute('/blog/$slug')({
     loader: async ({ context: { queryClient }, params: { slug } }) => {
@@ -117,6 +118,10 @@ function BlogPost() {
                 >
                     <div dangerouslySetInnerHTML={contentHtml} />
                 </article>
+
+                <div className="mt-14">
+                    <SubscribeForm variant="article" />
+                </div>
             </div>
         </MainLayout>
     )

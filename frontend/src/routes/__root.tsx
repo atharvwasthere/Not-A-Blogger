@@ -56,6 +56,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=JetBrains+Mono:wght@400;500&display=swap' },
       { rel: 'stylesheet', href: appCss },
       { rel: 'icon', type: 'image/svg+xml', href: '/quotation-marks-svgrepo-com.svg' },
+      { rel: 'alternate', type: 'application/rss+xml', title: 'Not a Blogger', href: '/rss.xml' },
     ],
     scripts: [
       {

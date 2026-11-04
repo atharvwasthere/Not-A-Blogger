@@ -12,10 +12,10 @@ export function NoteRow({ post }: { post: Post }) {
                     <PostIcon post={post} className="h-[26px] w-[26px]" />
                 </span>
                 <span>
-                    <span className="block font-sans text-[15.5px] leading-[1.4] text-ink decoration-faint underline-offset-4 group-hover:underline">
+                    <span className="block font-sans text-[15px] font-medium leading-[1.4] text-ink decoration-faint underline-offset-4 group-hover:underline">
                         {post.title}
                     </span>
-                    <PostMeta date={postDate(post)} readingTime={post.reading_time} className="mt-[3px] block font-sans text-[13.5px] text-soft" />
+                    <PostMeta date={postDate(post)} readingTime={post.reading_time} className="mt-[3px] block font-sans text-[13px] text-mute" />
                 </span>
             </Link>
         </li>

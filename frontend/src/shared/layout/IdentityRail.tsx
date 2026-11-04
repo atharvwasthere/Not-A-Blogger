@@ -1,27 +1,45 @@
 import { Link } from '@tanstack/react-router'
+import { AboutLink } from './AboutLink'
 import { SubscribeForm } from './SubscribeForm'
-import { WhyThisBlog } from './WhyThisBlog'
 import { SocialLinks } from './SocialLinks'
 import { SiteCredit } from './SiteCredit'
 
-/** Left rail on browsing pages (≥ md). Sticky; scrolls on its own when taller than the viewport. */
+/** Left rail on browsing pages (≥ md): pinned at viewport height and never scrolls, so its spacing shrinks on short screens. */
 export function IdentityRail() {
     return (
-        <aside className="no-scrollbar hidden border-r border-rule md:sticky md:top-0 md:flex md:h-screen md:flex-col md:gap-7 md:overflow-y-auto md:px-7 md:pb-8 md:pt-11 xl:px-10 xl:pb-10 xl:pt-14">
-            <div>
-                <Link to="/" className="block font-title text-[48px] leading-[0.95] tracking-[-0.015em] text-ink xl:text-[58px]">
-                    Not a Blogger.
+        <aside className="hidden border-r border-rule md:sticky md:top-0 md:flex md:h-screen md:flex-col md:gap-[clamp(16px,3.2vh,28px)] md:overflow-hidden md:px-7 md:pb-[clamp(16px,3vh,28px)] md:pt-[clamp(20px,4vh,36px)]">
+            <div className="flex flex-col gap-[clamp(10px,1.8vh,16px)]">
+                <Link to="/" className="block font-title text-[48px] leading-[0.9] tracking-[-0.025em] text-ink xl:text-[56px]">
+                    Not a<br />
+                    Blogger
                 </Link>
-                <p className="mt-[18px] max-w-[220px] font-sans text-[17px] leading-[1.55] text-ink">
-                    I break systems so you don’t have to.
+                <div className="flex max-w-[280px] flex-col gap-2">
+                    <p className="font-sans text-[15px] leading-[1.6] text-soft">I break systems so you don’t have to.</p>
+                    <p className="font-sans text-[13px] leading-[1.6] text-mute">
+                        Notes on backend, systems, and things I build when I’m bored of tutorials.
+                    </p>
+                </div>
+                <p className="font-sans text-sm leading-[1.6] text-soft">
+                    Written by
+                    <br />
+                    <a
+                        href="https://atharvsingh.me/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        itemProp="author"
+                        className="font-medium text-ink underline decoration-rule underline-offset-4 hover:decoration-ink"
+                    >
+                        Atharv Singh
+                    </a>{' '}
+                    (not a blogger).
                 </p>
+                <AboutLink />
             </div>
-            <hr className="border-rule" />
-            <WhyThisBlog />
-            <hr className="border-rule" />
-            <SubscribeForm />
-            <SocialLinks />
-            <div className="mt-auto">
+            <div className="border-t border-rule pt-[clamp(16px,2.6vh,24px)]">
+                <SubscribeForm />
+            </div>
+            <div className="mt-auto flex flex-col gap-4">
+                <SocialLinks />
                 <SiteCredit />
             </div>
         </aside>

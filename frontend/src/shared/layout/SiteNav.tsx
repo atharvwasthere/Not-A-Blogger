@@ -9,7 +9,7 @@ export function SiteNav({ showWordmark }: { showWordmark: boolean }) {
         <nav aria-label="Site" className="flex h-[50px] items-center gap-5 border-b border-rule px-5 md:h-[72px] md:px-11">
             {showWordmark && (
                 <Link to="/" className="mr-[18px] hidden font-title text-2xl text-ink md:inline">
-                    Not a Blogger.
+                    Not a Blogger
                 </Link>
             )}
             <NavTabs />

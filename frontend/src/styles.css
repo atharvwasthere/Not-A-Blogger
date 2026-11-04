@@ -48,6 +48,7 @@ code {
   --color-ink: var(--ink);
   --color-body: var(--body);
   --color-soft: var(--soft);
+  --color-mute: var(--mute);
   --color-faint: var(--faint);
   --color-label: var(--label);
   --color-danger: var(--danger);
@@ -332,11 +333,10 @@ section[data-open] > .references-body ol { opacity: 1; transform: none; transiti
 /* Section label: LATEST NOTE, RECENTLY PUBLISHED… */
 @utility section-label {
   font-family: "JetBrains Mono", monospace;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--label);
+  color: var(--mute);
 }
 
 @keyframes intro-frame {

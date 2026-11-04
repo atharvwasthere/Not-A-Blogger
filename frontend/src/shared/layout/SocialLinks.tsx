@@ -28,19 +28,28 @@ const LINKS = [
             </svg>
         ),
     },
+    {
+        href: '/rss.xml',
+        label: 'RSS feed',
+        icon: (
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+                <path d="M4 9a7 7 0 0 1 7 7M4 3.5A12.5 12.5 0 0 1 16.5 16" />
+                <circle cx="4.75" cy="15.25" r="1" fill="currentColor" />
+            </svg>
+        ),
+    },
 ]
 
 export function SocialLinks() {
     return (
-        <div className="flex gap-[22px] text-ink">
+        <div className="flex gap-[18px] text-soft">
             {LINKS.map(link => (
                 <a
                     key={link.label}
                     href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    {...(link.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                     aria-label={link.label}
-                    className="opacity-80 transition-opacity hover:opacity-100 [&_svg]:h-[22px] [&_svg]:w-[22px]"
+                    className="transition-colors hover:text-ink [&_svg]:h-5 [&_svg]:w-5"
                 >
                     {link.icon}
                 </a>
