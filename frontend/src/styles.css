@@ -152,6 +152,7 @@ code {
 .prose mark[data-color="#bbf7d0" i] { background: var(--mark-green) !important; }
 .prose mark[data-color="#bfdbfe" i] { background: var(--mark-blue) !important; }
 .prose mark[data-color="#fef9c3" i] { background: var(--mark-yellow) !important; }
+.prose mark[data-color="#fbcfe8" i] { background: var(--mark-pink) !important; }
 
 /* Remove default backticks from inline code in Tailwind Typography */
 .prose code::before,
