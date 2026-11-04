@@ -22,12 +22,6 @@ export interface Post extends PostInput {
 }
 
 /** Lightweight post shape for the ⌘K command palette (GET /posts/index). */
-export interface PostIndexItem {
-    slug: string
-    title: string
-    tags: string[]
-}
-
 export interface User {
     username: string
     id: string

@@ -1,23 +1,20 @@
 import { Command } from 'cmdk'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { api } from '@/lib/api'
+import { PostIcon } from '@/features/blog/components/PostIcon'
+import { postsQueryOptions } from '@/features/blog/hooks/usePosts'
 import { useCommandPalette } from '@/shared/search/CommandPaletteProvider'
 
-/**
- * Global search dialog, opened by ⌘K / Ctrl+K or the search button in the nav.
- * Client-side fuzzy search over post title + tags (cmdk's built-in filter
- * matches against each item's `value`, which we set to "title tags...").
- */
+// Plain substring match: cmdk's default fuzzy scoring matches almost anything against a long excerpt.
+const matches = (value: string, search: string, keywords?: string[]) =>
+    [value, ...(keywords ?? [])].join(' ').toLowerCase().includes(search.trim().toLowerCase()) ? 1 : 0
+
+/** Global search dialog, opened by ⌘K / Ctrl+K or the search button in the nav. */
 export function CommandPalette() {
     const { open, setOpen } = useCommandPalette()
     const navigate = useNavigate()
 
-    const { data: posts } = useQuery({
-        queryKey: ['posts-index'],
-        queryFn: api.getPostIndex,
-        staleTime: 5 * 60 * 1000,
-    })
+    const { data: posts } = useQuery({ ...postsQueryOptions, enabled: open })
 
     const go = (slug: string) => {
         setOpen(false)
@@ -29,6 +26,7 @@ export function CommandPalette() {
             open={open}
             onOpenChange={setOpen}
             label="Search notes"
+            filter={matches}
             overlayClassName="fixed inset-0 z-[100] bg-[var(--scrim)]"
             contentClassName="fixed left-1/2 top-[14vh] z-[101] w-[calc(100vw-32px)] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-[14px] border border-rule bg-card shadow-2xl"
         >
@@ -43,16 +41,14 @@ export function CommandPalette() {
                 {posts?.map(post => (
                     <Command.Item
                         key={post.slug}
-                        value={`${post.title} ${post.tags.join(' ')}`}
+                        value={post.slug}
+                        keywords={[post.title, ...post.tags, post.excerpt ?? '']}
                         onSelect={() => go(post.slug)}
-                        className="flex cursor-pointer flex-col gap-1 rounded-lg px-3 py-2.5 aria-selected:bg-wash"
+                        className="grid cursor-pointer grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-3 py-2.5 aria-selected:bg-wash"
                     >
+                        <PostIcon post={post} className="h-[22px] w-[22px]" />
                         <span className="font-sans text-[14.5px] text-ink">{post.title}</span>
-                        {post.tags.length > 0 && (
-                            <span className="font-mono text-xs uppercase tracking-wider text-soft">
-                                {post.tags.join(' · ')}
-                            </span>
-                        )}
+                        <span className="font-mono text-xs text-soft">{post.reading_time} min</span>
                     </Command.Item>
                 ))}
             </Command.List>
