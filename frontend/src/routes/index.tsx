@@ -29,6 +29,7 @@ function useAdminEasterEgg() {
   useEffect(() => {
     let buffer = ""
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLElement && e.target.closest('input, textarea, [contenteditable="true"]')) return
       // Add char to buffer (keep last 5)
       if (e.key.length === 1) {
         buffer = (buffer + e.key).slice(-5)
@@ -57,6 +58,7 @@ function Home() {
   return (
     <MainLayout variant="browse">
       <div className="grid gap-10 px-5 pb-9 pt-[26px] md:gap-[52px] md:px-11 md:pb-16 md:pt-11">
+        <h1 className="sr-only">Not a Blogger — Atharv Singh on backend systems and engineering</h1>
         {tag && (
           <Link
             to="/"

@@ -48,7 +48,7 @@ export function CommandPalette() {
                     >
                         <PostIcon post={post} className="h-[22px] w-[22px]" />
                         <span className="font-sans text-[14.5px] text-ink">{post.title}</span>
-                        <span className="font-mono text-xs text-soft">{post.reading_time} min</span>
+                        <span className="font-mono text-xs text-soft">{post.reading_time || 1} min</span>
                     </Command.Item>
                 ))}
             </Command.List>
