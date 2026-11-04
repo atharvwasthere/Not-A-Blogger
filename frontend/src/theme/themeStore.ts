@@ -4,7 +4,7 @@ export type Theme = 'light' | 'dark'
 export type EmbedMode = 'default' | 'reader-dark'
 
 export const THEME_STORAGE_KEY = 'nab-theme'
-const DARK_QUERY = '(prefers-color-scheme: dark)'
+export const DARK_QUERY = '(prefers-color-scheme: dark)'
 
 export function readStoredTheme(): Theme | null {
     try {

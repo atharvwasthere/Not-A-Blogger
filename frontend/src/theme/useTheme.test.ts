@@ -6,12 +6,17 @@ import { useTheme } from './useTheme'
 import { THEME_STORAGE_KEY } from './themeStore'
 
 function mockSystem(dark: boolean) {
+    const system = { dark, listeners: [] as (() => void)[] }
     window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-        matches: dark && query.includes('dark'),
+        get matches() { return system.dark && query.includes('dark') },
         media: query,
-        addEventListener: vi.fn(),
+        addEventListener: (_: string, fn: () => void) => system.listeners.push(fn),
         removeEventListener: vi.fn(),
     })) as unknown as typeof window.matchMedia
+    return (next: boolean) => {
+        system.dark = next
+        system.listeners.forEach(fn => fn())
+    }
 }
 
 const render = () => renderHook(() => useTheme(), { wrapper: ThemeProvider })
@@ -81,5 +86,27 @@ describe('useTheme', () => {
         document.documentElement.classList.add('dark')
         const { result } = render()
         expect(result.current.theme).toBe('dark')
+    })
+
+    it('follows a system change until the reader picks a theme', () => {
+        const setSystem = mockSystem(false)
+        const { result } = render()
+        act(() => setSystem(true))
+        expect(result.current.theme).toBe('dark')
+
+        act(() => result.current.toggle())
+        act(() => setSystem(true))
+        expect(result.current.theme).toBe('light')
+    })
+
+    it('applies a choice made in another tab', () => {
+        mockSystem(false)
+        const { result } = render()
+        act(() => {
+            window.localStorage.setItem(THEME_STORAGE_KEY, 'dark')
+            window.dispatchEvent(new StorageEvent('storage', { key: THEME_STORAGE_KEY }))
+        })
+        expect(result.current.theme).toBe('dark')
+        expect(document.documentElement.classList.contains('dark')).toBe(true)
     })
 })

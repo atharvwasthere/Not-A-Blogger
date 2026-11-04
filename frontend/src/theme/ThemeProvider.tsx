@@ -1,5 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
-import { appliedTheme, applyTheme, embedModeFor, initialTheme, storeTheme, type EmbedMode, type Theme } from './themeStore'
+import { appliedTheme, applyTheme, DARK_QUERY, embedModeFor, initialTheme, readStoredTheme, storeTheme, systemTheme, THEME_STORAGE_KEY, type EmbedMode, type Theme } from './themeStore'
 
 export interface ThemeContextValue {
     theme: Theme
@@ -19,6 +19,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const current = appliedTheme() === 'dark' ? 'dark' : initialTheme()
         applyTheme(current)
         setTheme(current)
+
+        // Follow the system until the reader picks, and keep other open tabs in step.
+        const follow = (next: Theme) => {
+            applyTheme(next)
+            setTheme(next)
+        }
+        const media = window.matchMedia?.(DARK_QUERY)
+        const onSystem = () => {
+            if (!readStoredTheme()) follow(systemTheme())
+        }
+        const onStorage = (e: StorageEvent) => e.key === THEME_STORAGE_KEY && follow(initialTheme())
+        media?.addEventListener('change', onSystem)
+        window.addEventListener('storage', onStorage)
+        return () => {
+            media?.removeEventListener('change', onSystem)
+            window.removeEventListener('storage', onStorage)
+        }
     }, [])
 
     const toggle = useCallback(() => {
