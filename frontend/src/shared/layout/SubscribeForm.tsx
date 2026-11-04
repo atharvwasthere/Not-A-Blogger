@@ -8,7 +8,14 @@ import { toast } from "react-hot-toast";
 
 type UIStatus = "idle" | "loading" | "success";
 
-export function SubscribeForm() {
+const COPY = {
+    rail: { title: "Subscribe to the newsletter", body: "Get notified when I publish. No spam, ever." },
+    article: { title: "Get the next one when it’s out", body: "One email when I publish. No spam, ever." },
+};
+
+/** `rail`: the stacked form in the identity rail. `article`: the block at the end of a post, input and button on one row. */
+export function SubscribeForm({ variant = "rail" }: { variant?: "rail" | "article" }) {
+    const article = variant === "article";
     const [email, setEmail] = useState("");
     const [uiStatus, setUiStatus] = useState<UIStatus>("idle");
 
@@ -38,12 +45,16 @@ export function SubscribeForm() {
     };
 
     return (
-        <div>
-        <h3 className="mb-2 text-[21px] font-normal leading-snug text-ink">Subscribe to the newsletter</h3>
-        <p className="mb-[18px] max-w-sm font-sans text-sm leading-relaxed text-soft">
-            Get notified when I publish. No spam, ever.
-        </p>
-        <form onSubmit={handleSubmit} className="grid w-full max-w-sm gap-2.5">
+        <section
+            aria-label="Subscribe"
+            className={article ? "border border-rule bg-card px-6 py-7 md:px-8" : undefined}
+        >
+        <h2 className={`mb-2 font-medium leading-snug text-ink ${article ? "text-[22px]" : "text-lg"}`}>{COPY[variant].title}</h2>
+        <p className="mb-5 max-w-sm font-sans text-sm leading-relaxed text-soft">{COPY[variant].body}</p>
+        <form
+            onSubmit={handleSubmit}
+            className={article ? "flex w-full flex-col gap-2 sm:flex-row" : "grid w-full max-w-sm gap-2"}
+        >
             <input
                 type="email"
                 placeholder="john@doe.com"
@@ -51,15 +62,16 @@ export function SubscribeForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 aria-label="Email"
-                className="w-full rounded-[4px] border border-rule bg-card px-3.5 py-[13px] font-mono text-[13.5px] text-ink placeholder:text-faint transition-colors focus:border-ink focus:outline-none"
+                className="h-12 w-full min-w-0 rounded-none border border-rule bg-transparent px-4 font-mono text-[13.5px] text-ink placeholder:text-faint transition-colors focus:border-ink focus:outline-none"
                 disabled={uiStatus !== "idle"}
             />
             <Button
                 type="submit"
-                className="relative h-[46px] w-full overflow-hidden rounded-[4px] bg-ink text-[14.5px] font-medium text-paper hover:bg-ink/90"
+                className={`relative h-12 overflow-hidden rounded-none bg-ink text-sm font-medium text-paper shadow-none hover:bg-ink/90 ${article ? "w-full shrink-0 px-7 sm:w-auto" : "w-full"}`}
                 disabled={uiStatus !== "idle"}
             >
-                <AnimatePresence mode="wait">
+                {/* initial={false}: the label is visible in the server HTML, not only after hydration */}
+                <AnimatePresence mode="wait" initial={false}>
                     {uiStatus === "idle" && (
                         <motion.span
                             key="idle"
@@ -108,6 +120,15 @@ export function SubscribeForm() {
                 )}
             </Button>
         </form>
-        </div>
+        {article && (
+            <p className="mt-3 font-sans text-[13px] text-mute">
+                Or follow along with{" "}
+                <a href="/rss.xml" className="text-soft underline decoration-rule underline-offset-[3px] hover:decoration-soft">
+                    RSS
+                </a>
+                .
+            </p>
+        )}
+        </section>
     );
 }
