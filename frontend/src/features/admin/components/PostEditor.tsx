@@ -82,6 +82,19 @@ export function PostEditor({
     )
     const [confirmDelete, setConfirmDelete] = useState(false)
 
+    // Mirrors the backend's BasedOn schema, so a bad entry blocks Save here instead of failing the whole save.
+    const basedOnProblem = (() => {
+        const title = basedOnTitle.trim()
+        if (!title) return basedOnBy.trim() || basedOnUrl.trim() ? 'Add a title, or clear the other fields.' : null
+        if (title.length < 2) return 'The title needs at least 2 characters.'
+        try {
+            if (!['http:', 'https:'].includes(new URL(basedOnUrl.trim()).protocol)) throw new Error()
+        } catch {
+            return "Add the paper's link (https://…)."
+        }
+        return null
+    })()
+
     const handleSave = () =>
         onSave({
             title,
@@ -161,11 +174,12 @@ export function PostEditor({
 
                     <Button
                         onClick={handleSave}
-                        disabled={isSaving}
+                        disabled={isSaving || basedOnProblem !== null}
                         className="w-full rounded-none bg-zinc-900 text-white hover:bg-zinc-800 h-10 shadow-none disabled:opacity-50"
                     >
                         {isSaving ? 'Saving...' : mode === 'new' ? 'Save Post' : 'Update Post'}
                     </Button>
+                    {basedOnProblem && <p className="text-xs text-danger">Based on: {basedOnProblem}</p>}
                 </div>
 
                 <div className="h-px bg-zinc-100 w-full" />
@@ -261,6 +275,7 @@ export function PostEditor({
                             className="w-full text-sm bg-white border border-zinc-200 rounded-md p-2 outline-none focus:border-zinc-300"
                         />
                     </div>
+                    {basedOnProblem && <p className="text-xs text-danger">{basedOnProblem}</p>}
                 </div>
 
                 <div className="h-px bg-zinc-100 w-full" />
