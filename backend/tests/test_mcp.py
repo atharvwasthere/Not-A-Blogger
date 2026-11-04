@@ -309,7 +309,7 @@ def test_valid_references_block_is_accepted(admin_client):
     _, tokens = connect(admin_client)
     content = references(
         REFERENCE.format(kind="package", note="What V3 streams every file through."),
-        REFERENCE.format(kind="article", note="Read this for STORE mode."),
+        REFERENCE.format(kind="article", note="Read this for STORE mode.").replace('<code data-install="">npm i archiver</code>', ""),
     )
 
     result = call_tool(admin_client, tokens["access_token"], "create_draft", {"title": "Refs", "content": content})
@@ -327,6 +327,9 @@ def test_valid_references_block_is_accepted(admin_client):
         ('<li data-kind="repo"><span data-source="">x</span><p data-note="">Why</p></li>', "Each reference needs a link and a note"),
         (REFERENCE.format(kind="video", note="Why"), "reference kind 'video'"),
         (REFERENCE.format(kind="package", note="Why").replace(' data-kind="package"', ""), "reference kind None"),
+        (REFERENCE.format(kind="package", note="Why <em>this</em>"), "<em> in a references block is dropped"),
+        (REFERENCE.format(kind="article", note="Why"), "<code data-install> is for package references only"),
+        (REFERENCE.format(kind="package", note="Why").replace("</li>", "") * 2, "close each reference's <li>"),
     ],
 )
 def test_invalid_references_are_refused(admin_client, item, message):
@@ -351,6 +354,21 @@ def test_only_one_references_section_is_allowed(admin_client, content):
     _, tokens = connect(admin_client)
     result = call_tool(admin_client, tokens["access_token"], "create_draft", {"title": "Refs", "content": content})
     assert result["isError"] is True
+
+
+@pytest.mark.parametrize(
+    "content, message",
+    [
+        (references(REFERENCE.format(kind="package", note="Why")).replace("<ol>", "<ul>").replace("</ol>", "</ul>"), "<ul> in a references block"),
+        (references(REFERENCE.format(kind="package", note="Why")).replace("<h2>References</h2>", "<h2>Further reading</h2>"), "heading is <h2>References</h2>"),
+        (references(REFERENCE.format(kind="package", note="Why")).replace("<ol>", "<p>Intro</p><ol>"), "<p> in a references block"),
+    ],
+)
+def test_references_block_shape_matches_the_editor(admin_client, content, message):
+    _, tokens = connect(admin_client)
+    result = call_tool(admin_client, tokens["access_token"], "create_draft", {"title": "Refs", "content": content})
+    assert result["isError"] is True
+    assert message in result["content"][0]["text"]
 
 
 def test_drafts_accept_based_on(admin_client):

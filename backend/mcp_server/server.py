@@ -85,10 +85,42 @@ class _EditorHTMLCheck(HTMLParser):
         self.problems: list[str] = []
         self.stack: list[tuple[str, dict]] = []
         self.references_blocks = 0
+        self.references_heading = ""
         self.reference: Optional[_Reference] = None
 
-    def _in_references(self) -> bool:
-        return any(tag == "section" and "data-references" in attrs for tag, attrs in self.stack)
+    # The editor reads a references block as plain text from exactly this shape; anything else is lost.
+    def _check_reference_tag(self, path: list[str], tag: str, attributes: dict):
+        if path == [] and tag in ("h2", "ol"):
+            return
+        if path == ["ol"] and tag == "li":
+            self.reference = _Reference(attributes.get("data-kind"))
+            return
+        if path == ["ol", "li"] and tag == "li":
+            self.problems.append("close each reference's <li> before the next")
+            return
+        if path == ["ol", "li"] and self.reference is not None:
+            if tag == "a" and attributes.get("href"):
+                self.reference.links += 1
+                return
+            if tag == "span" and "data-source" in attributes:
+                return
+            if tag == "p" and "data-note" in attributes:
+                self.reference.in_note = True
+                return
+            if tag == "code" and "data-install" in attributes:
+                if self.reference.kind != "package":
+                    self.problems.append("<code data-install> is for package references only")
+                return
+        self.problems.append(
+            f"<{tag}> in a references block is dropped by the editor; use the documented shape with plain text"
+        )
+
+    def _references_path(self) -> Optional[list[str]]:
+        """Tags open between the references <section> and here, or None outside one."""
+        for i, (tag, attrs) in enumerate(self.stack):
+            if tag == "section" and "data-references" in attrs:
+                return [t for t, _ in self.stack[i + 1:]]
+        return None
 
     def handle_starttag(self, tag, attrs):
         attributes = dict(attrs)
@@ -99,14 +131,9 @@ class _EditorHTMLCheck(HTMLParser):
                 self.problems.append("<section> is only allowed as a references block (data-references)")
             else:
                 self.references_blocks += 1
-        if self._in_references():
-            if tag == "li":
-                self.reference = _Reference(attributes.get("data-kind"))
-            elif self.reference is not None:
-                if tag == "a" and attributes.get("href"):
-                    self.reference.links += 1
-                elif tag == "p" and "data-note" in attributes:
-                    self.reference.in_note = True
+        path = self._references_path()
+        if path is not None:
+            self._check_reference_tag(path, tag, attributes)
         if tag == "iframe" and not any(
             "data-embed-id" in parent_attrs or "data-youtube-video" in parent_attrs
             for _, parent_attrs in self.stack
@@ -119,16 +146,26 @@ class _EditorHTMLCheck(HTMLParser):
             self.stack.append((tag, attributes))
 
     def handle_data(self, data):
-        if self.reference is not None and self.reference.in_note:
-            self.reference.note += data
+        path = self._references_path()
+        if path is None or not data.strip():
+            return
+        if path == ["h2"]:
+            self.references_heading += data
+        elif len(path) == 3 and path[:2] == ["ol", "li"]:
+            if self.reference is not None and self.reference.in_note:
+                self.reference.note += data
+        else:
+            self.problems.append("text in a references block goes in its <h2> or a reference's fields only")
 
     def handle_endtag(self, tag):
         if self.reference is not None:
             if tag == "p":
                 self.reference.in_note = False
-            elif tag == "li":
+            elif tag in ("li", "ol", "section"):  # an unclosed <li> still gets checked
                 self._check_reference(self.reference)
                 self.reference = None
+        if tag == "section" and self._references_path() is not None and self.references_heading.strip() != "References":
+            self.problems.append("a references block's heading is <h2>References</h2>")
         for i in range(len(self.stack) - 1, -1, -1):
             if self.stack[i][0] == tag:
                 del self.stack[i:]
