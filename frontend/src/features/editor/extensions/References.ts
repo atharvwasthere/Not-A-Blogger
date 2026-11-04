@@ -1,6 +1,5 @@
 import { Node } from '@tiptap/core'
-import type { Editor } from '@tiptap/core'
-import type { DOMOutputSpec } from '@tiptap/pm/model'
+import type { DOMOutputSpec, Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { REFERENCE_KINDS, type Reference, type ReferenceKind } from './referenceKind'
 import { OPEN_REFERENCES_EVENT, ReferencesView } from './ReferencesView'
@@ -42,9 +41,9 @@ function renderReference(item: Reference): DOMOutputSpec {
 }
 
 /** The position of the post's references node, if it has one. */
-export function findReferences(editor: Editor): number | null {
+export function findReferences(doc: ProseMirrorNode): number | null {
     let found: number | null = null
-    editor.state.doc.descendants((node, pos) => {
+    doc.descendants((node, pos) => {
         if (found !== null) return false
         if (node.type.name === 'references') found = pos
         return found === null
@@ -86,7 +85,8 @@ export const References = Node.create({
             openReferences:
                 () =>
                 ({ editor, tr, dispatch }) => {
-                    let pos = findReferences(editor)
+                    // tr.doc, not editor.state: the chained deleteRange has already moved positions.
+                    let pos = findReferences(tr.doc)
                     if (pos === null) {
                         pos = tr.doc.content.size
                         tr.insert(pos, this.type.create({ items: [] }))
