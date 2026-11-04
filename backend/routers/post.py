@@ -12,10 +12,15 @@ from middleware.auth import require_authentication
 from services import post as post_service
 from services.cloudinary_urls import is_own_cloudinary_url
 from services import prints as print_service
+from services import indexnow
 from services.email import send_new_post_notification
 from config import get_settings
 
 settings = get_settings()
+
+
+def _post_url(post: BlogPost) -> str:
+    return f"{settings.SITE_URL}/blog/{post.slug}"
 
 
 def trigger_post_notifications(
@@ -28,12 +33,11 @@ def trigger_post_notifications(
     emails = [row[0] for row in subscribers]
 
     if emails:
-        post_url = f"{settings.SITE_URL}/blog/{post.slug}"
         background_tasks.add_task(
             send_new_post_notification,
             post_title=post.title,
             post_excerpt=post.excerpt,
-            post_url=post_url,
+            post_url=_post_url(post),
             cover_image=post.cover_image,
             subscribers=emails,
         )
@@ -128,6 +132,7 @@ def create_post(
     # Fire notification if published immediately
     if new_post.is_published:
         trigger_post_notifications(new_post, background_tasks, db)
+        background_tasks.add_task(indexnow.ping, [_post_url(new_post)])
 
     return new_post
 
@@ -153,21 +158,33 @@ def update_post(
     if post.is_published and not was_published:
         trigger_post_notifications(post, background_tasks, db)
 
+    # A public page changed, appeared or went away.
+    if post.is_published or was_published:
+        background_tasks.add_task(indexnow.ping, [_post_url(post)])
+
     return post
 
 
 @posts_router.delete("/{post_id}", status_code=204)
 def delete_post(
-    post_id: str, db: Session = Depends(get_db), auth=Depends(require_authentication)
+    post_id: str,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    auth=Depends(require_authentication),
 ):
     # Find the post
     post = db.query(BlogPost).filter(BlogPost.id == post_id).first()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
+    was_published, url = post.is_published, _post_url(post)
+
     # Delete it
     db.delete(post)
     db.commit()
+
+    if was_published:
+        background_tasks.add_task(indexnow.ping, [url])
 
 
 @posts_router.post("/{post_id}/print", response_model=PrintOutput)

@@ -25,6 +25,7 @@ class AppSettings:
     ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS")
     SITE_URL = os.getenv("SITE_URL", "http://localhost:3000")
     API_URL = os.getenv("API_URL", "http://localhost:8000")
+    INDEXNOW_KEY = os.getenv("INDEXNOW_KEY")
 
 
 def get_settings():
