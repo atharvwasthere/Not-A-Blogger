@@ -72,6 +72,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
             name: 'Atharv Singh',
             url: SITE_URL,
             jobTitle: 'Backend Engineer',
+            // Ties the author to their other profiles, so engines know who wrote the notes.
+            sameAs: [
+              'https://atharvsingh.me',
+              'https://github.com/atharvwasthere',
+              'https://linkedin.com/in/atharvwasthere',
+              'https://twitter.com/atharvwasthere',
+            ],
           },
         }),
       },
