@@ -14,7 +14,7 @@ interface Parts {
  * collapsible section. Idempotent: the DOM is built once, listeners are bound per effect run.
  */
 function enhance(section: HTMLElement): Parts | null {
-    const existing = section.querySelector<HTMLButtonElement>(':scope > .references-toggle')
+    const existing = section.querySelector<HTMLButtonElement>(':scope > h2 > .references-toggle')
     const list = section.querySelector<HTMLOListElement>('ol')
     if (!list) return null
     if (existing) return { toggle: existing, list }
@@ -25,8 +25,9 @@ function enhance(section: HTMLElement): Parts | null {
     toggle.className = 'references-toggle'
     toggle.setAttribute('aria-controls', bodyId)
     toggle.innerHTML = `<span>References</span>${CHEVRON}`
-    section.querySelector(':scope > h2')?.replaceWith(toggle)
-    if (!toggle.isConnected) section.prepend(toggle)
+    // The button goes inside the heading, so "References" stays in heading navigation.
+    const heading = section.querySelector(':scope > h2') ?? section.insertBefore(document.createElement('h2'), section.firstChild)
+    heading.replaceChildren(toggle)
 
     const body = document.createElement('div')
     body.className = 'references-body'

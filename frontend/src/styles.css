@@ -243,15 +243,16 @@ code.hljs { padding: 3px 5px }
  * Readable without JavaScript; useReferences adds the toggle and collapses it. */
 .prose section[data-references] { margin-top: 56px; }
 .prose section[data-references] > h2,
-.prose section[data-references] > .references-toggle {
+.prose section[data-references] .references-toggle {
   display: flex; align-items: center; gap: 12px; width: 100%;
   margin: 0; padding: 10px 0; background: none; border: 0;
   font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 500;
   letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
 }
-.prose section[data-references] > .references-toggle { cursor: pointer; }
-.prose section[data-references] > h2::after,
-.prose section[data-references] > .references-toggle::after {
+.prose section[data-references] .references-toggle { cursor: pointer; }
+.prose section[data-references].is-enhanced > h2 { padding: 0; }
+.prose section[data-references] > h2:not(:has(.references-toggle))::after,
+.prose section[data-references] .references-toggle::after {
   content: ""; flex: 1; height: 1px; background: var(--rule); order: 1;
 }
 .references-toggle svg { order: 2; width: 15px; height: 15px; color: var(--soft); transition: transform .3s cubic-bezier(.2,.8,.2,1); }

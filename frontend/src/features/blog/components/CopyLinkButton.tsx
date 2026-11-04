@@ -38,63 +38,66 @@ export function CopyLinkButton({ url, title }: { url: string; title: string }) {
         setPhase('done')
         await wait(HOLD_MS)
         setPhase('idle')
+        setAnnouncement('')
     }
 
     const t = (seconds: number) => ({ duration: reduced ? 0 : seconds })
 
     return (
-        <button
-            ref={button}
-            type="button"
-            onClick={onClick}
-            className="relative inline-grid h-[26px] min-w-[92px] items-center justify-items-end font-sans text-[13.5px] text-soft transition-colors hover:text-ink"
-            style={{ clipPath: 'inset(0 -240px 0 -240px)' }}
-        >
-            <AnimatePresence mode="wait" initial={false}>
-                {phase === 'idle' && (
+        <>
+            <button
+                ref={button}
+                type="button"
+                onClick={onClick}
+                aria-label={mode === 'share' ? 'Share' : 'Copy link'}
+                className="relative inline-grid h-[26px] min-w-[92px] items-center justify-items-end font-sans text-[13.5px] text-soft transition-colors hover:text-ink"
+                style={{ clipPath: 'inset(0 -240px 0 -240px)' }}
+            >
+                <AnimatePresence mode="wait" initial={false}>
+                    {phase === 'idle' && (
+                        <motion.span
+                            key="label"
+                            ref={label}
+                            className="col-start-1 row-start-1 inline-flex items-center gap-[7px] whitespace-nowrap"
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -20, opacity: 0 }}
+                            transition={t(0.25)}
+                        >
+                            <Icon className="h-3.5 w-3.5" strokeWidth={1.6} aria-hidden />
+                            {mode === 'share' ? 'Share' : 'Copy link'}
+                        </motion.span>
+                    )}
+                    {phase === 'done' && (
+                        <motion.span
+                            key="done"
+                            className="col-start-1 row-start-1 inline-flex items-center gap-[7px] whitespace-nowrap text-ink"
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.5, opacity: 0 }}
+                            transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 18 }}
+                            aria-hidden
+                        >
+                            <Check className="h-3.5 w-3.5" strokeWidth={1.8} aria-hidden />
+                            {mode === 'share' ? 'Shared' : 'Copied'}
+                        </motion.span>
+                    )}
+                </AnimatePresence>
+
+                {phase === 'sending' && !reduced && (
                     <motion.span
-                        key="label"
-                        ref={label}
-                        className="col-start-1 row-start-1 inline-flex items-center gap-[7px] whitespace-nowrap"
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -20, opacity: 0 }}
-                        transition={t(0.25)}
-                    >
-                        <Icon className="h-3.5 w-3.5" strokeWidth={1.6} aria-hidden />
-                        {mode === 'share' ? 'Share' : 'Copy link'}
-                    </motion.span>
-                )}
-                {phase === 'done' && (
-                    <motion.span
-                        key="done"
-                        className="col-start-1 row-start-1 inline-flex items-center gap-[7px] whitespace-nowrap text-ink"
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.5, opacity: 0 }}
-                        transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 18 }}
+                        className="pointer-events-none absolute top-1/2 -mt-[7px] text-ink"
+                        style={{ left: flyFrom }}
+                        initial={{ x: 0, scale: 1, opacity: 1 }}
+                        animate={{ x: 70, scale: 0.5, opacity: 0 }}
+                        transition={{ duration: FLY_SECONDS, ease: 'easeInOut' }}
                         aria-hidden
                     >
-                        <Check className="h-3.5 w-3.5" strokeWidth={1.8} aria-hidden />
-                        {mode === 'share' ? 'Shared' : 'Copied'}
+                        <Icon className="h-3.5 w-3.5" strokeWidth={1.6} />
                     </motion.span>
                 )}
-            </AnimatePresence>
-
-            {phase === 'sending' && !reduced && (
-                <motion.span
-                    className="pointer-events-none absolute top-1/2 -mt-[7px] text-ink"
-                    style={{ left: flyFrom }}
-                    initial={{ x: 0, scale: 1, opacity: 1 }}
-                    animate={{ x: 70, scale: 0.5, opacity: 0 }}
-                    transition={{ duration: FLY_SECONDS, ease: 'easeInOut' }}
-                    aria-hidden
-                >
-                    <Icon className="h-3.5 w-3.5" strokeWidth={1.6} />
-                </motion.span>
-            )}
-
+            </button>
             <span className="sr-only" aria-live="polite">{announcement}</span>
-        </button>
+        </>
     )
 }
