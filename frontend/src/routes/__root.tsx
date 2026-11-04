@@ -9,6 +9,7 @@ import { themeBootScript } from '../theme/themeStore'
 import { CommandPaletteProvider } from '../shared/search/CommandPaletteProvider'
 
 import appCss from '../styles.css?url'
+import { SITE_URL } from '@/lib/site'
 
 // Lazy-load — keeps cmdk out of the initial bundle (consistent with PostEditor/GlitchOverlay).
 const CommandPalette = lazy(() =>
@@ -32,7 +33,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { property: 'og:title', content: 'Not a Blogger | Atharv Singh — Backend Systems & Engineering Notes' },
       { property: 'og:description', content: 'Backend systems, debugging, and deliberate engineering by Atharv Singh.' },
       { property: 'og:type', content: 'website' },
-      { property: 'og:url', content: 'https://blogs.atharvsingh.me' },
+      { property: 'og:url', content: SITE_URL },
       { property: 'og:site_name', content: 'Not a Blogger' },
       { property: 'og:image', content: 'https://images.atharvsingh.me/cta/NotABlogger.webp' },
       // Twitter Cards
@@ -42,7 +43,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { name: 'twitter:site', content: '@atharvwasthere' },
       { name: 'twitter:creator', content: '@atharvwasthere' },
       { name: 'twitter:image', content: 'https://images.atharvsingh.me/cta/NotABlogger.webp' },
-      { name: 'twitter:url', content: 'https://blogs.atharvsingh.me' },
+      { name: 'twitter:url', content: SITE_URL },
     ],
     links: [
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -52,7 +53,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/gh/atharvwasthere/fonts-cdn@v1.1.0/fonts.css' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=JetBrains+Mono:wght@400;500&display=swap' },
       { rel: 'stylesheet', href: appCss },
-      { rel: 'canonical', href: 'https://blogs.atharvsingh.me' },
       { rel: 'icon', type: 'image/svg+xml', href: '/quotation-marks-svgrepo-com.svg' },
     ],
     scripts: [
@@ -62,12 +62,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           '@context': 'https://schema.org',
           '@type': 'Blog',
           name: 'Not a Blogger',
-          url: 'https://blogs.atharvsingh.me',
+          url: SITE_URL,
           description: 'Backend systems and deliberate engineering notes by Atharv Singh.',
           author: {
             '@type': 'Person',
             name: 'Atharv Singh',
-            url: 'https://blogs.atharvsingh.me',
+            url: SITE_URL,
             jobTitle: 'Backend Engineer',
           },
         }),

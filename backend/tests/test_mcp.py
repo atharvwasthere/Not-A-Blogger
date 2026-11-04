@@ -292,3 +292,94 @@ def test_list_drafts_and_get_post(admin_client):
     post = call_tool(admin_client, tokens["access_token"], "get_post", {"id_or_slug": slug})["structuredContent"]
     assert post["id"] == draft_id
     assert post["edit_url"].endswith(f"/admin/edit/{draft_id}")
+
+
+REFERENCE = (
+    '<li data-kind="{kind}"><a href="https://www.npmjs.com/package/archiver">archiver</a>'
+    '<span data-source="">npm package</span><p data-note="">{note}</p>'
+    '<code data-install="">npm i archiver</code></li>'
+)
+
+
+def references(*items):
+    return f'<p>Body</p><section data-references=""><h2>References</h2><ol>{"".join(items)}</ol></section>'
+
+
+def test_valid_references_block_is_accepted(admin_client):
+    _, tokens = connect(admin_client)
+    content = references(
+        REFERENCE.format(kind="package", note="What V3 streams every file through."),
+        REFERENCE.format(kind="article", note="Read this for STORE mode.").replace('<code data-install="">npm i archiver</code>', ""),
+    )
+
+    result = call_tool(admin_client, tokens["access_token"], "create_draft", {"title": "Refs", "content": content})
+
+    assert not result.get("isError"), result
+    with SessionLocal() as db:
+        assert db.query(BlogPost).one().content == content
+
+
+@pytest.mark.parametrize(
+    "item, message",
+    [
+        (REFERENCE.format(kind="package", note="  "), "Each reference needs a link and a note"),
+        ('<li data-kind="repo"><a href="https://github.com/a/b">b</a></li>', "Each reference needs a link and a note"),
+        ('<li data-kind="repo"><span data-source="">x</span><p data-note="">Why</p></li>', "Each reference needs a link and a note"),
+        (REFERENCE.format(kind="video", note="Why"), "reference kind 'video'"),
+        (REFERENCE.format(kind="package", note="Why").replace(' data-kind="package"', ""), "reference kind None"),
+        (REFERENCE.format(kind="package", note="Why <em>this</em>"), "<em> in a references block is dropped"),
+        (REFERENCE.format(kind="article", note="Why"), "<code data-install> is for package references only"),
+        (REFERENCE.format(kind="package", note="Why").replace("</li>", "") * 2, "close each reference's <li>"),
+    ],
+)
+def test_invalid_references_are_refused(admin_client, item, message):
+    _, tokens = connect(admin_client)
+
+    result = call_tool(admin_client, tokens["access_token"], "create_draft", {"title": "Refs", "content": references(item)})
+
+    assert result["isError"] is True
+    assert message in result["content"][0]["text"]
+    with SessionLocal() as db:
+        assert db.query(BlogPost).count() == 0
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "<section><p>x</p></section>",
+        references(REFERENCE.format(kind="package", note="Why")) * 2,
+    ],
+)
+def test_only_one_references_section_is_allowed(admin_client, content):
+    _, tokens = connect(admin_client)
+    result = call_tool(admin_client, tokens["access_token"], "create_draft", {"title": "Refs", "content": content})
+    assert result["isError"] is True
+
+
+@pytest.mark.parametrize(
+    "content, message",
+    [
+        (references(REFERENCE.format(kind="package", note="Why")).replace("<ol>", "<ul>").replace("</ol>", "</ul>"), "<ul> in a references block"),
+        (references(REFERENCE.format(kind="package", note="Why")).replace("<h2>References</h2>", "<h2>Further reading</h2>"), "heading is <h2>References</h2>"),
+        (references(REFERENCE.format(kind="package", note="Why")).replace("<ol>", "<p>Intro</p><ol>"), "<p> in a references block"),
+    ],
+)
+def test_references_block_shape_matches_the_editor(admin_client, content, message):
+    _, tokens = connect(admin_client)
+    result = call_tool(admin_client, tokens["access_token"], "create_draft", {"title": "Refs", "content": content})
+    assert result["isError"] is True
+    assert message in result["content"][0]["text"]
+
+
+def test_drafts_accept_based_on(admin_client):
+    _, tokens = connect(admin_client)
+    paper = {"title": "Scaling Memcache at Facebook", "by": "Nishtala et al.", "url": "https://www.usenix.org/nsdi13"}
+
+    created = call_tool(
+        admin_client, tokens["access_token"], "create_draft", {"title": "Paper", "content": "<p>x</p>", "based_on": paper}
+    )
+    post_id = created["structuredContent"]["id"]
+    call_tool(admin_client, tokens["access_token"], "update_draft", {"post_id": post_id, "content": "<p>y</p>"})
+
+    with SessionLocal() as db:
+        assert db.get(BlogPost, post_id).based_on == paper

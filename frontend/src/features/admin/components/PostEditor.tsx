@@ -3,6 +3,7 @@ import { Editor } from '@/features/editor/Editor'
 import { ImageUpload } from '@/features/editor/ImageUpload'
 import { Button } from '@/shared/ui/button'
 import { format } from 'date-fns'
+import type { BasedOn } from '@/lib/types'
 
 export interface PostEditorInitialValues {
     title?: string
@@ -16,27 +17,32 @@ export interface PostEditorInitialValues {
     tags?: string // comma-separated for the form input
     series?: string
     seriesOrder?: number | null
+    basedOn?: BasedOn | null
     // Edit-only meta
     slug?: string
     createdAt?: string
     updatedAt?: string
 }
 
+export interface PostEditorValues {
+    title: string
+    content: string
+    coverImage: string
+    iconUrl: string
+    excerpt: string
+    seoTitle: string
+    seoDescription: string
+    isPublished: boolean
+    tags: string // comma-separated; split by the route handler
+    series: string
+    seriesOrder: number | null
+    /** null when the title is empty */
+    basedOn: BasedOn | null
+}
+
 interface PostEditorProps {
     initialValues?: PostEditorInitialValues
-    onSave: (data: {
-        title: string
-        content: string
-        coverImage: string
-        iconUrl: string
-        excerpt: string
-        seoTitle: string
-        seoDescription: string
-        isPublished: boolean
-        tags: string // comma-separated; split by the route handler
-        series: string
-        seriesOrder: number | null
-    }) => Promise<void>
+    onSave: (data: PostEditorValues) => Promise<void>
     onDelete?: () => Promise<void>
     isSaving: boolean
     lastSaved?: Date
@@ -68,10 +74,26 @@ export function PostEditor({
     const [seriesOrder, setSeriesOrder] = useState(
         initialValues.seriesOrder != null ? String(initialValues.seriesOrder) : ''
     )
+    const [basedOnTitle, setBasedOnTitle] = useState(initialValues.basedOn?.title || '')
+    const [basedOnBy, setBasedOnBy] = useState(initialValues.basedOn?.by || '')
+    const [basedOnUrl, setBasedOnUrl] = useState(initialValues.basedOn?.url || '')
     const [postStatus, setPostStatus] = useState<'Draft' | 'Published'>(
         initialValues.isPublished ? 'Published' : 'Draft'
     )
     const [confirmDelete, setConfirmDelete] = useState(false)
+
+    // Mirrors the backend's BasedOn schema, so a bad entry blocks Save here instead of failing the whole save.
+    const basedOnProblem = (() => {
+        const title = basedOnTitle.trim()
+        if (!title) return basedOnBy.trim() || basedOnUrl.trim() ? 'Add a title, or clear the other fields.' : null
+        if (title.length < 2) return 'The title needs at least 2 characters.'
+        try {
+            if (!['http:', 'https:'].includes(new URL(basedOnUrl.trim()).protocol)) throw new Error()
+        } catch {
+            return "Add the paper's link (https://…)."
+        }
+        return null
+    })()
 
     const handleSave = () =>
         onSave({
@@ -86,6 +108,9 @@ export function PostEditor({
             tags,
             series,
             seriesOrder: seriesOrder.trim() === '' ? null : Number(seriesOrder),
+            basedOn: basedOnTitle.trim()
+                ? { title: basedOnTitle.trim(), by: basedOnBy.trim() || null, url: basedOnUrl.trim() }
+                : null,
         })
 
     return (
@@ -149,11 +174,12 @@ export function PostEditor({
 
                     <Button
                         onClick={handleSave}
-                        disabled={isSaving}
+                        disabled={isSaving || basedOnProblem !== null}
                         className="w-full rounded-none bg-zinc-900 text-white hover:bg-zinc-800 h-10 shadow-none disabled:opacity-50"
                     >
                         {isSaving ? 'Saving...' : mode === 'new' ? 'Save Post' : 'Update Post'}
                     </Button>
+                    {basedOnProblem && <p className="text-xs text-danger">Based on: {basedOnProblem}</p>}
                 </div>
 
                 <div className="h-px bg-zinc-100 w-full" />
@@ -211,6 +237,45 @@ export function PostEditor({
                             />
                         </div>
                     </div>
+                </div>
+
+                <div className="h-px bg-zinc-100 w-full" />
+
+                {/* Based on: the paper series */}
+                <div className="space-y-4">
+                    <h3 className="font-serif text-lg text-zinc-900">Based on (research paper)</h3>
+                    <p className="text-[10px] text-zinc-400">Optional. Shown above the article. Leave the title empty for none.</p>
+                    <div className="space-y-1">
+                        <label className="text-xs text-zinc-400 font-medium">Title</label>
+                        <input
+                            type="text"
+                            placeholder="Scaling Memcache at Facebook"
+                            value={basedOnTitle}
+                            onChange={e => setBasedOnTitle(e.target.value)}
+                            className="w-full text-sm bg-white border border-zinc-200 rounded-md p-2 outline-none focus:border-zinc-300"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-xs text-zinc-400 font-medium">By</label>
+                        <input
+                            type="text"
+                            placeholder="Nishtala et al. · NSDI ’13"
+                            value={basedOnBy}
+                            onChange={e => setBasedOnBy(e.target.value)}
+                            className="w-full text-sm bg-white border border-zinc-200 rounded-md p-2 outline-none focus:border-zinc-300"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-xs text-zinc-400 font-medium">Link</label>
+                        <input
+                            type="url"
+                            placeholder="https://…"
+                            value={basedOnUrl}
+                            onChange={e => setBasedOnUrl(e.target.value)}
+                            className="w-full text-sm bg-white border border-zinc-200 rounded-md p-2 outline-none focus:border-zinc-300"
+                        />
+                    </div>
+                    {basedOnProblem && <p className="text-xs text-danger">{basedOnProblem}</p>}
                 </div>
 
                 <div className="h-px bg-zinc-100 w-full" />

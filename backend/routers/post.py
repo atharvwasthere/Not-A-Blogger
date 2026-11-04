@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -68,8 +69,8 @@ def list_posts(
     if not include_drafts:
         query = query.filter(BlogPost.is_published)
 
-    # Sort by creation date descending (latest first)
-    query = query.order_by(BlogPost.created_at.desc())
+    # Newest first by publish date; drafts (no publish date yet) by when they were started
+    query = query.order_by(func.coalesce(BlogPost.published_at, BlogPost.created_at).desc())
 
     posts = query.offset(offset).limit(limit).all()
     return posts

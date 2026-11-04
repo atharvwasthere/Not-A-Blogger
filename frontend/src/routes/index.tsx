@@ -1,23 +1,31 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { ArrowRight } from 'lucide-react'
 import { useEffect, useState, lazy, Suspense } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { MainLayout } from '@/shared/layout/MainLayout'
 import { PhoneTail } from '@/shared/layout/PhoneTail'
+import { BrowsePage } from '@/shared/layout/BrowsePage'
+import { topicSlug } from '@/theme/topics'
 import { postsQueryOptions, usePosts } from '@/features/blog/hooks/usePosts'
 import { LatestNote } from '@/features/blog/components/LatestNote'
 import { NoteRow } from '@/features/blog/components/NoteRow'
+import { canonical } from '@/lib/site'
 
 // Lazy load heavy admin components
 const GlitchOverlay = lazy(() => import('@/features/admin/components/GlitchOverlay').then(module => ({ default: module.GlitchOverlay })))
 const AdminLogin = lazy(() => import('@/features/admin/components/AdminLogin').then(module => ({ default: module.AdminLogin })))
 
 export const Route = createFileRoute('/')({
-  validateSearch: (search: Record<string, unknown>): { tag?: string } => {
-    const tag = typeof search.tag === 'string' && search.tag.trim() ? search.tag : undefined
-    return tag ? { tag } : {}
+  // Old topic links filtered this page in place (/?tag=x); topics have their own pages now.
+  beforeLoad: ({ location }) => {
+    const tag = (location.search as { tag?: unknown }).tag
+    if (typeof tag === 'string' && topicSlug(tag)) {
+      throw redirect({ to: '/topics/$topic', params: { topic: topicSlug(tag) }, statusCode: 302 })
+    }
   },
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(postsQueryOptions),
+  head: () => ({ links: [canonical()] }),
   component: Home,
 })
 
@@ -49,26 +57,13 @@ function useAdminEasterEgg() {
 }
 
 function Home() {
-  const allPosts = usePosts()
-  const { tag } = Route.useSearch()
-  const posts = tag ? allPosts.filter((p) => p.tags?.includes(tag)) : allPosts
-  const [latest, ...rest] = posts
+  const [latest, ...rest] = usePosts()
   const { isAdminMode, showLogin } = useAdminEasterEgg()
 
   return (
     <MainLayout variant="browse">
-      <div className="grid gap-10 px-5 pb-9 pt-[26px] md:gap-[52px] md:px-11 md:pb-16 md:pt-11">
+      <BrowsePage>
         <h1 className="sr-only">Not a Blogger — Atharv Singh on backend systems and engineering</h1>
-        {tag && (
-          <Link
-            to="/"
-            search={{}}
-            className="inline-flex items-center gap-2 justify-self-start rounded-full border border-rule px-3 py-1.5 font-mono text-xs text-soft transition-colors hover:text-ink"
-          >
-            Filtered by <span className="text-ink">#{tag}</span>
-            <span aria-hidden>✕</span>
-          </Link>
-        )}
         {!latest && (
           <p className="font-serif text-xl italic text-soft">No posts yet.</p>
         )}
@@ -79,9 +74,13 @@ function Home() {
             <ul className="grid grid-cols-1 gap-[22px] lg:grid-cols-2 lg:gap-x-12">
               {rest.map((post) => <NoteRow key={post.slug} post={post} />)}
             </ul>
+            <Link to="/notes" className="group inline-flex items-center gap-2.5 justify-self-start text-[14.5px] text-ink">
+              View all notes
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-[3px]" strokeWidth={1.4} aria-hidden />
+            </Link>
           </section>
         )}
-      </div>
+      </BrowsePage>
       <PhoneTail />
 
       <AnimatePresence>

@@ -4,6 +4,8 @@ import { api, stripHtml } from '@/lib/api'
 import toast from 'react-hot-toast'
 import { useQueryClient } from '@tanstack/react-query'
 
+import type { PostEditorValues } from '@/features/admin/components/PostEditor'
+
 // Lazy load — keeps Tiptap editor out of the main bundle
 const PostEditor = lazy(() =>
   import('@/features/admin/components/PostEditor').then(m => ({ default: m.PostEditor }))
@@ -20,12 +22,8 @@ function NewPost() {
 
   const handleSave = async ({
     title, content, coverImage, iconUrl, excerpt, seoTitle, seoDescription, isPublished,
-    tags, series, seriesOrder
-  }: {
-    title: string; content: string; coverImage: string; iconUrl: string
-    excerpt: string; seoTitle: string; seoDescription: string; isPublished: boolean
-    tags: string; series: string; seriesOrder: number | null
-  }) => {
+    tags, series, seriesOrder, basedOn
+  }: PostEditorValues) => {
     if (!title) {
       toast.error('Title is required')
       return
@@ -44,6 +42,7 @@ function NewPost() {
         tags: tags.split(',').map(t => t.trim()).filter(Boolean),
         series: series.trim() || null,
         series_order: seriesOrder,
+        based_on: basedOn,
       })
       queryClient.invalidateQueries({ queryKey: ['posts'] })
       toast.success('Post saved successfully!')

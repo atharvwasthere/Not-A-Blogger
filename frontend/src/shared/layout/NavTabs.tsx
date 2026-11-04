@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 
 const TABS = [
     { to: '/', label: 'Notes', match: (path: string) => path === '/' || path.startsWith('/notes') },
+    { to: '/topics', label: 'Topics', match: (path: string) => path.startsWith('/topics') },
 ] as const
 
 export function NavTabs() {

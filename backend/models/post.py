@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Text, Boolean, DateTime, Integer
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from datetime import datetime
 from database import BaseModel
 from uuid import uuid4
@@ -18,6 +18,7 @@ class BlogPost(BaseModel):
     is_published = Column(Boolean, default=False, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    published_at = Column(DateTime, nullable=True)  # set on first publish, kept if unpublished
     seo_title = Column(String(200))
     seo_description = Column(String(300))
     reading_time = Column(Integer, default=1)
@@ -26,3 +27,5 @@ class BlogPost(BaseModel):
     tags = Column(ARRAY(String), nullable=False, server_default="{}")
     series = Column(String(100), nullable=True, index=True)
     series_order = Column(Integer, nullable=True)
+    # The source a paper-series post is built around: {title, by, url}
+    based_on = Column(JSONB(none_as_null=True), nullable=True)

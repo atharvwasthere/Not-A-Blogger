@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import type { Post } from '@/lib/types'
 import { PostIcon } from './PostIcon'
 import { PostMeta } from './PostMeta'
+import { postDate } from '../formatDate'
 
 export function LatestNote({ post }: { post: Post }) {
     return (
@@ -21,7 +22,7 @@ export function LatestNote({ post }: { post: Post }) {
                         {post.title}
                     </h2>
                     <PostMeta
-                        date={post.created_at}
+                        date={postDate(post)}
                         readingTime={post.reading_time}
                         className="font-mono text-[13px] uppercase tracking-[0.08em] text-soft"
                     />

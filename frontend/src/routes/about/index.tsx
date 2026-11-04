@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { MainLayout } from '@/shared/layout/MainLayout'
+import { canonical } from '@/lib/site'
 
 export const Route = createFileRoute('/about/')({
+    head: () => ({ links: [canonical('/about')] }),
     component: AboutPage,
 })
 

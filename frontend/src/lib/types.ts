@@ -1,3 +1,10 @@
+/** The source a post is built around ("Based on"). */
+export interface BasedOn {
+    title: string
+    by?: string | null
+    url: string
+}
+
 export interface PostInput {
     title: string
     content: string
@@ -10,6 +17,7 @@ export interface PostInput {
     tags?: string[]
     series?: string | null
     series_order?: number | null
+    based_on?: BasedOn | null
 }
 
 export interface Post extends PostInput {
@@ -17,6 +25,8 @@ export interface Post extends PostInput {
     slug: string
     created_at: string
     updated_at: string
+    /** Set on first publish; null for a draft that was never published. */
+    published_at?: string | null
     reading_time: number
     tags: string[]
 }

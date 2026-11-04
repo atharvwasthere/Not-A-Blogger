@@ -15,7 +15,7 @@ from config import get_settings
 from database import SessionLocal
 from models.embed import Embed
 from models.post import BlogPost
-from schemas.post import PostInput, PostOutput
+from schemas.post import BasedOn, PostInput, PostOutput
 from services import post as post_service
 from services.embed import validate_embed_html
 from mcp_server.oauth import oauth_provider
@@ -31,14 +31,52 @@ EDITOR_TAGS = {
     "pre", "blockquote", "ul", "ol", "li", "img",
     "div", "span", "label", "input",  # task lists and the youtube wrapper
     "figure", "figcaption", "iframe",  # visualisers and youtube
+    "section",  # the references block
 }
+
+REFERENCE_KINDS = {"article", "paper", "repo", "package"}
+
+REFERENCES_EXAMPLE = """<section data-references="">
+  <h2>References</h2>
+  <ol>
+    <li data-kind="article">
+      <a href="https://dev.to/aws-builders/s3-zipper-challenge-a-parallel-zip-assembly-that-beats-the-single-lambda">S3 zipper challenge: a parallel zip assembly that beats the single Lambda</a>
+      <span data-source="">dev.to · AWS Builders</span>
+      <p data-note="">Read this for STORE mode: when the archive layout is fixed in advance, you can build the zip in parallel.</p>
+    </li>
+    <li data-kind="package">
+      <a href="https://www.npmjs.com/package/archiver">archiver</a>
+      <span data-source="">npm package</span>
+      <p data-note="">What V3 streams every file through on its way into the multipart upload.</p>
+      <code data-install="">npm i archiver</code>
+    </li>
+  </ol>
+</section>"""
 
 INSTRUCTIONS = f"""Write drafts for the Not a Blogger engineering blog.
 Post content is HTML limited to these tags: {", ".join(sorted(EDITOR_TAGS))}.
 Code goes in <pre><code class="language-python">…</code></pre>. Leave images out; the author adds them.
 For an interactive visualiser, create the draft first, call attach_embed with its id, and put the
 returned <figure> snippet into the content with update_draft.
-Every tool returns an edit_url: give it to the author, who reviews and publishes from the admin."""
+Every tool returns an edit_url: give it to the author, who reviews and publishes from the admin.
+
+References go at the end of the post, at most one block, in exactly this shape:
+{REFERENCES_EXAMPLE}
+data-kind is one of: {", ".join(sorted(REFERENCE_KINDS))}. Each <li> has one link, a source line, and a
+note from the author on why the reader should open it; a link without a note stays in the text instead.
+<code data-install> is for packages only.
+
+For a post built around one paper or source, pass based_on: {{"title", "by", "url"}}."""
+
+
+class _Reference:
+    """What one <li> of a references block holds, collected while parsing."""
+
+    def __init__(self, kind: Optional[str]):
+        self.kind = kind
+        self.links = 0
+        self.note = ""
+        self.in_note = False
 
 
 class _EditorHTMLCheck(HTMLParser):
@@ -46,11 +84,56 @@ class _EditorHTMLCheck(HTMLParser):
         super().__init__()
         self.problems: list[str] = []
         self.stack: list[tuple[str, dict]] = []
+        self.references_blocks = 0
+        self.references_heading = ""
+        self.reference: Optional[_Reference] = None
+
+    # The editor reads a references block as plain text from exactly this shape; anything else is lost.
+    def _check_reference_tag(self, path: list[str], tag: str, attributes: dict):
+        if path == [] and tag in ("h2", "ol"):
+            return
+        if path == ["ol"] and tag == "li":
+            self.reference = _Reference(attributes.get("data-kind"))
+            return
+        if path == ["ol", "li"] and tag == "li":
+            self.problems.append("close each reference's <li> before the next")
+            return
+        if path == ["ol", "li"] and self.reference is not None:
+            if tag == "a" and attributes.get("href"):
+                self.reference.links += 1
+                return
+            if tag == "span" and "data-source" in attributes:
+                return
+            if tag == "p" and "data-note" in attributes:
+                self.reference.in_note = True
+                return
+            if tag == "code" and "data-install" in attributes:
+                if self.reference.kind != "package":
+                    self.problems.append("<code data-install> is for package references only")
+                return
+        self.problems.append(
+            f"<{tag}> in a references block is dropped by the editor; use the documented shape with plain text"
+        )
+
+    def _references_path(self) -> Optional[list[str]]:
+        """Tags open between the references <section> and here, or None outside one."""
+        for i, (tag, attrs) in enumerate(self.stack):
+            if tag == "section" and "data-references" in attrs:
+                return [t for t, _ in self.stack[i + 1:]]
+        return None
 
     def handle_starttag(self, tag, attrs):
         attributes = dict(attrs)
         if tag not in EDITOR_TAGS:
             self.problems.append(f"<{tag}> is not supported by the editor")
+        if tag == "section":
+            if "data-references" not in attributes:
+                self.problems.append("<section> is only allowed as a references block (data-references)")
+            else:
+                self.references_blocks += 1
+        path = self._references_path()
+        if path is not None:
+            self._check_reference_tag(path, tag, attributes)
         if tag == "iframe" and not any(
             "data-embed-id" in parent_attrs or "data-youtube-video" in parent_attrs
             for _, parent_attrs in self.stack
@@ -62,17 +145,48 @@ class _EditorHTMLCheck(HTMLParser):
         if tag not in ("br", "hr", "img", "input"):
             self.stack.append((tag, attributes))
 
+    def handle_data(self, data):
+        path = self._references_path()
+        if path is None or not data.strip():
+            return
+        if path == ["h2"]:
+            self.references_heading += data
+        elif len(path) == 3 and path[:2] == ["ol", "li"]:
+            if self.reference is not None and self.reference.in_note:
+                self.reference.note += data
+        else:
+            self.problems.append("text in a references block goes in its <h2> or a reference's fields only")
+
     def handle_endtag(self, tag):
+        if self.reference is not None:
+            if tag == "p":
+                self.reference.in_note = False
+            elif tag in ("li", "ol", "section"):  # an unclosed <li> still gets checked
+                self._check_reference(self.reference)
+                self.reference = None
+        if tag == "section" and self._references_path() is not None and self.references_heading.strip() != "References":
+            self.problems.append("a references block's heading is <h2>References</h2>")
         for i in range(len(self.stack) - 1, -1, -1):
             if self.stack[i][0] == tag:
                 del self.stack[i:]
                 break
 
 
+    def _check_reference(self, reference: _Reference):
+        if reference.kind not in REFERENCE_KINDS:
+            self.problems.append(
+                f"reference kind {reference.kind!r} must be one of {', '.join(sorted(REFERENCE_KINDS))}"
+            )
+        if reference.links != 1 or not reference.note.strip():
+            self.problems.append("Each reference needs a link and a note")
+
+
 def check_editor_html(content: str) -> None:
     checker = _EditorHTMLCheck()
     checker.feed(content)
     checker.close()
+    if checker.references_blocks > 1:
+        checker.problems.append("a post has at most one references block")
     if checker.problems:
         raise ToolError("Content would lose parts in the editor: " + "; ".join(sorted(set(checker.problems))))
 
@@ -145,12 +259,13 @@ def create_draft(
     tags: Optional[list[str]] = None,
     series: Optional[str] = None,
     series_order: Optional[int] = None,
+    based_on: Optional[BasedOn] = None,
 ) -> DraftRef:
     """Create an unpublished post. Content is editor HTML (see the server instructions)."""
     check_editor_html(content)
     post_data = PostInput(
         title=title, content=content, excerpt=excerpt, tags=tags or [],
-        series=series, series_order=series_order, is_published=False,
+        series=series, series_order=series_order, based_on=based_on, is_published=False,
     )
     with SessionLocal() as db:
         return _draft_ref(post_service.create_post(db, post_data))
@@ -165,6 +280,7 @@ def update_draft(
     tags: Optional[list[str]] = None,
     series: Optional[str] = None,
     series_order: Optional[int] = None,
+    based_on: Optional[BasedOn] = None,
 ) -> DraftRef:
     """Change fields of a draft. Fields left out keep their current value. Published posts are refused."""
     if content is not None:
@@ -172,7 +288,8 @@ def update_draft(
     changes = {
         name: value
         for name, value in dict(
-            title=title, content=content, excerpt=excerpt, tags=tags, series=series, series_order=series_order
+            title=title, content=content, excerpt=excerpt, tags=tags, series=series,
+            series_order=series_order, based_on=based_on,
         ).items()
         if value is not None
     }
